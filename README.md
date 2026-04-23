@@ -200,3 +200,7 @@ docker compose up --build
   "status": 200
 }
 ~~~
+
+### SwaggerUI
+Once the application is running, you can access the interactive Swagger UI at:
+`http://localhost:8080/swagger-ui.html`
