@@ -9,7 +9,7 @@ public record SaleResponseDto (
     Long id,
     LocalDate date,
     Long branchId,
-    List<DetailSaleResponseDto> detailSaleResponseDtoList,
+    List<DetailSaleResponseDto> detailSaleList,
     SaleStatus saleStatus,
     BigDecimal total
 ) {

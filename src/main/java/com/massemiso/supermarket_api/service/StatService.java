@@ -46,7 +46,7 @@ public class StatService {
 
     log.info("Successfully get best selling product: {} with a total "
             + "revenue of {}",
-        responseDto.productResponseDto(),
+        responseDto.product(),
         responseDto.totalRevenue());
     return responseDto;
   }
