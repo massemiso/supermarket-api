@@ -28,10 +28,9 @@ public class DetailSaleMapper {
     );
   }
 
-  public DetailSale toEntity(DetailSaleRequestDto requestDto, Sale sale, Product product) {
+  public DetailSale toEntity(DetailSaleRequestDto requestDto, Product product) {
     return DetailSale.builder()
         .quantity(requestDto.quantity())
-        .sale(sale)
         .product(product)
         .build();
   }
@@ -46,7 +45,6 @@ public class DetailSaleMapper {
     return detailSaleRequestDtoList.stream()
         .map(ds -> this.toEntity(
             ds,
-            null, // sale doesn't exist at this point
             productRepository
                 .findByIdAndDeletedAtIsNull(ds.productId())
                 .orElseThrow(() -> new ProductNotFoundException(ds.productId()))))

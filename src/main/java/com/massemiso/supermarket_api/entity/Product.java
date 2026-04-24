@@ -24,6 +24,8 @@ public class Product extends BaseEntityWithSoftDelete {
 
   @Builder
   public Product(String name, String category, BigDecimal actualPrice) {
+    if (actualPrice.compareTo(BigDecimal.ZERO) < 0)
+      throw new ArithmeticException("Product price cannot be negative");
     this.name = name;
     this.category = category;
     this.actualPrice = actualPrice;
@@ -37,8 +39,11 @@ public class Product extends BaseEntityWithSoftDelete {
    * @param actualPrice The new price of the product.
    */
   public void update(String name, String category, BigDecimal actualPrice) {
-    this.name = name;
-    this.category = category;
-    this.actualPrice = actualPrice;
+    if(name != null && !name.isBlank())
+      this.name = name;
+    if(category != null && !category.isBlank())
+      this.category = category;
+    if(actualPrice != null && actualPrice.compareTo(BigDecimal.ZERO) >= 0)
+      this.actualPrice = actualPrice;
   }
 }

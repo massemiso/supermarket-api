@@ -29,10 +29,11 @@ public class DetailSale extends BaseEntityWithSoftDelete {
   private Product product;
 
   @Builder
-  public DetailSale(Integer quantity, Sale sale, Product product) {
+  public DetailSale(Integer quantity, Product product) {
+    if (quantity < 1)
+      throw new ArithmeticException("Quantity cannot be negative");
     this.quantity = quantity;
     this.unitPrice = product.getActualPrice();
-    this.sale = sale;
     this.product = product;
   }
 

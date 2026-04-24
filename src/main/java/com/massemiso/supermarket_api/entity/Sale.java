@@ -25,7 +25,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Sale extends BaseEntityWithSoftDelete {
   @PastOrPresent
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) // Expects YYYY-MM-DD
-  private LocalDate date = getCreatedAt().toLocalDate();
+  private LocalDate date;
 
   @Enumerated(EnumType.STRING)
   private SaleStatus saleStatus;
@@ -50,13 +50,24 @@ public class Sale extends BaseEntityWithSoftDelete {
    */
   @Builder
   public Sale(Branch branch, List<DetailSale> detailSaleList) {
+    if (detailSaleList == null ||  detailSaleList.isEmpty())
+      throw new IllegalArgumentException("detailSaleList cannot be null or empty");
+    this.date = LocalDate.now();
     this.branch = branch;
     this.detailSaleList = detailSaleList;
-    this.saleStatus = !isDeleted() ? SaleStatus.REGISTERED : SaleStatus.ANNULLED;
-    this.total = detailSaleList.stream()
+    this.saleStatus = getInitialSaleStatus();
+    this.total = getInitialTotal();
+    detailSaleList.forEach(item -> item.setSale(this));
+  }
+
+  private SaleStatus getInitialSaleStatus(){
+    return !isDeleted() ? SaleStatus.REGISTERED : SaleStatus.ANNULLED;
+  }
+
+  private BigDecimal getInitialTotal(){
+    return detailSaleList.stream()
         .map(DetailSale::calculateTotal)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
-    detailSaleList.forEach(item -> item.setSale(this));
   }
 
   @Override

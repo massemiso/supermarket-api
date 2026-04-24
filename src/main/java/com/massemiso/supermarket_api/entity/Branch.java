@@ -36,8 +36,11 @@ public class Branch extends BaseEntityWithSoftDelete{
    * @param phoneNumber The new phone number of the branch.
    */
   public void update(String name, String address, String phoneNumber) {
-    this.name = name;
-    this.address = address;
-    this.phoneNumber = phoneNumber;
+    if(name != null && !name.isBlank())
+      this.name = name;
+    if(address != null && !address.isBlank())
+      this.address = address;
+    if(phoneNumber != null && !phoneNumber.isBlank())
+      this.phoneNumber = phoneNumber;
   }
 }
