@@ -120,7 +120,7 @@ public class SaleService {
     List<DetailSale> detailSaleList = this.getDetailSaleList(
         requestDto.detailSaleRequestDtoList());
 
-    Sale entity = saleMapper.toEntity(requestDto, branch, detailSaleList);
+    Sale entity = saleMapper.toEntity(branch, detailSaleList);
     entity = saleRepository.save(entity);
 
     SaleResponseDto dto = saleMapper.toDto(entity,
