@@ -7,5 +7,5 @@ import java.util.List;
 
 public record SaleRequestDto (
     @NotNull @Min(1) Long branchId,
-    @NotNull @NotEmpty List<DetailSaleRequestDto> detailSaleRequestDtoList
+    @NotEmpty List<DetailSaleRequestDto> detailSaleRequestDtoList
 ) { }
