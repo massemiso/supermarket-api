@@ -1,6 +1,7 @@
 package com.massemiso.supermarket_api.service;
 
 import com.massemiso.supermarket_api.dto.DetailSaleMapper;
+import com.massemiso.supermarket_api.dto.DetailSaleRequestDto;
 import com.massemiso.supermarket_api.dto.SaleMapper;
 import com.massemiso.supermarket_api.dto.SaleRequestDto;
 import com.massemiso.supermarket_api.dto.SaleResponseDto;
@@ -8,9 +9,11 @@ import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Sale;
 import com.massemiso.supermarket_api.exception.BranchNotFoundException;
+import com.massemiso.supermarket_api.exception.ProductNotFoundException;
 import com.massemiso.supermarket_api.exception.SaleNotFoundException;
 import com.massemiso.supermarket_api.repository.BranchRepository;
 import com.massemiso.supermarket_api.repository.DetailSaleRepository;
+import com.massemiso.supermarket_api.repository.ProductRepository;
 import com.massemiso.supermarket_api.repository.SaleRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 public class SaleService {
 
   private final SaleRepository saleRepository;
+  private final ProductRepository productRepository;
   private final BranchRepository branchRepository;
   private final DetailSaleRepository detailSaleRepository;
   private final SaleMapper saleMapper;
@@ -35,11 +39,13 @@ public class SaleService {
   @Autowired
   public SaleService(
       SaleRepository saleRepository,
+      ProductRepository productRepository,
       BranchRepository branchRepository,
       DetailSaleRepository detailSaleRepository,
       SaleMapper saleMapper,
       DetailSaleMapper detailSaleMapper){
     this.saleRepository = saleRepository;
+    this.productRepository = productRepository;
     this.detailSaleRepository = detailSaleRepository;
     this.branchRepository = branchRepository;
     this.saleMapper = saleMapper;
@@ -111,7 +117,7 @@ public class SaleService {
         .orElseThrow(() -> new BranchNotFoundException(requestDto.branchId()));
 
     // sales in detailSaleList are empty => sale don't exist yet
-    List<DetailSale> detailSaleList = detailSaleMapper.getDetailSaleList(
+    List<DetailSale> detailSaleList = this.getDetailSaleList(
         requestDto.detailSaleRequestDtoList());
 
     Sale entity = saleMapper.toEntity(requestDto, branch, detailSaleList);
@@ -143,6 +149,16 @@ public class SaleService {
     return saleRepository
         .findByIdAndDeletedAtIsNull(id)
         .orElseThrow(() -> new SaleNotFoundException(id));
+  }
+
+  private List<DetailSale> getDetailSaleList(List<DetailSaleRequestDto> detailSaleRequestDtoList){
+    return detailSaleRequestDtoList.stream()
+        .map(ds -> detailSaleMapper.toEntity(
+            ds,
+            productRepository
+                .findByIdAndDeletedAtIsNull(ds.productId())
+                .orElseThrow(() -> new ProductNotFoundException(ds.productId()))))
+        .toList();
   }
 
 }

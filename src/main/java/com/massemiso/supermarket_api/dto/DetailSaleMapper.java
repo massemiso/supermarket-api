@@ -12,13 +12,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class DetailSaleMapper {
 
-  private final ProductRepository productRepository;
-
-  @Autowired
-  public DetailSaleMapper(ProductRepository productRepository) {
-    this.productRepository = productRepository;
-  }
-
   public DetailSaleResponseDto toDto(DetailSale entity) {
     return new DetailSaleResponseDto(
         entity.getId(),
@@ -38,16 +31,6 @@ public class DetailSaleMapper {
   public List<DetailSaleResponseDto> getDetailSaleListDto(List<DetailSale> detailSaleList){
     return detailSaleList.stream()
         .map(this::toDto)
-        .toList();
-  }
-
-  public List<DetailSale> getDetailSaleList(List<DetailSaleRequestDto> detailSaleRequestDtoList){
-    return detailSaleRequestDtoList.stream()
-        .map(ds -> this.toEntity(
-            ds,
-            productRepository
-                .findByIdAndDeletedAtIsNull(ds.productId())
-                .orElseThrow(() -> new ProductNotFoundException(ds.productId()))))
         .toList();
   }
 }
