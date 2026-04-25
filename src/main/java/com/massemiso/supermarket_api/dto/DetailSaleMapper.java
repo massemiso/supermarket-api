@@ -29,6 +29,8 @@ public class DetailSaleMapper {
   }
 
   public List<DetailSaleResponseDto> getDetailSaleListDto(List<DetailSale> detailSaleList){
+    if (detailSaleList == null)
+      return List.of();
     return detailSaleList.stream()
         .map(this::toDto)
         .toList();
