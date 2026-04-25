@@ -2,6 +2,7 @@ package com.massemiso.supermarket_api.dto;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.massemiso.supermarket_api.dto.mapper.BranchMapper;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.util.TestDataFactory;
 import org.junit.jupiter.api.Test;

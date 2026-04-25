@@ -1,12 +1,10 @@
-package com.massemiso.supermarket_api.dto;
+package com.massemiso.supermarket_api.dto.mapper;
 
+import com.massemiso.supermarket_api.dto.DetailSaleRequestDto;
+import com.massemiso.supermarket_api.dto.DetailSaleResponseDto;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Product;
-import com.massemiso.supermarket_api.entity.Sale;
-import com.massemiso.supermarket_api.exception.ProductNotFoundException;
-import com.massemiso.supermarket_api.repository.ProductRepository;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component

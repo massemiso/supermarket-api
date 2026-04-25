@@ -1,6 +1,6 @@
 package com.massemiso.supermarket_api.service;
 
-import com.massemiso.supermarket_api.dto.BranchMapper;
+import com.massemiso.supermarket_api.dto.mapper.BranchMapper;
 import com.massemiso.supermarket_api.dto.BranchRequestDto;
 import com.massemiso.supermarket_api.dto.BranchResponseDto;
 import com.massemiso.supermarket_api.entity.Branch;

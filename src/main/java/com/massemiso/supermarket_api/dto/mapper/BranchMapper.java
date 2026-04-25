@@ -1,5 +1,7 @@
-package com.massemiso.supermarket_api.dto;
+package com.massemiso.supermarket_api.dto.mapper;
 
+import com.massemiso.supermarket_api.dto.BranchRequestDto;
+import com.massemiso.supermarket_api.dto.BranchResponseDto;
 import com.massemiso.supermarket_api.entity.Branch;
 import org.springframework.stereotype.Component;
 

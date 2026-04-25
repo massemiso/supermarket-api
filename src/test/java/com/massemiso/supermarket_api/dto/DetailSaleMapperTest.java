@@ -3,6 +3,7 @@ package com.massemiso.supermarket_api.dto;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
+import com.massemiso.supermarket_api.dto.mapper.DetailSaleMapper;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Product;
 import com.massemiso.supermarket_api.util.TestDataFactory;

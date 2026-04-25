@@ -3,6 +3,7 @@ package com.massemiso.supermarket_api.dto;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.massemiso.supermarket_api.dto.mapper.ProductMapper;
 import com.massemiso.supermarket_api.entity.Product;
 import com.massemiso.supermarket_api.util.TestDataFactory;
 import java.math.BigDecimal;
