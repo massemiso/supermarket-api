@@ -23,7 +23,6 @@ public class SaleMapper {
   }
 
   public Sale toEntity(
-      SaleRequestDto requestDto,
       Branch branch,
       List<DetailSale> detailSaleList) {
     // ASSUME: user can't update sales
