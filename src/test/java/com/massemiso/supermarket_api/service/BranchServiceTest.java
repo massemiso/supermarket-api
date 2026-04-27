@@ -116,7 +116,7 @@ class BranchServiceTest {
     );
 
     verify(branchRepository).findByIdAndDeletedAtIsNull(invalidId);
-    verify(branchMapper, never()).toDto(any());
+    verify(branchMapper, never()).toDto(any(Branch.class));
   }
 
   @Test
@@ -159,17 +159,21 @@ class BranchServiceTest {
     when(branchRepository.findByIdAndDeletedAtIsNull(validId))
         .thenReturn(Optional.of(entity));
     when(branchRepository.save(entity)).thenReturn(entity);
-    when(branchMapper.toDto(any(Branch.class))).thenReturn(responseDto);
+    when(branchMapper.toDto(entity)).thenReturn(responseDto);
 
     // acts
     BranchResponseDto actual = branchService.update(validId, requestDto);
 
     // asserts
+
+    /* check if entity was actually updated */
+    assertEquals(requestDto.name(), entity.getName());
+
     assertNotNull(actual);
     assertEquals(validId, actual.id());
     verify(branchRepository).findByIdAndDeletedAtIsNull(validId);
     verify(branchRepository).save(entity);
-    verify(branchMapper).toDto(any(Branch.class));
+    verify(branchMapper).toDto(entity);
   }
 
   @Test
@@ -210,7 +214,7 @@ class BranchServiceTest {
     assertNotNull(entity);
     assertTrue(entity.isDeleted());
     verify(branchRepository).findByIdAndDeletedAtIsNull(validId);
-    verify(branchRepository).save(any(Branch.class));
+    verify(branchRepository).save(entity);
   }
 
   @Test
@@ -229,6 +233,6 @@ class BranchServiceTest {
     );
 
     verify(branchRepository).findByIdAndDeletedAtIsNull(invalidId);
-    verify(branchMapper, never()).toDto(any());
+    verify(branchRepository, never()).save(any(Branch.class));
   }
 }
