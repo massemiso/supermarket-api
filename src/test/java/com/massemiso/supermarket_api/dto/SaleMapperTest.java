@@ -1,7 +1,9 @@
 package com.massemiso.supermarket_api.dto;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.massemiso.supermarket_api.dto.mapper.SaleMapper;
 import com.massemiso.supermarket_api.entity.Branch;

@@ -1,6 +1,9 @@
 package com.massemiso.supermarket_api.entity;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.massemiso.supermarket_api.util.TestDataFactory;
 import java.math.BigDecimal;
@@ -9,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.*;
 
 class SaleTest {
 

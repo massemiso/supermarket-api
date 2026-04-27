@@ -1,7 +1,8 @@
 package com.massemiso.supermarket_api.entity;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.massemiso.supermarket_api.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
