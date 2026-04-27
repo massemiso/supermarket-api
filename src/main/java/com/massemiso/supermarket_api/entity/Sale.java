@@ -55,13 +55,11 @@ public class Sale extends BaseEntityWithSoftDelete {
     this.date = LocalDate.now();
     this.branch = branch;
     this.detailSaleList = detailSaleList;
-    this.saleStatus = getInitialSaleStatus();
+
+    // A sale is always born as REGISTERED.
+    this.saleStatus = SaleStatus.REGISTERED;
     this.total = getInitialTotal();
     detailSaleList.forEach(item -> item.setSale(this));
-  }
-
-  private SaleStatus getInitialSaleStatus(){
-    return !isDeleted() ? SaleStatus.REGISTERED : SaleStatus.ANNULLED;
   }
 
   private BigDecimal getInitialTotal(){
