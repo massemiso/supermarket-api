@@ -2,7 +2,8 @@ package com.massemiso.supermarket_api.util;
 
 import com.massemiso.supermarket_api.dto.BranchRequestDto;
 import com.massemiso.supermarket_api.dto.BranchResponseDto;
-import com.massemiso.supermarket_api.dto.DetailSaleResponseDto;
+import com.massemiso.supermarket_api.dto.ProductRequestDto;
+import com.massemiso.supermarket_api.dto.ProductResponseDto;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Product;
@@ -13,6 +14,11 @@ public class TestDataFactory {
   private final static String DEFAULT_BRANCH_NAME = "Some branch name";
   private final static String DEFAULT_BRANCH_ADDRESS  = "Some branch address";
   private final static String DEFAULT_BRANCH_PHONENUMBER  = "123456789" ;
+
+  private final static Long DEFAULT_PRODUCT_ID = 1L;
+  private final static String DEFAULT_PRODUCT_NAME = "Some product name";
+  private final static String DEFAULT_PRODUCT_CATEGORY  = "Some product category";
+  private final static BigDecimal DEFAULT_PRODUCT_ACTUALPRICE = BigDecimal.valueOf(2.50);
 
   public static Branch createDefaultBranch() {
     return Branch.builder()
@@ -38,10 +44,27 @@ public class TestDataFactory {
 
   public static Product createDefaultProduct() {
     return Product.builder()
-        .name("Some product name")
-        .category("Some category")
-        .actualPrice(BigDecimal.valueOf(2.50))
+        .name(DEFAULT_PRODUCT_NAME)
+        .category(DEFAULT_PRODUCT_CATEGORY)
+        .actualPrice(DEFAULT_PRODUCT_ACTUALPRICE)
         .build();
+  }
+
+  public static ProductRequestDto createDefaultProductRequestDto() {
+    return new ProductRequestDto(
+        DEFAULT_PRODUCT_NAME,
+        DEFAULT_PRODUCT_CATEGORY,
+        DEFAULT_PRODUCT_ACTUALPRICE
+    );
+  }
+
+  public static ProductResponseDto createDefaultProductResponseDto() {
+    return new ProductResponseDto(
+        DEFAULT_PRODUCT_ID,
+        DEFAULT_PRODUCT_NAME,
+        DEFAULT_PRODUCT_CATEGORY,
+        DEFAULT_PRODUCT_ACTUALPRICE
+    );
   }
 
   public static DetailSale createDefaultDetailSale() {
@@ -54,4 +77,6 @@ public class TestDataFactory {
   public static Long getDefaultBranchId() {
     return DEFAULT_BRANCH_ID;
   }
+
+  public static Long getDefaultProductId() { return DEFAULT_PRODUCT_ID; }
 }
