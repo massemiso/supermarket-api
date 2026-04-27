@@ -62,18 +62,18 @@ class BranchTest {
   }
 
   @Test
-  void update_GivenSomeNullArgs_ShouldKeepOldDataAndUpdateWithValidArgs() {
+  void update_GivenNameNull_ShouldKeepOldDataAndUpdateWithValidArgs() {
     // Arrange
     Branch branch = TestDataFactory.createDefaultBranch();
     String oldName = branch.getName();
     String newAddress = "New Address";
-    String oldPhoneNumber = branch.getPhoneNumber();
+    String newPhoneNumber = "123456789";
 
     // Act
     branch.update(
         null,
         newAddress,
-        null);
+        newPhoneNumber);
 
     // Assert
     assertNotNull(branch);
@@ -86,12 +86,171 @@ class BranchTest {
         .isNotNull()
         .isEqualTo(newAddress);
     assertThat(branch.getPhoneNumber())
-        .as("Phone Number should remain unchanged when null is passed")
+        .as("Phone Number SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newPhoneNumber);
+    assertThat(branch.getSaleList())
+        .isNullOrEmpty();
+  }
+
+  @Test
+  void update_GivenNameBlank_ShouldKeepOldDataAndUpdateWithValidArgs() {
+    // Arrange
+    Branch branch = TestDataFactory.createDefaultBranch();
+    String oldName = branch.getName();
+    String newAddress = "New Address";
+    String newPhoneNumber = "123456789";
+
+    // Act
+    branch.update(
+        "",
+        newAddress,
+        newPhoneNumber);
+
+    // Assert
+    assertNotNull(branch);
+    assertThat(branch.getName())
+        .as("Name should remain unchanged when no characters are passed")
+        .isNotNull()
+        .isEqualTo(oldName);
+    assertThat(branch.getAddress())
+        .as("Address SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newAddress);
+    assertThat(branch.getPhoneNumber())
+        .as("Phone Number SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newPhoneNumber);
+    assertThat(branch.getSaleList())
+        .isNullOrEmpty();
+  }
+
+  @Test
+  void update_GivenCategoryNull_ShouldKeepOldDataAndUpdateWithValidArgs() {
+    // Arrange
+    Branch branch = TestDataFactory.createDefaultBranch();
+    String newName = "New name";
+    String oldAddress = branch.getAddress();
+    String newPhoneNumber = "123456789";
+
+    // Act
+    branch.update(
+        newName,
+        null,
+        newPhoneNumber);
+
+    // Assert
+    assertNotNull(branch);
+    assertThat(branch.getName())
+        .as("Name SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newName);
+    assertThat(branch.getAddress())
+        .as("Address should remain unchanged when a null is passed")
+        .isNotNull()
+        .isEqualTo(oldAddress);
+    assertThat(branch.getPhoneNumber())
+        .as("Phone Number SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newPhoneNumber);
+    assertThat(branch.getSaleList())
+        .isNullOrEmpty();
+  }
+
+  @Test
+  void update_GivenCategoryBlank_ShouldKeepOldDataAndUpdateWithValidArgs() {
+    // Arrange
+    Branch branch = TestDataFactory.createDefaultBranch();
+    String newName = "New name";
+    String oldAddress = branch.getAddress();
+    String newPhoneNumber = "123456789";
+
+    // Act
+    branch.update(
+        newName,
+        "",
+        newPhoneNumber);
+
+    // Assert
+    assertNotNull(branch);
+    assertThat(branch.getName())
+        .as("Name SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newName);
+    assertThat(branch.getAddress())
+        .as("Address should remain unchanged when no characters are passed")
+        .isNotNull()
+        .isEqualTo(oldAddress);
+    assertThat(branch.getPhoneNumber())
+        .as("Phone Number SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newPhoneNumber);
+    assertThat(branch.getSaleList())
+        .isNullOrEmpty();
+  }
+  @Test
+  void update_GivenPhoneNumberNull_ShouldKeepOldDataAndUpdateWithValidArgs() {
+    // Arrange
+    Branch branch = TestDataFactory.createDefaultBranch();
+    String newName = "New name";
+    String newAddress = "New address";
+    String oldPhoneNumber = branch.getPhoneNumber();
+
+    // Act
+    branch.update(
+        newName,
+        newAddress,
+        null);
+
+    // Assert
+    assertNotNull(branch);
+    assertThat(branch.getName())
+        .as("Name SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newName);
+    assertThat(branch.getAddress())
+        .as("Address SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newAddress);
+    assertThat(branch.getPhoneNumber())
+        .as("Phone Number should remain unchanged when null is "
+            + "passed")
         .isNotNull()
         .isEqualTo(oldPhoneNumber);
     assertThat(branch.getSaleList())
         .isNullOrEmpty();
-
   }
 
+  @Test
+  void update_GivenPhoneNumberBlank_ShouldKeepOldDataAndUpdateWithValidArgs() {
+    // Arrange
+    Branch branch = TestDataFactory.createDefaultBranch();
+    String newName = "New name";
+    String newAddress = "New address";
+    String oldPhoneNumber = branch.getPhoneNumber();
+
+    // Act
+    branch.update(
+        newName,
+        newAddress,
+        "");
+
+    // Assert
+    assertNotNull(branch);
+    assertThat(branch.getName())
+        .as("Name SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newName);
+    assertThat(branch.getAddress())
+        .as("Address SHOULD CHANGE when a valid arg is passed")
+        .isNotNull()
+        .isEqualTo(newAddress);
+    assertThat(branch.getPhoneNumber())
+        .as("Phone Number should remain unchanged when no characters are "
+            + "passed")
+        .isNotNull()
+        .isEqualTo(oldPhoneNumber);
+    assertThat(branch.getSaleList())
+        .isNullOrEmpty();
+  }
 }

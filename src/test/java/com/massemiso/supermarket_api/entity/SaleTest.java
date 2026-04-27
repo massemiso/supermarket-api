@@ -45,7 +45,7 @@ class SaleTest {
   }
 
   @Test
-  void saleBuilder_ShouldCalculateCorrectTotalAndStatus() {
+  void saleBuilder_ShouldCalculateCorrectTotal() {
     // Arrange
     Branch branch = TestDataFactory.createDefaultBranch();
     Product product = TestDataFactory.createDefaultProduct();
@@ -81,8 +81,8 @@ class SaleTest {
         .containsExactlyInAnyOrder(item1, item2)
         .isNotEmpty()
         .allSatisfy(detail ->
-        assertThat(detail.getSale())
-            .isEqualTo(actual));
+            assertThat(detail.getSale())
+                .isEqualTo(actual));
 
     assertEquals(SaleStatus.REGISTERED, actual.getSaleStatus());
     assertThat(actual.getTotal())

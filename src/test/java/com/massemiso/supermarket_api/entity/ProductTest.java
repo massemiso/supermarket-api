@@ -87,23 +87,127 @@ class ProductTest {
   }
 
   @Test
-  void update_WhenGivenSomeNullArgs_ShouldKeepOldDataAndSetValidArgsCorrectly() {
+  void update_WhenGivenNameNull_ShouldKeepOldDataAndSetValidArgsCorrectly() {
+    // Arrange
+    Product product = TestDataFactory.createDefaultProduct();
+    String oldName = product.getName();
+
+    // Act
+    product.update(
+        null,
+        "New category",
+       BigDecimal.ONE
+    );
+
+    // Assert
+    assertNotNull(product);
+    assertEquals(oldName, product.getName());
+    assertEquals("New category", product.getCategory());
+    assertThat(product.getActualPrice())
+        .isEqualByComparingTo(BigDecimal.ONE);
+  }
+
+  @Test
+  void update_WhenGivenNameBlank_ShouldKeepOldDataAndSetValidArgsCorrectly() {
+    // Arrange
+    Product product = TestDataFactory.createDefaultProduct();
+    String oldName = product.getName();
+
+    // Act
+    product.update(
+        "",
+        "New category",
+        BigDecimal.ONE
+    );
+
+    // Assert
+    assertNotNull(product);
+    assertEquals(oldName, product.getName());
+    assertEquals("New category", product.getCategory());
+    assertThat(product.getActualPrice())
+        .isEqualByComparingTo(BigDecimal.ONE);
+  }
+
+  @Test
+  void update_WhenGivenCategoryNull_ShouldKeepOldDataAndSetValidArgsCorrectly() {
     // Arrange
     Product product = TestDataFactory.createDefaultProduct();
     String oldCategory = product.getCategory();
-    BigDecimal oldActualPrice = product.getActualPrice();
 
     // Act
     product.update(
         "New name",
         null,
-        null
+        BigDecimal.ONE
     );
 
     // Assert
     assertNotNull(product);
     assertEquals("New name", product.getName());
     assertEquals(oldCategory, product.getCategory());
+    assertThat(product.getActualPrice())
+        .isEqualByComparingTo(BigDecimal.ONE);
+  }
+
+  @Test
+  void update_WhenGivenCategoryBlank_ShouldKeepOldDataAndSetValidArgsCorrectly() {
+    // Arrange
+    Product product = TestDataFactory.createDefaultProduct();
+    String oldCategory = product.getCategory();
+
+    // Act
+    product.update(
+        "New name",
+        "",
+        BigDecimal.ONE
+    );
+
+    // Assert
+    assertNotNull(product);
+    assertEquals("New name", product.getName());
+    assertEquals(oldCategory, product.getCategory());
+    assertThat(product.getActualPrice())
+        .isEqualByComparingTo(BigDecimal.ONE);
+  }
+
+  @Test
+  void update_WhenGivenActualPriceNull_ShouldKeepOldDataAndSetValidArgsCorrectly() {
+    // Arrange
+    Product product = TestDataFactory.createDefaultProduct();
+    BigDecimal oldActualPrice = product.getActualPrice();
+
+    // Act
+    product.update(
+        "New name",
+        "New category",
+        null
+    );
+
+    // Assert
+    assertNotNull(product);
+    assertEquals("New name", product.getName());
+    assertEquals("New category", product.getCategory());
+    assertThat(product.getActualPrice())
+        .isEqualByComparingTo(oldActualPrice);
+  }
+
+  @Test
+  void update_WhenGivenActualPriceInvalid_ShouldKeepOldDataAndSetValidArgsCorrectly() {
+    // Arrange
+    Product product = TestDataFactory.createDefaultProduct();
+    BigDecimal oldActualPrice = product.getActualPrice();
+
+    // Act
+    product.update(
+        "New name",
+        "New category",
+        BigDecimal.valueOf(-1)
+    );
+
+    // Assert
+    assertNotNull(product);
+    assertEquals("New name", product.getName());
+    assertEquals("New category", product.getCategory());
     assertThat(product.getActualPrice())
         .isEqualByComparingTo(oldActualPrice);
   }
