@@ -19,27 +19,19 @@ import org.springframework.http.HttpStatus;
 class BranchControllerTest extends BaseIntegrationTest {
 
   @Autowired
-  private BranchRepository branchRepository;
+  private BranchRepository repo;
 
   @BeforeEach
   void setup(){
     RestAssured.baseURI = "http://localhost:" + port + "/api/branches";
-    branchRepository.deleteAll();
+    repo.deleteAll();
   }
 
   @Test
   void getAll_ShouldReturn200AndAJsonWithAPageOfBranches() {
-    Branch branch1 = Branch.builder()
-        .name("Branch 1")
-        .address("Address 1")
-        .phoneNumber("123456789")
-        .build();
-    Branch branch2 = Branch.builder()
-        .name("Branch 2")
-        .address("Address 2")
-        .phoneNumber("987654321")
-        .build();
-    branchRepository.saveAll(List.of(branch1, branch2));
+    List<Branch> entities = this.insertSomeDefaultValues();
+    Branch entity1 = entities.getFirst();
+    Branch entity2 = entities.getLast();
 
     given()
         .contentType(ContentType.JSON)
@@ -48,12 +40,12 @@ class BranchControllerTest extends BaseIntegrationTest {
     .then()
         .statusCode(HttpStatus.OK.value())
         .body("content", hasSize(2))
-        .body("content[0].name", is(branch1.getName()))
-        .body("content[0].address", is(branch1.getAddress()))
-        .body("content[0].phoneNumber", is(branch1.getPhoneNumber()))
-        .body("content[1].name", is(branch2.getName()))
-        .body("content[1].address", is(branch2.getAddress()))
-        .body("content[1].phoneNumber", is(branch2.getPhoneNumber()))
+        .body("content[0].name", is(entity1.getName()))
+        .body("content[0].address", is(entity1.getAddress()))
+        .body("content[0].phoneNumber", is(entity1.getPhoneNumber()))
+        .body("content[1].name", is(entity2.getName()))
+        .body("content[1].address", is(entity2.getAddress()))
+        .body("content[1].phoneNumber", is(entity2.getPhoneNumber()))
         .body("page.size", is(20))
         .body("page.number", is(0))
         .body("page.totalElements", is(2))
@@ -62,18 +54,7 @@ class BranchControllerTest extends BaseIntegrationTest {
 
   @Test
   void getById_GivenValidId_ShouldReturn200AndApiResponseOfBranchDto() {
-    Branch branch1 = Branch.builder()
-        .name("Branch 1")
-        .address("Address 1")
-        .phoneNumber("123456789")
-        .build();
-    Branch branch2 = Branch.builder()
-        .name("Branch 2")
-        .address("Address 2")
-        .phoneNumber("987654321")
-        .build();
-    branchRepository.saveAll(List.of(branch1, branch2));
-    int validId = branch1.getId().intValue();
+    int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
 
     given()
         .contentType(ContentType.JSON)
@@ -154,19 +135,7 @@ class BranchControllerTest extends BaseIntegrationTest {
 
   @Test
   void update_GivenValidIdAndBranchRequestDto_ShouldReturn200AndApiResponseOfBranchDto() {
-    Branch branch1 = Branch.builder()
-        .name("Branch 1")
-        .address("Address 1")
-        .phoneNumber("123456789")
-        .build();
-    Branch branch2 = Branch.builder()
-        .name("Branch 2")
-        .address("Address 2")
-        .phoneNumber("987654321")
-        .build();
-    branchRepository.saveAll(List.of(branch1, branch2));
-
-    int validId = branch1.getId().intValue();
+    int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
     BranchRequestDto branchRequestDto = new BranchRequestDto(
         "New Branch 1",
         "New Address 1",
@@ -217,19 +186,7 @@ class BranchControllerTest extends BaseIntegrationTest {
 
   @Test
   void update_GivenInvalidBranchRequestDto_ShouldReturn500AndApiResponseError() {
-    Branch branch1 = Branch.builder()
-        .name("Branch 1")
-        .address("Address 1")
-        .phoneNumber("123456789")
-        .build();
-    Branch branch2 = Branch.builder()
-        .name("Branch 2")
-        .address("Address 2")
-        .phoneNumber("987654321")
-        .build();
-    branchRepository.saveAll(List.of(branch1, branch2));
-
-    int validId = branch1.getId().intValue();
+    int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
     BranchRequestDto branchRequestDto = new BranchRequestDto(
         "",
         "",
@@ -258,7 +215,7 @@ class BranchControllerTest extends BaseIntegrationTest {
         .address("Address 1")
         .phoneNumber("123456789")
         .build();
-    branchRepository.save(branch1);
+    repo.save(branch1);
     int validId = branch1.getId().intValue();
 
     given()
@@ -283,5 +240,19 @@ class BranchControllerTest extends BaseIntegrationTest {
         .body("timestamp", containsString(LocalDate.now().toString()))
         .body("message", is("Branch with id " + invalidId + " not found"))
         .body("status", is(404));
+  }
+
+  private List<Branch> insertSomeDefaultValues() {
+    Branch branch1 = Branch.builder()
+        .name("Branch 1")
+        .address("Address 1")
+        .phoneNumber("123456789")
+        .build();
+    Branch branch2 = Branch.builder()
+        .name("Branch 2")
+        .address("Address 2")
+        .phoneNumber("987654321")
+        .build();
+   return repo.saveAll(List.of(branch1, branch2));
   }
 }
