@@ -44,7 +44,6 @@ class ProductControllerTest extends BaseIntegrationTest {
     Product entity2 = entities.getLast();
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .get()
@@ -72,7 +71,6 @@ class ProductControllerTest extends BaseIntegrationTest {
     int validId = entity1.getId().intValue();
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", validId)
@@ -90,7 +88,6 @@ class ProductControllerTest extends BaseIntegrationTest {
   void getById_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = 1;
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", invalidId)
@@ -111,7 +108,6 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -139,7 +135,6 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -165,7 +160,6 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -194,7 +188,6 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -222,7 +215,6 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -243,7 +235,6 @@ class ProductControllerTest extends BaseIntegrationTest {
     int validId = entity1.getId().intValue();
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -255,7 +246,6 @@ class ProductControllerTest extends BaseIntegrationTest {
   void delete_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = 1;
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)

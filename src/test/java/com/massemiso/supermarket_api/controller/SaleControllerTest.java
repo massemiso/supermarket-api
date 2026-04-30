@@ -60,7 +60,6 @@ class SaleControllerTest extends BaseIntegrationTest {
     Sale entity2 = entities.getLast();
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .get()
@@ -92,7 +91,6 @@ class SaleControllerTest extends BaseIntegrationTest {
         .intValue();
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .queryParam("branchId", branchId)
     .when()
@@ -118,7 +116,6 @@ class SaleControllerTest extends BaseIntegrationTest {
     repo.save(entity);
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .queryParam("date", LocalDate.now().toString())
     .when()
@@ -149,7 +146,6 @@ class SaleControllerTest extends BaseIntegrationTest {
     repo.save(entity);
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .queryParam("branchId", branchId)
         .queryParam("date", LocalDate.now().toString())
@@ -172,7 +168,6 @@ class SaleControllerTest extends BaseIntegrationTest {
     int branchId = entity.getBranch().getId().intValue();
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", validId)
@@ -196,7 +191,6 @@ class SaleControllerTest extends BaseIntegrationTest {
   void getById_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = -1;
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", invalidId)
@@ -230,7 +224,6 @@ class SaleControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -259,7 +252,6 @@ class SaleControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -277,7 +269,6 @@ class SaleControllerTest extends BaseIntegrationTest {
   void delete_GivenValidId_ShouldReturn204AndNoContent() {
     int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -290,7 +281,6 @@ class SaleControllerTest extends BaseIntegrationTest {
     this.insertSomeDefaultValues();
     int invalidId = -1;
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)

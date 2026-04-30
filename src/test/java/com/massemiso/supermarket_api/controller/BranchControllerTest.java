@@ -42,7 +42,6 @@ class BranchControllerTest extends BaseIntegrationTest {
     branchRepository.saveAll(List.of(branch1, branch2));
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .get()
@@ -77,7 +76,6 @@ class BranchControllerTest extends BaseIntegrationTest {
     int validId = branch1.getId().intValue();
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", validId)
@@ -95,7 +93,6 @@ class BranchControllerTest extends BaseIntegrationTest {
   void getById_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = 1;
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", invalidId)
@@ -116,7 +113,6 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -143,7 +139,6 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -179,7 +174,6 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -207,7 +201,6 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -244,7 +237,6 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -270,7 +262,6 @@ class BranchControllerTest extends BaseIntegrationTest {
     int validId = branch1.getId().intValue();
 
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -282,7 +273,6 @@ class BranchControllerTest extends BaseIntegrationTest {
   void delete_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = 1;
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)

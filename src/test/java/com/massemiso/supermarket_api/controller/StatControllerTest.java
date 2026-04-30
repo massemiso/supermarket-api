@@ -100,7 +100,6 @@ class StatControllerTest extends BaseIntegrationTest {
 
     BigDecimal bestSellingProductTotalRevenue = BigDecimal.TEN;
     given()
-        .port(port)
         .contentType(ContentType.JSON)
     .when()
         .get("/best-selling-product")
