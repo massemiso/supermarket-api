@@ -12,6 +12,11 @@ services:
     ports:
       - "5432:5432"
 
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -29,6 +34,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+      JAVA_TOOL_OPTIONS: "-Xmx384m -Xms128m"
+
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
 volumes:
   postgres_data:
