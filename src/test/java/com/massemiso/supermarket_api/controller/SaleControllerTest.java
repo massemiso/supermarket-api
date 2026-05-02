@@ -327,7 +327,6 @@ class SaleControllerTest extends BaseIntegrationTest {
         .build();
 
     List<Sale> out = repo.saveAll(List.of(entity1, entity2));
-    detailSaleRepo.saveAll(List.of(ds1, ds2, ds3));
     return out;
   }
 }
