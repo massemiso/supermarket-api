@@ -13,7 +13,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class GlobalHandlerException {
 
   private ResponseEntity<ApiResponse<Void>> handleNotFoundException(Exception e) {
-    log.warn("Resource: {}", e.getMessage());
+    log.warn("RESOURCE: {}", e.getMessage());
     ApiResponse<Void> apiResponse = ApiResponse.error(
         e.getMessage(),
         HttpStatus.NOT_FOUND.value()

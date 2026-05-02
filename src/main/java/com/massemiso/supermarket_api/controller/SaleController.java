@@ -7,7 +7,6 @@ import com.massemiso.supermarket_api.service.SaleService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/sales")
 public class SaleController {
@@ -40,8 +38,6 @@ public class SaleController {
       Pageable pageable,
       @RequestParam(required = false) Long branchId,
       @RequestParam(required = false) LocalDate date){
-    log.info("REST request to get sales. Filters -> branchId: {}, date: {}, "
-        + "page: {}", branchId, date, pageable);
     return ResponseEntity.ok(
         saleService.getAll(pageable, branchId, date));
   }
@@ -64,16 +60,12 @@ public class SaleController {
   @PostMapping
   public ResponseEntity<ApiResponse<SaleResponseDto>> create(
       @Valid @RequestBody SaleRequestDto requestDto){
-    log.debug("POST Sale: {}", requestDto);
     SaleResponseDto responseDto = saleService.create(requestDto);
     ApiResponse<SaleResponseDto> apiResponse = ApiResponse.success(
         responseDto,
         "Sale created successfully",
         HttpStatus.CREATED.value()
     );
-    log.info(
-        "New sale resource created with ID: {}. Returning CREATED status.",
-        responseDto.id());
     return ResponseEntity
         .created(URI.create("/api/sales/" + responseDto.id()))
         .body(apiResponse);
@@ -86,11 +78,7 @@ public class SaleController {
   public ResponseEntity<ApiResponse<Void>> delete(
       @PathVariable Long id
   ){
-    log.debug("DELETE Sale by ID: {}", id);
     saleService.delete(id);
-    log.info(
-        "Deleted sale resource with ID: {}. Returning NO_CONTENT status",
-        id);
     return ResponseEntity
         .noContent()
         .build();

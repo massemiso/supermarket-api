@@ -6,7 +6,6 @@ import com.massemiso.supermarket_api.dto.ProductResponseDto;
 import com.massemiso.supermarket_api.service.ProductService;
 import jakarta.validation.Valid;
 import java.net.URI;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -59,7 +57,6 @@ public class ProductController {
   @PostMapping
   public ResponseEntity<ApiResponse<ProductResponseDto>> create(
       @Valid @RequestBody ProductRequestDto requestDto){
-    log.debug("POST Product: {}", requestDto);
     ProductResponseDto responseDto = productService.create(requestDto);
     ApiResponse<ProductResponseDto> apiResponse = ApiResponse.success(
         responseDto,
@@ -67,9 +64,6 @@ public class ProductController {
         HttpStatus.CREATED.value()
     );
 
-    log.info(
-        "New product resource created with ID: {}. Returning CREATED status",
-        responseDto.id());
     return ResponseEntity
         .created(URI.create("/api/products/" + responseDto.id()))
         .body(apiResponse);
@@ -81,16 +75,12 @@ public class ProductController {
       @PathVariable Long id,
       @Valid @RequestBody ProductRequestDto requestDto
   ){
-    log.debug("PUT Product -> {} with ID: {}", requestDto, id);
     ProductResponseDto responseDto = productService.update(id, requestDto);
     ApiResponse<ProductResponseDto> apiResponse = ApiResponse.success(
         responseDto,
         "Product updated successfully",
         HttpStatus.OK.value()
     );
-    log.info(
-        "Updated product resource with ID: {}. Returning OK status",
-        responseDto.id());
     return ResponseEntity
         .ok(apiResponse);
   }
@@ -100,11 +90,7 @@ public class ProductController {
   public ResponseEntity<ApiResponse<Void>> delete(
       @PathVariable Long id
   ){
-    log.debug("DELETE Product with ID: {}", id);
     productService.delete(id);
-    log.info(
-        "Deleted product resource with ID: {}. Returning NO_CONTENT status",
-        id);
     return ResponseEntity
         .noContent()
         .build();

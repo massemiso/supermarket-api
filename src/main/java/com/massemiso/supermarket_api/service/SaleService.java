@@ -18,13 +18,11 @@ import com.massemiso.supermarket_api.repository.SaleRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 public class SaleService {
 
@@ -55,7 +53,6 @@ public class SaleService {
   public Page<SaleResponseDto> getAll(Pageable pageable, Long branchId, LocalDate date) {
     Page<SaleResponseDto> page;
     if (branchId == null && date == null) {
-      log.info("Attempting to return all sales");
       page = saleRepository
           .findByDeletedAtIsNull(pageable)
           .map(sale -> saleMapper.toDto(
@@ -64,7 +61,6 @@ public class SaleService {
                   sale.getDetailSaleList())));
     }
     else if(date == null){
-      log.info("Attempting to return all sales by branchId: {}", branchId);
       page = saleRepository
           .findByDeletedAtIsNullAndBranchId(branchId, pageable)
           .map(sale -> saleMapper.toDto(
@@ -73,7 +69,6 @@ public class SaleService {
                   sale.getDetailSaleList())));
     }
     else if(branchId == null){
-      log.info("Attempting to return all sales by date: {}", date);
       page = saleRepository
           .findByDeletedAtIsNullAndDate(date, pageable)
           .map(sale -> saleMapper.toDto(
@@ -82,8 +77,6 @@ public class SaleService {
                   sale.getDetailSaleList())));
     }
     else{
-      log.info("Attempting to return all sales by branchId and date: {}, {}",
-          branchId, date);
       page = saleRepository
           .findByDeletedAtIsNullAndBranchIdAndDate(branchId, date, pageable)
           .map(sale -> saleMapper.toDto(
@@ -92,26 +85,19 @@ public class SaleService {
                   sale.getDetailSaleList())));
     }
 
-    log.info("Returning page {} of sales with total {} elements",
-        page.getNumber(), page.getTotalElements());
     return page;
   }
 
   public SaleResponseDto getById(Long id) {
-    log.info("Attempting to get sale by id: {}", id);
     Sale sale = findById(id);
-
-    SaleResponseDto dto = saleMapper.toDto(
+    return saleMapper.toDto(
         sale,
         detailSaleMapper.getDetailSaleListDto(
             sale.getDetailSaleList()));
-    log.info("Returning sale: {}", dto);
-    return dto;
   }
 
   @Transactional
   public SaleResponseDto create(SaleRequestDto requestDto) {
-    log.info("Attempting to create sale: {}", requestDto);
     Branch branch = branchRepository
         .findByIdAndDeletedAtIsNull(requestDto.branchId())
         .orElseThrow(() -> new BranchNotFoundException(requestDto.branchId()));
@@ -123,15 +109,12 @@ public class SaleService {
     Sale entity = saleMapper.toEntity(branch, detailSaleList);
     entity = saleRepository.save(entity);
 
-    SaleResponseDto dto = saleMapper.toDto(entity,
+    return saleMapper.toDto(entity,
         detailSaleMapper.getDetailSaleListDto(detailSaleList));
-    log.info("Successfully created sale: {}", dto);
-    return dto;
   }
 
   @Transactional
   public void delete(Long id) {
-    log.info("Attempting to soft delete sale by id: {}", id);
     Sale entity = findById(id);
     entity.delete();
     List<DetailSale> detailSaleList = detailSaleRepository
@@ -141,7 +124,6 @@ public class SaleService {
       detailSaleRepository.save(ds);
     });
 
-    log.info("Successfully soft deleted sale: {}", entity);
     saleRepository.save(entity);
   }
 

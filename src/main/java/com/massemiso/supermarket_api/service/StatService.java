@@ -6,12 +6,9 @@ import com.massemiso.supermarket_api.exception.ProductNotFoundException;
 import com.massemiso.supermarket_api.repository.BestSellerProjection;
 import com.massemiso.supermarket_api.repository.DetailSaleRepository;
 import com.massemiso.supermarket_api.repository.ProductRepository;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 public class StatService {
 
@@ -36,18 +33,11 @@ public class StatService {
    * @return BestSellerDto with the best-selling product and its total revenue.
    */
   public BestSellerResponseDto getBestSellingProduct() {
-    log.info("Attempting to get best selling product");
     BestSellerProjection seller = detailSaleRepository.findBestSellingProductId();
-    BestSellerResponseDto responseDto = new BestSellerResponseDto(
+    return new BestSellerResponseDto(
         productMapper.toDto(productRepository
             .findByIdAndDeletedAtIsNull(seller.getProductId())
             .orElseThrow(() -> new ProductNotFoundException(seller.getProductId()))),
         seller.getTotalRevenue());
-
-    log.info("Successfully get best selling product: {} with a total "
-            + "revenue of {}",
-        responseDto.product(),
-        responseDto.totalRevenue());
-    return responseDto;
   }
 }

@@ -6,7 +6,6 @@ import com.massemiso.supermarket_api.dto.BranchResponseDto;
 import com.massemiso.supermarket_api.service.BranchService;
 import jakarta.validation.Valid;
 import java.net.URI;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/branches")
 public class BranchController {
@@ -59,16 +57,12 @@ public class BranchController {
   @PostMapping
   public ResponseEntity<ApiResponse<BranchResponseDto>> create(
       @Valid @RequestBody BranchRequestDto requestDto){
-    log.debug("POST Branch: {}", requestDto);
     BranchResponseDto responseDto = branchService.create(requestDto);
     ApiResponse<BranchResponseDto> apiResponse = ApiResponse.success(
         responseDto,
         "Branch created successfully",
         HttpStatus.CREATED.value()
     );
-    log.info(
-        "New branch resource created with ID: {}. Returning CREATED status.",
-        responseDto.id());
     return ResponseEntity
         .created(URI.create("/api/branches/" + responseDto.id()))
         .body(apiResponse);
@@ -80,16 +74,12 @@ public class BranchController {
       @PathVariable Long id,
       @Valid @RequestBody BranchRequestDto requestDto
   ){
-    log.debug("PUT Branch -> {} with ID: {}", requestDto, id);
     BranchResponseDto responseDto = branchService.update(id, requestDto);
     ApiResponse<BranchResponseDto> apiResponse = ApiResponse.success(
         responseDto,
         "Branch updated successfully",
         HttpStatus.OK.value()
     );
-    log.info(
-        "Branch resource updated with ID: {}. Returning OK status.",
-        responseDto.id());
     return ResponseEntity
         .ok(apiResponse);
   }
@@ -99,11 +89,7 @@ public class BranchController {
   public ResponseEntity<ApiResponse<Void>> delete(
       @PathVariable Long id
   ){
-    log.debug("DELETE Branch by ID: {}", id);
     branchService.delete(id);
-    log.info(
-        "Branch resource deleted with ID: {}. Returning NO_CONTENT status.",
-        id);
     return ResponseEntity
         .noContent()
         .build();
