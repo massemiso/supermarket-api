@@ -5,33 +5,47 @@ demonstrate skills in Java and Spring Boot.
 
 ## Features
 - **CRUD** operations for Branches, Products and Sales.
-- Statistics for best-selling products.
+- **Business Statistics** for best-selling products via native SQL projections.
 - **Soft deletion** of entities: to preserve data integrity and allow for data recovery.
 - Pagination and search sorting for collections.
 - Consistent API responses with **JSON**, including exception details.
-- Dockerized application for easy deployment using **Docker**.
+- **Optimistic Locking** using JPA @Version to prevent data overwriting in high-load scenarios.
 - Logging with **SLF4J** and **Logback**.
+- Automated auditing using **Spring Data JPA Auditing**.
+- Dockerized application for easy deployment using **Docker**.
 
 ## Stack
 - Java 21+
+- Maven
 - Spring Boot 3.x
 - Spring Boot JPA (Hibernate)
-- PostgreSQL (production with docker) / H2 (local development)
-- Lombok
-- Maven
+- PostgreSQL (production/docker) 
+- H2 (local development/in-memory)
+- Testcontainers
+- REST Assured
+- Docker & Docker Compose
+- Lombok & MapStruct (conceptually)
 
 ## Project Structure
 ~~~
 src/main/java/com/massemiso/supermarket_api/
-├── config/        # Web and Pagination configurations
-├── controller/    # REST Endpoints
-├── dto/           # Request/Response objects and Mappers
-├── entity/        # Database Models (JPA Entities)
-├── exception/     # Custom exceptions and Global Handler
+├── config/        # JPA Auditing, Web & Pagination settings
+├── controller/    # REST Endpoints with @Valid 
+├── dto/           # Records for immutable data transfer & Mappers
+├── entity/        # JPA Models with @MappedSuperclass for Soft Delete
+├── exception/     # Custom exceptions & @ControllerAdvice handler
 ├── repository/    # Data Access Layer (Native Queries & Projections)
-├── service/       # Business Logic Layer
+├── service/       # Business Logic with @Transactional boundaries
 └── SupermarketApplication.java      # Main application class
 ~~~
+
+## Testing Strategy
+This project follows a testing pyramid:
+- **Unit Tests**: Using JUnit 5 and Mockito to test service logic and mappers in isolation. 
+- **Integration Tests**: Using Testcontainers to spin up a real PostgreSQL 15 container, ensuring the repository layer and native SQL queries behave exactly as they would in production. 
+- **API Tests**: Using **REST Assured** to validate HTTP status codes, JSON paths, and business constraints. 
+- **Coverage**: Instrumented with **JaCoCo** to ensure high code 
+  reliability (DTOs and Configs excluded for meaningful metrics).
 
 ## Getting Started
 ### Prerequisites
@@ -48,12 +62,13 @@ git clone https://github.com/massemiso/supermarket-api.git
    included.
 ~~~bash
 cd supermarket-api
-./mvnw clean install
+./mvnw clean package
 ~~~
 3. Build and run the docker compose
 ~~~bash
 docker compose up --build
 ~~~
+_This starts the Spring Boot app and a dedicated PostgreSQL 15 container._
 
 ## API Documentation
 ### Branches
