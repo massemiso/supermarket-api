@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,6 +56,7 @@ public class BranchController {
 
   // POST
   @PostMapping
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ApiResponse<BranchResponseDto>> create(
       @Valid @RequestBody BranchRequestDto requestDto){
     BranchResponseDto responseDto = branchService.create(requestDto);
@@ -70,6 +72,7 @@ public class BranchController {
 
   // UPDATE
   @PutMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ApiResponse<BranchResponseDto>> update(
       @PathVariable Long id,
       @Valid @RequestBody BranchRequestDto requestDto
@@ -86,6 +89,7 @@ public class BranchController {
 
   // DELETE
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ApiResponse<Void>> delete(
       @PathVariable Long id
   ){
