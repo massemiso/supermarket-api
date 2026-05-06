@@ -4,6 +4,7 @@ and sales. This project was developed inspired by a technical test to
 demonstrate skills in Java and Spring Boot.
 
 ## Features
+- Role-based security using **Spring Security** and Basic Authentication. Secures endpoints based on `ADMIN`, `MANAGER`, and `CASHIER` roles.
 - **CRUD** operations for Branches, Products and Sales.
 - **Business Statistics** for best-selling products via native SQL projections.
 - **Soft deletion** of entities: to preserve data integrity and allow for data recovery.
@@ -18,6 +19,7 @@ demonstrate skills in Java and Spring Boot.
 - Java 21+
 - Maven
 - Spring Boot 3.x
+- Spring Security
 - Spring Boot JPA (Hibernate)
 - PostgreSQL (production/docker) 
 - H2 (local development/in-memory)
@@ -71,14 +73,26 @@ docker compose up --build
 _This starts the Spring Boot app and a dedicated PostgreSQL 15 container._
 
 ## API Documentation
+
+### Authentication & Security
+The API is secured using **Basic Authentication**. Endpoints require specific roles to be accessed. Unauthenticated requests will return a `401 Unauthorized`, and authenticated requests without the proper roles will return a standard `403 Forbidden` API response.
+
+For testing purposes, the database needs to be manually pre-seeded with the following default users included in `resources/import.sql`:
+
+| Username | Password   | Role |
+| :--- |:-----------| :--- |
+| `admin` | `admin123` | ADMIN |
+| `manager` | `admin123` | MANAGER |
+| `cashier` | `admin123` | CASHIER |
+
 ### Branches
-| Method | Endpoint | Description | Return |
-| :--- | :--- | :--- | :--- | 
-| GET | `/api/branches` | Fetches all active branches (supports pagination) | OK 200 |
-| GET | `/api/branches/{id}` | Gets details of a specific active branch | OK 200 |
-| POST | `/api/branches` | Register a new branch with **name**, **address** and **phoneNumber** | CREATED 201 |
-| PUT | `/api/branches/{id}` | Updates a specific active branch with a **name**, **address** and **phoneNumber** | OK 200 |
-| DELETE | `/api/branches/{id}` | **Soft deletes** a specific active branch | NO_CONTENT 204 |
+| Method | Endpoint | Description | Roles Required | Return      |
+| :--- | :--- |:--- |:---------------|:------------| 
+| GET | `/api/branches` | Fetches all active branches (supports pagination) | `NONE`           | OK 200      |
+| GET | `/api/branches/{id}` | Gets details of a specific active branch   | `NONE`           | OK 200      |
+| POST | `/api/branches` | Register a new branch with **name**, **address** and **phoneNumber**  | `ADMIN`         | CREATED 201 |
+| PUT | `/api/branches/{id}` | Updates a specific active branch with a **name**, **address** and **phoneNumber** |  `ADMIN`    |  OK 200     |
+| DELETE | `/api/branches/{id}` | **Soft deletes** a specific active branch  |  `ADMIN`   | NO_CONTENT 204 |
 
 #### Example JSON Requests/Responses
 - POST Body Request:
@@ -104,14 +118,13 @@ _This starts the Spring Boot app and a dedicated PostgreSQL 15 container._
 }
 ~~~
 
-### Products
-| Method | Endpoint | Description | Return |
-| :--- | :--- | :---| :--- |
-| GET | `/api/products` | Fetches all active products (supports pagination) | OK 200 |
-| GET | `/api/products/{id}` | Gets details of a specific active product | OK 200 |
-| POST | `/api/products` | Register a new product with **name**, **category** and an **actualPrice** | CREATED 201 |
-| PUT | `/api/products/{id}` | Updates a specific active product with a **name**, **category** and an **actualPrice** | OK 200 |
-| DELETE | `/api/products/{id}` | **Soft deletes** a specific active product | NO_CONTENT 204 |
+| Method | Endpoint             | Description                                                                            | Roles Required    | Return      |
+| :--- |:---------------------|:---------------------------------------------------------------------------------------|:------------------|:------------| 
+| GET | `/api/products`      | Fetches all active products (supports pagination)                                      | `NONE`            | OK 200      |
+| GET | `/api/products/{id}` | Gets details of a specific active product                                              | `NONE`            | OK 200      |
+| POST | `/api/products`      | Register a new product with **name**, **category** and an **actualPrice**              | `ADMIN`,`MANAGER` | CREATED 201 |
+| PUT | `/api/products/{id}` | Updates a specific active product with a **name**, **category** and an **actualPrice** | `ADMIN`,`MANAGER` |  OK 200     |
+| DELETE | `/api/products/{id}` | **Soft deletes** a specific active product                                             | `ADMIN`,`MANAGER` | NO_CONTENT 204 |
 
 #### Example JSON Requests/Responses
 - POST Body Request:
@@ -138,13 +151,12 @@ _This starts the Spring Boot app and a dedicated PostgreSQL 15 container._
 ~~~
 
 ### Sales
-| Method | Endpoint | Description | Return |
-| :--- | :--- | :---| :--- |
-| GET | `/api/sales` | Fetches all active sales (supports pagination and search filtering by **branchId** and **date**) | OK 200 |
-| GET | `/api/sales/{id}` | Gets details of a specific active sale | OK 200 |
-| POST | `/api/sales` | Register a new sale with an active **branchId** and a **list of detail sales**. Each detail sale includes **quantity** and an active **productId** | CREATED 201 |
-| DELETE | `/api/sales/{id}` | **Soft deletes** a specific active sale | NO_CONTENT 204 |
-
+| Method | Endpoint          | Description                                                                                                                                        | Roles Required              | Return      |
+| :--- |:------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------|:------------| 
+| GET | `/api/sales`      | Fetches all active sales (supports pagination and search filtering by **branchId** and **date**)                                              | `NONE`                      | OK 200      |
+| GET | `/api/sales/{id}` | Gets details of a specific active sale                                                                                                             | `NONE`                      | OK 200      |
+| POST | `/api/sales`      | Register a new sale with an active **branchId** and a **list of detail sales**. Each detail sale includes **quantity** and an active **productId** | `ADMIN`,`MANAGER`,`CASHIER` | CREATED 201 |
+| DELETE | `/api/sales/{id}` | **Soft deletes** a specific active sale                                                                                                            | `ADMIN`,`MANAGER`,`CASHIER`          | NO_CONTENT 204 |
 #### Example JSON Requests/Responses
 - POST Body Request:
 ~~~json
@@ -195,9 +207,9 @@ _This starts the Spring Boot app and a dedicated PostgreSQL 15 container._
 ~~~
 
 ### Stats
-| Method | Endpoint | Description                  | Return |
-| :--- | :--- |:-----------------------------| :--- |
-| GET | `/api/stats/best-selling-product` | Fetches best-selling product | OK 200 |
+| Method | Endpoint | Description                   | Roles Required   | Return |
+| :--- | :--- |:------------------------------|:-----------------| :--- |
+| GET | `/api/stats/best-selling-product` | Fetches best-selling product | `ADMIN`,`MANAGER` | OK 200 |
 - GET Success Body Response:
 ~~~json
 {
