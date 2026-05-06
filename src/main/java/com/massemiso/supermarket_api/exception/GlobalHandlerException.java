@@ -4,6 +4,7 @@ import com.massemiso.supermarket_api.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -39,6 +40,14 @@ public class GlobalHandlerException {
   public ResponseEntity<Void> handleNoResourceFoundException(NoResourceFoundException e) {
     // Just return 404 without logging an ERROR stack trace
     return ResponseEntity.notFound().build();
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(Exception e) {
+    log.warn("UNAUTHORIZED: {}", e.getMessage());
+    return ResponseEntity
+        .status(HttpStatus.FORBIDDEN)
+        .body(ApiResponse.error("Access Denied: You do not have the required permissions.", 403));
   }
 
   @ExceptionHandler(ProductNotFoundException.class)
