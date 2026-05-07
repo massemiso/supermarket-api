@@ -6,20 +6,44 @@ import com.massemiso.supermarket_api.entity.UserEntity;
 import com.massemiso.supermarket_api.repository.RoleRepository;
 import com.massemiso.supermarket_api.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import java.util.Set;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile({"dev", "test"}) // needed for integration tests
+@PropertySource("classpath:mock-users.properties")
 @Slf4j
 public class UserSeeder implements CommandLineRunner {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
+
+  @Value("${user.admin.username}")
+  private String adminUsername;
+  @Value("${user.admin.password}")
+  private String adminPassword;
+  @Value("${user.admin.email")
+  private String adminEmail;
+  @Value("${user.manager.username}")
+  private String managerUsername;
+  @Value("${user.manager.password}")
+  private String managerPassword;
+  @Value("${user.manager.email")
+  private String managerEmail;
+  @Value("${user.cashier.username}")
+  private String cashierUsername;
+  @Value("${user.cashier.password}")
+  private String cashierPassword;
+  @Value("${user.cashier.email")
+  private String cashierEmail;
 
   @Autowired
   public UserSeeder(
@@ -58,41 +82,44 @@ public class UserSeeder implements CommandLineRunner {
 
     // creating default admin user
     UserEntity admin = UserEntity.builder()
-        .username("admin")
-        .password(passwordEncoder.encode("admin123"))
-        .email("admin@supermarket.com")
+        .username(adminUsername)
+        .password(passwordEncoder.encode(adminPassword))
+        .email(adminEmail)
         .isAccountExpired(false)
         .isAccountLocked(false)
         .isCredentialsExpired(false)
         .roles(Set.of(adminRole))
         .build();
     userRepository.save(admin);
-    log.info("Admin user 'admin' with password 'admin123' created succesfully.");
+    log.info("Admin user '" + adminUsername
+        + "'  with password '" + adminPassword + "' created succesfully.");
 
     // creating default manager user
     UserEntity manager = UserEntity.builder()
-        .username("manager")
-        .password(passwordEncoder.encode("manager123"))
-        .email("manager@supermarket.com")
+        .username(managerUsername)
+        .password(passwordEncoder.encode(managerPassword))
+        .email(managerEmail)
         .isAccountExpired(false)
         .isAccountLocked(false)
         .isCredentialsExpired(false)
         .roles(Set.of(managerRole))
         .build();
     userRepository.save(manager);
-    log.info("Manager user 'manager' with password 'manager123' created succesfully.");
+    log.info("Manager user '" + managerUsername
+        + "'  with password '" + managerPassword + "' created succesfully.");
 
     // creating default cashier user
     UserEntity cashier = UserEntity.builder()
-        .username("cashier")
-        .password(passwordEncoder.encode("cashier123"))
-        .email("cashier@supermarket.com")
+        .username(cashierUsername)
+        .password(passwordEncoder.encode(cashierPassword))
+        .email(cashierEmail)
         .isAccountExpired(false)
         .isAccountLocked(false)
         .isCredentialsExpired(false)
         .roles(Set.of(cashierRole))
         .build();
     userRepository.save(cashier);
-    log.info("Cashier user 'cashier' with password 'cashier123' created succesfully.");
+    log.info("Cashier user '" + cashierUsername
+        + "'  with password '" + cashierPassword + "' created succesfully.");
   }
 }
