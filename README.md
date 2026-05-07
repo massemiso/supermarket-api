@@ -77,13 +77,12 @@ _This starts the Spring Boot app and a dedicated PostgreSQL 15 container._
 ### Authentication & Security
 The API is secured using **Basic Authentication**. Endpoints require specific roles to be accessed. Unauthenticated requests will return a `401 Unauthorized`, and authenticated requests without the proper roles will return a standard `403 Forbidden` API response.
 
-For testing purposes, the database needs to be manually pre-seeded with the following default users included in `resources/import.sql`:
-
-| Username | Password   | Role |
-| :--- |:-----------| :--- |
-| `admin` | `admin123` | ADMIN |
-| `manager` | `admin123` | MANAGER |
-| `cashier` | `admin123` | CASHIER |
+For testing purposes, the pre-seeded users are:
+| Username | Password     | Role |
+| :--- |:-------------| :--- |
+| `admin` | `admin123`   | ADMIN |
+| `manager` | `manager123` | MANAGER |
+| `cashier` | `cashier123` | CASHIER |
 
 ### Branches
 | Method | Endpoint | Description | Roles Required | Return      |
