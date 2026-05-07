@@ -64,4 +64,9 @@ public class GlobalHandlerException {
   ResponseEntity<ApiResponse<Void>> handleSaleNotFoundException(SaleNotFoundException e) {
     return handleNotFoundException(e);
   }
+
+  @ExceptionHandler(UserNotFoundException.class)
+  ResponseEntity<ApiResponse<Void>> handleUserNotFoundException(UserNotFoundException e) {
+    return handleNotFoundException(e);
+  }
 }

@@ -26,15 +26,12 @@ public class UserEntity extends BaseEntityWithSoftDelete{
   private String username;
 
   private String password;
-
-  @Column(unique = true)
   private String email;
-
   private Boolean isAccountExpired;
   private Boolean isAccountLocked;
   private Boolean isCredentialsExpired;
 
-  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @JoinTable(name = "sec_user_role",
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -69,4 +66,9 @@ public class UserEntity extends BaseEntityWithSoftDelete{
     return authorities;
   }
 
+  public void update(String passwordEncoded, String email, Set<RoleEntity> roles) {
+    this.password = passwordEncoded;
+    this.email = email;
+    this.roles = roles;
+  }
 }

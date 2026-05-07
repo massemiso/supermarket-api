@@ -1,21 +1,45 @@
 package com.massemiso.supermarket_api.service;
 
+import com.massemiso.supermarket_api.dto.UserRequestDto;
+import com.massemiso.supermarket_api.dto.UserResponseDto;
+import com.massemiso.supermarket_api.dto.mapper.UserMapper;
+import com.massemiso.supermarket_api.entity.RoleEntity;
+import com.massemiso.supermarket_api.entity.RoleEnum;
 import com.massemiso.supermarket_api.entity.UserEntity;
+import com.massemiso.supermarket_api.exception.UserNotFoundException;
+import com.massemiso.supermarket_api.repository.RoleRepository;
 import com.massemiso.supermarket_api.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
+  private final UserMapper userMapper;
+  private final RoleRepository roleRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Autowired
-  public UserService(UserRepository userRepository){
+  public UserService(
+      UserRepository userRepository,
+      UserMapper userMapper,
+      RoleRepository roleRepository,
+      PasswordEncoder passwordEncoder
+  ){
     this.userRepository = userRepository;
+    this.userMapper = userMapper;
+    this.roleRepository = roleRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @Override
@@ -34,5 +58,73 @@ public class UserService implements UserDetailsService {
         .credentialsExpired(user.getIsCredentialsExpired())
         .authorities(user.getAuthorities())
         .build();
+  }
+
+  public Page<UserResponseDto> getAll(Pageable pageable) {
+    return userRepository
+        .findByDeletedAtIsNull(pageable)
+        .map(userMapper::toDto);
+  }
+
+  public UserResponseDto getById(Long id) {
+    UserEntity entity = findById(id);
+    return userMapper.toDto(entity);
+  }
+
+  @Transactional
+  public UserResponseDto create(UserRequestDto requestDto) {
+    Set<RoleEntity> roles = requestDto.roles()
+        .stream()
+        .map(this::findOrCreateRole)
+        .collect(Collectors.toSet());
+    UserEntity entity = userMapper.toEntity(roles, requestDto,
+        passwordEncoder.encode(requestDto.password()));
+    entity = userRepository.save(entity);
+    return userMapper.toDto(entity);
+  }
+
+
+  @Transactional
+  public UserResponseDto update(Long id, UserRequestDto requestDto) {
+    Set<RoleEntity> roles = requestDto.roles()
+        .stream()
+        .map(this::findOrCreateRole)
+        .collect(Collectors.toSet());
+    UserEntity entity = findById(id);
+
+    entity.update(
+        encodePassword(requestDto.password()),
+        requestDto.email(),
+        roles
+    );
+    entity = userRepository.save(entity);
+
+    return userMapper.toDto(entity);
+  }
+
+  @Transactional
+  public void delete(Long id) {
+    UserEntity entity = findById(id);
+    entity.delete();
+
+    userRepository.save(entity);
+  }
+
+  private UserEntity findById(Long id){
+    return userRepository
+        .findByIdAndDeletedAtIsNull(id)
+        .orElseThrow(() -> new UserNotFoundException(id));
+  }
+
+  private String encodePassword(String password) {
+    return passwordEncoder.encode(password);
+  }
+
+  @Transactional
+  private RoleEntity findOrCreateRole(RoleEnum roleEnum){
+    return roleRepository.findByRoleEnum(roleEnum)
+        .orElseGet(() ->
+            roleRepository.save(
+                RoleEntity.builder().roleEnum(roleEnum).build()));
   }
 }
