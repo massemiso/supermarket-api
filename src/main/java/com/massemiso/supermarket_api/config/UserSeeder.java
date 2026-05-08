@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile({"dev", "test"}) // needed for integration tests
 @PropertySource("classpath:mock-users.properties")
 @Slf4j
 public class UserSeeder implements CommandLineRunner {
@@ -62,7 +61,7 @@ public class UserSeeder implements CommandLineRunner {
       return;
     }
 
-    log.info("No users found. Seeding initial Admin account...");
+    log.info("No users found. Seeding some mock accounts...");
     // creating default roles
     RoleEntity adminRole = roleRepository.save(
         RoleEntity
