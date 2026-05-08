@@ -84,9 +84,9 @@ public class UserSeeder implements CommandLineRunner {
         .username(adminUsername)
         .password(passwordEncoder.encode(adminPassword))
         .email(adminEmail)
-        .isAccountExpired(false)
-        .isAccountLocked(false)
-        .isCredentialsExpired(false)
+        .accountNonExpired(true)
+        .accountNonLocked(true)
+        .credentialsNonExpired(true)
         .roles(Set.of(adminRole))
         .build();
     userRepository.save(admin);
@@ -98,9 +98,9 @@ public class UserSeeder implements CommandLineRunner {
         .username(managerUsername)
         .password(passwordEncoder.encode(managerPassword))
         .email(managerEmail)
-        .isAccountExpired(false)
-        .isAccountLocked(false)
-        .isCredentialsExpired(false)
+        .accountNonExpired(true)
+        .accountNonLocked(true)
+        .credentialsNonExpired(true)
         .roles(Set.of(managerRole))
         .build();
     userRepository.save(manager);
@@ -112,9 +112,9 @@ public class UserSeeder implements CommandLineRunner {
         .username(cashierUsername)
         .password(passwordEncoder.encode(cashierPassword))
         .email(cashierEmail)
-        .isAccountExpired(false)
-        .isAccountLocked(false)
-        .isCredentialsExpired(false)
+        .accountNonExpired(true)
+        .accountNonLocked(true)
+        .credentialsNonExpired(true)
         .roles(Set.of(cashierRole))
         .build();
     userRepository.save(cashier);

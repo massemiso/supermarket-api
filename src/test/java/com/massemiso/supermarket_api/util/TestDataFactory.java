@@ -39,6 +39,7 @@ public class TestDataFactory {
       createDefaultSale().getTotal();
   private final static LocalDate DEFAULT_SALE_DATE = LocalDate.now();
 
+  @Getter
   private final static String DEFAULT_USER_USERNAME = "Some username";
   private final static String DEFAULT_USER_PASSWORD = "some_passowrd";
   private final static String DEFAULT_USER_EMAIL = "some_email@example.com";
@@ -157,9 +158,9 @@ public class TestDataFactory {
        .username(DEFAULT_USER_USERNAME)
        .password(DEFAULT_USER_PASSWORD)
        .email(DEFAULT_USER_EMAIL)
-       .isAccountExpired(false)
-       .isAccountLocked(false)
-       .isCredentialsExpired(false)
+       .accountNonExpired(true)
+       .accountNonLocked(true)
+       .credentialsNonExpired(true)
        .roles(Set.of(createDefaultRoleEntity()))
        .build();
   }

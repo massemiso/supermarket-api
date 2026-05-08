@@ -15,9 +15,9 @@ public class UserMapper {
         .username(requestDto.username())
         .password(passwordEncoded)
         .email(requestDto.email())
-        .isAccountExpired(false)
-        .isAccountLocked(false)
-        .isCredentialsExpired(false)
+        .accountNonExpired(true)
+        .accountNonLocked(true)
+        .credentialsNonExpired(true)
         .roles(roles)
         .build();
   }
@@ -27,9 +27,9 @@ public class UserMapper {
         entity.getId(),
         entity.getUsername(),
         entity.getEmail(),
-        entity.getIsAccountExpired(),
-        entity.getIsAccountLocked(),
-        entity.getIsCredentialsExpired(),
+        entity.getAccountNonExpired(),
+        entity.getAccountNonLocked(),
+        entity.getCredentialsNonExpired(),
         entity.getRoles().stream().map(RoleEntity::getRoleEnum).collect(Collectors.toSet())
     );
   }

@@ -8,9 +8,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Builder;
@@ -28,9 +25,9 @@ public class UserEntity extends BaseEntityWithSoftDelete{
 
   private String password;
   private String email;
-  private Boolean isAccountExpired;
-  private Boolean isAccountLocked;
-  private Boolean isCredentialsExpired;
+  private Boolean accountNonExpired;
+  private Boolean accountNonLocked;
+  private Boolean credentialsNonExpired;
 
   @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @JoinTable(name = "sec_user_role",
@@ -43,17 +40,17 @@ public class UserEntity extends BaseEntityWithSoftDelete{
       String username,
       String password,
       String email,
-      Boolean isAccountExpired,
-      Boolean isAccountLocked,
-      Boolean isCredentialsExpired,
+      Boolean accountNonExpired,
+      Boolean accountNonLocked,
+      Boolean credentialsNonExpired,
       Set<RoleEntity> roles
   ) {
     this.username = username;
     this.password = password;
     this.email = email;
-    this.isAccountExpired = isAccountExpired;
-    this.isAccountLocked = isAccountLocked;
-    this.isCredentialsExpired = isCredentialsExpired;
+    this.accountNonExpired = accountNonExpired;
+    this.accountNonLocked = accountNonLocked;
+    this.credentialsNonExpired = credentialsNonExpired;
     this.roles = roles;
   }
 

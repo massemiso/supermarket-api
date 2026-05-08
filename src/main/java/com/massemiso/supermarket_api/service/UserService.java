@@ -53,9 +53,9 @@ public class UserService implements UserDetailsService {
         .username(user.getUsername())
         .password(user.getPassword())
         .disabled(user.isDeleted())
-        .accountExpired(user.getIsAccountExpired())
-        .accountLocked(user.getIsAccountLocked())
-        .credentialsExpired(user.getIsCredentialsExpired())
+        .accountExpired(!user.getAccountNonExpired())
+        .accountLocked(!user.getAccountNonLocked())
+        .credentialsExpired(!user.getCredentialsNonExpired())
         .authorities(user.getAuthorities())
         .build();
   }
