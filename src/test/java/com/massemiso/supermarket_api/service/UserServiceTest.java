@@ -26,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -66,8 +67,8 @@ class UserServiceTest {
     assertEquals(entity.getCredentialsNonExpired(), result.isCredentialsNonExpired());
     assertEquals(!entity.isDeleted(), result.isEnabled());
     assertThat(result.getAuthorities())
-        .isNotNull()
-        .hasSize(entity.getRoles().size());
+        .extracting(GrantedAuthority::getAuthority)
+        .containsExactly("ROLE_ADMIN");
 
     verify(userRepository).findByUsername(username);
   }
