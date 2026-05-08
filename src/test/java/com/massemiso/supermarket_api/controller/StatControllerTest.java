@@ -49,8 +49,8 @@ class StatControllerTest extends BaseIntegrationTest {
     RestAssured.baseURI = "http://localhost:" + port + "/api/stats";
     detailSaleRepo.deleteAll();
     repo.deleteAll();
-    branchRepo.deleteAll();
     productRepo.deleteAll();
+    branchRepo.deleteAll();
   }
 
   @Test
@@ -100,6 +100,7 @@ class StatControllerTest extends BaseIntegrationTest {
 
     BigDecimal bestSellingProductTotalRevenue = BigDecimal.TEN;
     given()
+        .auth().basic(adminUsername, adminPassword)
         .contentType(ContentType.JSON)
     .when()
         .get("/best-selling-product")

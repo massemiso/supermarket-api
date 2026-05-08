@@ -23,7 +23,7 @@ public class StatController {
   }
 
   @GetMapping("/best-selling-product")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+  @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
   public ResponseEntity<ApiResponse<BestSellerResponseDto>> getBestSellingProduct(){
     ApiResponse<BestSellerResponseDto> apiResponse = ApiResponse.success(
         statService.getBestSellingProduct(),

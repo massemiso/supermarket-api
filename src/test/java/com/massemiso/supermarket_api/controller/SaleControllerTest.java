@@ -224,6 +224,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     );
 
     given()
+        .auth().basic(adminUsername, adminPassword)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -252,6 +253,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     );
 
     given()
+        .auth().basic(adminUsername, adminPassword)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -269,6 +271,7 @@ class SaleControllerTest extends BaseIntegrationTest {
   void delete_GivenValidId_ShouldReturn204AndNoContent() {
     int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
     given()
+        .auth().basic(adminUsername, adminPassword)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -281,6 +284,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     this.insertSomeDefaultValues();
     int invalidId = -1;
     given()
+        .auth().basic(adminUsername, adminPassword)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)
@@ -326,7 +330,6 @@ class SaleControllerTest extends BaseIntegrationTest {
         .detailSaleList(List.of(ds2,ds3))
         .build();
 
-    List<Sale> out = repo.saveAll(List.of(entity1, entity2));
-    return out;
+    return repo.saveAll(List.of(entity1, entity2));
   }
 }

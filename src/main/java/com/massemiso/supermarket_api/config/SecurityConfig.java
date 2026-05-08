@@ -34,8 +34,10 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> {
 
-          // Anyone can fetch data.
-          auth.requestMatchers(HttpMethod.GET, "/api/**").permitAll();
+          // public
+          auth.requestMatchers(HttpMethod.GET,"/api/branches/**").permitAll();
+          auth.requestMatchers(HttpMethod.GET,"/api/products/**").permitAll();
+          auth.requestMatchers(HttpMethod.GET,"/api/sales/**").permitAll();
 
           // auth infrastructure
           auth.requestMatchers("/api/auth/**", "/h2-console/**").permitAll();
