@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,18 +58,20 @@ public class UserEntity extends BaseEntityWithSoftDelete{
   }
 
   public Collection<? extends SimpleGrantedAuthority> getAuthorities(){
-    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    roles.forEach(role -> authorities.add(
-            new SimpleGrantedAuthority(
-                "ROLE_".concat(role.getRoleEnum().toString()))
-        )
-    );
-    return authorities;
+    return roles.stream()
+        .map(RoleEntity::toAuthority)
+        .collect(Collectors.toSet());
   }
 
   public void update(String passwordEncoded, String email, Set<RoleEntity> roles) {
-    this.password = passwordEncoded;
-    this.email = email;
-    this.roles = roles;
+    if (passwordEncoded != null && !passwordEncoded.isBlank()) {
+      this.password = passwordEncoded;
+    }
+    if (email != null && !email.isBlank()) {
+      this.email = email;
+    }
+    if (roles != null && !roles.isEmpty()) {
+      this.roles = roles;
+    }
   }
 }

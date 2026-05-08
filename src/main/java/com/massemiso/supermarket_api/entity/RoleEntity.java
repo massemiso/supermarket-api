@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Entity
 @Table(name = "sec_role")
@@ -47,4 +48,9 @@ public class RoleEntity {
     this.roleEnum = roleEnum;
   }
 
+  public SimpleGrantedAuthority toAuthority() {
+    return new SimpleGrantedAuthority(
+        "ROLE_".concat(
+            this.getRoleEnum().toString()));
+  }
 }
