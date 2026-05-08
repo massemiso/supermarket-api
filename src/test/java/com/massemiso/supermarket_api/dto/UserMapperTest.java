@@ -30,9 +30,9 @@ class UserMapperTest {
     assertEquals(requestDto.username(), entity.getUsername());
     assertEquals(passwordEncoded, entity.getPassword());
     assertEquals(requestDto.email(), entity.getEmail());
-    assertFalse(entity.getAccountNonExpired());
-    assertFalse(entity.getAccountNonLocked());
-    assertFalse(entity.getCredentialsNonExpired());
+    assertTrue(entity.getAccountNonExpired());
+    assertTrue(entity.getAccountNonLocked());
+    assertTrue(entity.getCredentialsNonExpired());
     assertThat(entity.getRoles())
         .isNotNull()
         .hasSize(roles.size())
@@ -53,9 +53,9 @@ class UserMapperTest {
     assertEquals(entity.getUsername(), dto.username());
     /* assertEquals(entity.getPassword(), dto.password()); UserResponseDto don't have password */
     assertEquals(entity.getEmail(), dto.email());
-    assertEquals(entity.getAccountNonExpired(), dto.isAccountExpired());
-    assertEquals(entity.getAccountNonLocked(), dto.isAccountLocked());
-    assertEquals(entity.getCredentialsNonExpired(), dto.isCredentialsExpired());
+    assertEquals(entity.getAccountNonExpired(), dto.accountNonExpired());
+    assertEquals(entity.getAccountNonLocked(), dto.accountNonLocked());
+    assertEquals(entity.getCredentialsNonExpired(), dto.credentialsNonExpired());
     assertThat(dto.roles())
         .isNotNull()
         .hasSize(entity.getRoles().size())

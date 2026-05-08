@@ -7,8 +7,8 @@ public record UserResponseDto (
     Long id,
     String username,
     String email,
-    Boolean isAccountExpired,
-    Boolean isAccountLocked,
-    Boolean isCredentialsExpired,
+    Boolean accountNonExpired,
+    Boolean accountNonLocked,
+    Boolean credentialsNonExpired,
     Set<RoleEnum> roles
 ){ }
