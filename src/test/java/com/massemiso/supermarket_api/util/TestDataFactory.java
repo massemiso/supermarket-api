@@ -9,6 +9,7 @@ import com.massemiso.supermarket_api.dto.ProductResponseDto;
 import com.massemiso.supermarket_api.dto.SaleRequestDto;
 import com.massemiso.supermarket_api.dto.SaleResponseDto;
 import com.massemiso.supermarket_api.dto.UserRequestDto;
+import com.massemiso.supermarket_api.dto.UserResponseDto;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Product;
@@ -39,8 +40,8 @@ public class TestDataFactory {
       createDefaultSale().getTotal();
   private final static LocalDate DEFAULT_SALE_DATE = LocalDate.now();
 
-  @Getter
-  private final static String DEFAULT_USER_USERNAME = "Some username";
+  @Getter private final static Long DEFAULT_USER_ID = 1L;
+  @Getter private final static String DEFAULT_USER_USERNAME = "Some username";
   private final static String DEFAULT_USER_PASSWORD = "some_passowrd";
   private final static String DEFAULT_USER_EMAIL = "some_email@example.com";
 
@@ -180,6 +181,18 @@ public class TestDataFactory {
     );
   }
 
+  public static UserResponseDto createDefaultUserResponseDto() {
+    return new UserResponseDto(
+        DEFAULT_USER_ID,
+        DEFAULT_USER_USERNAME,
+        DEFAULT_USER_EMAIL,
+        true,
+        true,
+        true,
+        Set.of(DEFAULT_USER_ROLE)
+    );
+  }
+
   public static Long getDefaultBranchId() {
     return DEFAULT_BRANCH_ID;
   }
@@ -189,4 +202,5 @@ public class TestDataFactory {
   public static Long getDefaultSaleId() { return DEFAULT_SALE_ID; }
 
   public static LocalDate getDefaultSaleDate(){  return DEFAULT_SALE_DATE; }
+
 }

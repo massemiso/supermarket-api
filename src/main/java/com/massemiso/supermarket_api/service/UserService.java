@@ -120,7 +120,6 @@ public class UserService implements UserDetailsService {
     return passwordEncoder.encode(password);
   }
 
-  @Transactional
   private RoleEntity findOrCreateRole(RoleEnum roleEnum){
     return roleRepository.findByRoleEnum(roleEnum)
         .orElseGet(() ->
