@@ -57,7 +57,7 @@ public class UserEntity extends BaseEntityWithSoftDelete{
     this.roles = roles;
   }
 
-  public Collection<? extends SimpleGrantedAuthority> getAuthorities(){
+  public Set<SimpleGrantedAuthority> getAuthorities(){
     return roles.stream()
         .map(RoleEntity::toAuthority)
         .collect(Collectors.toSet());

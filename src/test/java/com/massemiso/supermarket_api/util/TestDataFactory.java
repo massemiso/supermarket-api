@@ -8,14 +8,20 @@ import com.massemiso.supermarket_api.dto.ProductRequestDto;
 import com.massemiso.supermarket_api.dto.ProductResponseDto;
 import com.massemiso.supermarket_api.dto.SaleRequestDto;
 import com.massemiso.supermarket_api.dto.SaleResponseDto;
+import com.massemiso.supermarket_api.dto.UserRequestDto;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Product;
+import com.massemiso.supermarket_api.entity.RoleEntity;
+import com.massemiso.supermarket_api.entity.RoleEnum;
 import com.massemiso.supermarket_api.entity.Sale;
 import com.massemiso.supermarket_api.entity.SaleStatus;
+import com.massemiso.supermarket_api.entity.UserEntity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import lombok.Getter;
 
 public class TestDataFactory {
   private final static Long DEFAULT_BRANCH_ID = 1L;
@@ -32,6 +38,13 @@ public class TestDataFactory {
   private final static BigDecimal DEFAULT_SALE_TOTAL =
       createDefaultSale().getTotal();
   private final static LocalDate DEFAULT_SALE_DATE = LocalDate.now();
+
+  private final static String DEFAULT_USER_USERNAME = "Some username";
+  private final static String DEFAULT_USER_PASSWORD = "some_passowrd";
+  private final static String DEFAULT_USER_EMAIL = "some_email@example.com";
+
+  @Getter
+  private final static RoleEnum DEFAULT_USER_ROLE = RoleEnum.ADMIN;
 
 
   public static Branch createDefaultBranch() {
@@ -139,6 +152,33 @@ public class TestDataFactory {
     );
   }
 
+  public static UserEntity createDefaultUserEntity(){
+   return UserEntity.builder()
+       .username(DEFAULT_USER_USERNAME)
+       .password(DEFAULT_USER_PASSWORD)
+       .email(DEFAULT_USER_EMAIL)
+       .isAccountExpired(false)
+       .isAccountLocked(false)
+       .isCredentialsExpired(false)
+       .roles(Set.of(createDefaultRoleEntity()))
+       .build();
+  }
+
+  public static RoleEntity createDefaultRoleEntity() {
+    return RoleEntity.builder()
+        .roleEnum(DEFAULT_USER_ROLE)
+        .build();
+  }
+
+  public static UserRequestDto createDefaultUserRequestDto() {
+    return new UserRequestDto(
+        DEFAULT_USER_USERNAME,
+        DEFAULT_USER_PASSWORD,
+        DEFAULT_USER_EMAIL,
+        Set.of(DEFAULT_USER_ROLE)
+    );
+  }
+
   public static Long getDefaultBranchId() {
     return DEFAULT_BRANCH_ID;
   }
@@ -148,5 +188,4 @@ public class TestDataFactory {
   public static Long getDefaultSaleId() { return DEFAULT_SALE_ID; }
 
   public static LocalDate getDefaultSaleDate(){  return DEFAULT_SALE_DATE; }
-
 }
