@@ -45,17 +45,9 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
   }
 
   @ExceptionHandler(NoResourceFoundException.class)
-  public ResponseEntity<Void> handleNoResourceFoundException(NoResourceFoundException e) {
+  public ResponseEntity<Void> handleNoResourceFoundException() {
     // Just return 404 without logging an ERROR stack trace
     return ResponseEntity.notFound().build();
-  }
-
-  @ExceptionHandler(AccessDeniedException.class)
-  public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException e) {
-    log.warn("UNAUTHORIZED: {}", e.getMessage());
-    return ResponseEntity
-        .status(HttpStatus.FORBIDDEN)
-        .body(ApiResponse.error("Access Denied: You do not have the required permissions.", 403));
   }
 
   @ExceptionHandler(ProductNotFoundException.class)
@@ -78,6 +70,17 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
     return handleNotFoundException(e);
   }
 
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(HttpServletRequest request) {
+    String errorMessage = "You do not have the required permissions to perform a "
+        + request.getMethod() + " on " + request.getRequestURI();
+    log.warn("403 FORBIDDEN: User '{}' doesn't have the required permissions to perform a {} on {}",
+        request.getRemoteUser(), request.getMethod(), request.getRequestURI());
+    return ResponseEntity
+        .status(HttpStatus.FORBIDDEN)
+        .body(ApiResponse.error(errorMessage, 403));
+  }
+
   // Catches Authentication exceptions
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -88,7 +91,10 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
         HttpStatus.UNAUTHORIZED.value()
     );
 
-    log.warn("UNAUTHENTICATED: {}", apiResponse.message());
+    String ipAddress = request.getRemoteAddr();
+    String userAgent = request.getHeader("User-Agent");
+    log.warn("401 UNAUTHORIZED: User [IP {}, Agent {}] tried to make a {} on {}"
+        , ipAddress, userAgent, request.getMethod(), request.getRequestURI());
 
     response.setContentType("application/json");
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
