@@ -224,7 +224,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -253,7 +253,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -271,7 +271,7 @@ class SaleControllerTest extends BaseIntegrationTest {
   void delete_GivenValidId_ShouldReturn204AndNoContent() {
     int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -284,7 +284,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     this.insertSomeDefaultValues();
     int invalidId = -1;
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)

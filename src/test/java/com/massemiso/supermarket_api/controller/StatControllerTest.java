@@ -100,7 +100,7 @@ class StatControllerTest extends BaseIntegrationTest {
 
     BigDecimal bestSellingProductTotalRevenue = BigDecimal.TEN;
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
     .when()
         .get("/best-selling-product")

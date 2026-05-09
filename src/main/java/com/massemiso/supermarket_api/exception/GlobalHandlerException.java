@@ -1,5 +1,6 @@
 package com.massemiso.supermarket_api.exception;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.massemiso.supermarket_api.dto.ApiResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +15,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Slf4j
 @ControllerAdvice
@@ -92,6 +93,7 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
     response.setContentType("application/json");
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
     response.getWriter().write(mapper.writeValueAsString(apiResponse));
   }
 

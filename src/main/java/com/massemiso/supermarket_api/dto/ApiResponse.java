@@ -1,10 +1,11 @@
 package com.massemiso.supermarket_api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 public record ApiResponse<T> (
     T content,
-    LocalDateTime timestamp,
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime timestamp,
     String message,
     int status
 ){

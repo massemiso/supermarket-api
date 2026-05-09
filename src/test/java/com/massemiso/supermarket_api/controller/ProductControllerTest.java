@@ -108,7 +108,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -136,7 +136,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -162,7 +162,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -191,7 +191,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -219,7 +219,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -240,7 +240,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     int validId = entity1.getId().intValue();
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -252,7 +252,7 @@ class ProductControllerTest extends BaseIntegrationTest {
   void delete_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = 1;
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)

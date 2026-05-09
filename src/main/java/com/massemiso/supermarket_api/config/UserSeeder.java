@@ -1,124 +1,73 @@
 package com.massemiso.supermarket_api.config;
 
-import com.massemiso.supermarket_api.entity.RoleEntity;
+import com.massemiso.supermarket_api.dto.UserRequestDto;
 import com.massemiso.supermarket_api.entity.RoleEnum;
-import com.massemiso.supermarket_api.entity.UserEntity;
-import com.massemiso.supermarket_api.repository.RoleRepository;
 import com.massemiso.supermarket_api.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import com.massemiso.supermarket_api.service.UserService;
 import java.util.Set;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 @PropertySource("classpath:mock-users.properties")
 @Slf4j
 public class UserSeeder implements CommandLineRunner {
-  private final UserRepository userRepository;
-  private final RoleRepository roleRepository;
-  private final PasswordEncoder passwordEncoder;
-
   @Value("${user.admin.username}")
-  private String adminUsername;
+  private String ADMIN_USERNAME;
   @Value("${user.admin.password}")
-  private String adminPassword;
+  private String ADMIN_PASSWORD;
   @Value("${user.admin.email}")
-  private String adminEmail;
+  private String ADMIN_EMAIL;
   @Value("${user.manager.username}")
-  private String managerUsername;
+  private String MANAGER_USERNAME;
   @Value("${user.manager.password}")
-  private String managerPassword;
+  private String MANAGER_PASSWORD;
   @Value("${user.manager.email}")
-  private String managerEmail;
+  private String MANAGER_EMAIL;
   @Value("${user.cashier.username}")
-  private String cashierUsername;
+  private String CASHIER_USERNAME;
   @Value("${user.cashier.password}")
-  private String cashierPassword;
+  private String CASHIER_PASSWORD;
   @Value("${user.cashier.email}")
-  private String cashierEmail;
+  private String CASHIER_EMAIL;
 
   @Autowired
-  public UserSeeder(
-      UserRepository userRepository,
-      RoleRepository roleRepository,
-      PasswordEncoder passwordEncoder) {
-    this.userRepository = userRepository;
-    this.roleRepository = roleRepository;
-    this.passwordEncoder = passwordEncoder;
+  private UserRepository userRepository;
+  @Autowired
+  private UserService userService;
+
+  public void createUsersIfNotExists() {
+    log.info("Seeding some mock accounts if needed...");
+    if (userRepository.findByUsername(ADMIN_USERNAME).isEmpty()){
+      saveUser(RoleEnum.ADMIN, ADMIN_USERNAME, ADMIN_PASSWORD, ADMIN_EMAIL);
+    }
+    if (userRepository.findByUsername(MANAGER_USERNAME).isEmpty()){
+      saveUser(RoleEnum.MANAGER, MANAGER_USERNAME, MANAGER_PASSWORD, MANAGER_EMAIL);
+    }
+    if (userRepository.findByUsername(CASHIER_USERNAME).isEmpty()){
+      saveUser(RoleEnum.CASHIER, CASHIER_USERNAME, CASHIER_PASSWORD, CASHIER_EMAIL);
+    }
+  }
+
+  private void saveUser(RoleEnum roleEnum, String username,
+      String password, String email){
+    UserRequestDto userRequestDto = new UserRequestDto(
+        username,
+        password,
+        email,
+        Set.of(roleEnum)
+    );
+    userService.create(userRequestDto);
+    log.info(roleEnum.name() + " user '" + username
+        + "' with password '" + password + "' created succesfully.");
   }
 
   @Override
-  @Transactional
   public void run(String... args) throws Exception {
-    if (userRepository.count()!=0){
-      return;
-    }
-
-    log.info("No users found. Seeding some mock accounts...");
-    // creating default roles
-    RoleEntity adminRole = roleRepository.save(
-        RoleEntity
-            .builder()
-            .roleEnum(RoleEnum.ADMIN)
-            .build());
-    RoleEntity managerRole = roleRepository.save(
-        RoleEntity
-            .builder()
-            .roleEnum(RoleEnum.MANAGER)
-            .build());
-    RoleEntity cashierRole = roleRepository.save(
-        RoleEntity
-            .builder()
-            .roleEnum(RoleEnum.CASHIER)
-            .build());
-
-    // creating default admin user
-    UserEntity admin = UserEntity.builder()
-        .username(adminUsername)
-        .password(passwordEncoder.encode(adminPassword))
-        .email(adminEmail)
-        .accountNonExpired(true)
-        .accountNonLocked(true)
-        .credentialsNonExpired(true)
-        .roles(Set.of(adminRole))
-        .build();
-    userRepository.save(admin);
-    log.info("Admin user '" + adminUsername
-        + "'  with password '" + adminPassword + "' created succesfully.");
-
-    // creating default manager user
-    UserEntity manager = UserEntity.builder()
-        .username(managerUsername)
-        .password(passwordEncoder.encode(managerPassword))
-        .email(managerEmail)
-        .accountNonExpired(true)
-        .accountNonLocked(true)
-        .credentialsNonExpired(true)
-        .roles(Set.of(managerRole))
-        .build();
-    userRepository.save(manager);
-    log.info("Manager user '" + managerUsername
-        + "'  with password '" + managerPassword + "' created succesfully.");
-
-    // creating default cashier user
-    UserEntity cashier = UserEntity.builder()
-        .username(cashierUsername)
-        .password(passwordEncoder.encode(cashierPassword))
-        .email(cashierEmail)
-        .accountNonExpired(true)
-        .accountNonLocked(true)
-        .credentialsNonExpired(true)
-        .roles(Set.of(cashierRole))
-        .build();
-    userRepository.save(cashier);
-    log.info("Cashier user '" + cashierUsername
-        + "'  with password '" + cashierPassword + "' created succesfully.");
+    createUsersIfNotExists();
   }
 }

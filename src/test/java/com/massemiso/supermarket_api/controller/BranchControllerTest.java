@@ -3,6 +3,7 @@ package com.massemiso.supermarket_api.controller;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
+import com.massemiso.supermarket_api.config.UserSeeder;
 import com.massemiso.supermarket_api.dto.BranchRequestDto;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.repository.BranchRepository;
@@ -86,7 +87,7 @@ class BranchControllerTest extends BaseIntegrationTest {
         .body("status", is(404));
   }
   @Test
-  void create_GivenValidBranchRequestDto_ShouldReturn201AndApiResponseOfBranchDto() {
+  void create_GivenUserAuthenticatedAndRequestDto_ShouldReturn201AndApiResponseOfDto() {
     BranchRequestDto branchRequestDto = new BranchRequestDto(
         "Branch 1",
         "Address 1",
@@ -94,7 +95,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -113,6 +114,29 @@ class BranchControllerTest extends BaseIntegrationTest {
   }
 
   @Test
+  void create_GivenUserNotAuthenticated_ShouldReturn401Unauthorized() {
+    BranchRequestDto branchRequestDto = new BranchRequestDto(
+        "Branch 1",
+        "Address 1",
+        "123456789"
+    );
+
+    given()
+//        .auth().basic(seeder.getADMIN_USERNAME(), seeder.getADMIN_PASSWORD())
+        .contentType(ContentType.JSON)
+        .body(branchRequestDto)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to perform a POST on /api/branches"))
+        .body("status", is(401));
+  }
+
+  @Test
   void create_GivenInvalidBranchRequestDto_ShouldReturn500AndApiResponseError() {
     BranchRequestDto branchRequestDto = new BranchRequestDto(
         "",
@@ -121,7 +145,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -145,7 +169,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -164,6 +188,29 @@ class BranchControllerTest extends BaseIntegrationTest {
   }
 
   @Test
+  void update_GivenUserNotAuthenticated_ShouldReturn401Unauthorized() {
+    BranchRequestDto branchRequestDto = new BranchRequestDto(
+        "Branch 1",
+        "Address 1",
+        "123456789"
+    );
+    int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
+
+    given()
+        //.auth().basic(seeder.getADMIN_USERNAME(), seeder.getADMIN_PASSWORD())
+        .contentType(ContentType.JSON)
+        .body(branchRequestDto)
+    .when()
+        .put("/{id}", validId)
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to perform a PUT on /api/branches/" + validId))
+        .body("status", is(401));
+  }
+  @Test
   void update_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = 1;
     BranchRequestDto branchRequestDto = new BranchRequestDto(
@@ -173,7 +220,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -198,7 +245,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -224,7 +271,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     int validId = branch1.getId().intValue();
 
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -233,10 +280,34 @@ class BranchControllerTest extends BaseIntegrationTest {
   }
 
   @Test
+  void delete_GivenUserNotAuthenticated_ShouldReturn401Unauthorized() {
+    BranchRequestDto branchRequestDto = new BranchRequestDto(
+        "Branch 1",
+        "Address 1",
+        "123456789"
+    );
+    int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
+
+    given()
+        //.auth().basic(seeder.getADMIN_USERNAME(), seeder.getADMIN_PASSWORD())
+        .contentType(ContentType.JSON)
+        .body(branchRequestDto)
+    .when()
+        .delete("/{id}", validId)
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to perform a DELETE on /api/branches/" + validId))
+        .body("status", is(401));
+  }
+
+  @Test
   void delete_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = 1;
     given()
-        .auth().basic(adminUsername, adminPassword)
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)
