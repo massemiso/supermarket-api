@@ -29,19 +29,19 @@ public class UserSeeder implements CommandLineRunner {
   private String adminUsername;
   @Value("${user.admin.password}")
   private String adminPassword;
-  @Value("${user.admin.email")
+  @Value("${user.admin.email}")
   private String adminEmail;
   @Value("${user.manager.username}")
   private String managerUsername;
   @Value("${user.manager.password}")
   private String managerPassword;
-  @Value("${user.manager.email")
+  @Value("${user.manager.email}")
   private String managerEmail;
   @Value("${user.cashier.username}")
   private String cashierUsername;
   @Value("${user.cashier.password}")
   private String cashierPassword;
-  @Value("${user.cashier.email")
+  @Value("${user.cashier.email}")
   private String cashierEmail;
 
   @Autowired
