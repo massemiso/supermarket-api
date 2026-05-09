@@ -1,17 +1,24 @@
 package com.massemiso.supermarket_api.exception;
 
 import com.massemiso.supermarket_api.dto.ApiResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 @ControllerAdvice
-public class GlobalHandlerException {
+public class GlobalHandlerException implements AuthenticationEntryPoint {
 
   private ResponseEntity<ApiResponse<Void>> handleNotFoundException(Exception e) {
     log.warn("RESOURCE: {}", e.getMessage());
@@ -43,7 +50,7 @@ public class GlobalHandlerException {
   }
 
   @ExceptionHandler(AccessDeniedException.class)
-  public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(Exception e) {
+  public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException e) {
     log.warn("UNAUTHORIZED: {}", e.getMessage());
     return ResponseEntity
         .status(HttpStatus.FORBIDDEN)
@@ -69,4 +76,23 @@ public class GlobalHandlerException {
   ResponseEntity<ApiResponse<Void>> handleUserNotFoundException(UserNotFoundException e) {
     return handleNotFoundException(e);
   }
+
+  // Catches Authentication exceptions
+  @Override
+  public void commence(HttpServletRequest request, HttpServletResponse response,
+      AuthenticationException authenticationException) throws IOException, ServletException {
+    ApiResponse<Void> apiResponse = ApiResponse.error(
+        "Authentication is required to perform a " + request.getMethod()
+            + " on " + request.getRequestURI(),
+        HttpStatus.UNAUTHORIZED.value()
+    );
+
+    log.warn("UNAUTHENTICATED: {}", apiResponse.message());
+
+    response.setContentType("application/json");
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    ObjectMapper mapper = new ObjectMapper();
+    response.getWriter().write(mapper.writeValueAsString(apiResponse));
+  }
+
 }

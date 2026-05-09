@@ -1,5 +1,6 @@
 package com.massemiso.supermarket_api.config;
 
+import com.massemiso.supermarket_api.exception.GlobalHandlerException;
 import com.massemiso.supermarket_api.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,8 +33,9 @@ public class SecurityConfig {
             session
                 -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint(new GlobalHandlerException()))
         .authorizeHttpRequests(auth -> {
-
           // public
           auth.requestMatchers(HttpMethod.GET,"/api/branches/**").permitAll();
           auth.requestMatchers(HttpMethod.GET,"/api/products/**").permitAll();
