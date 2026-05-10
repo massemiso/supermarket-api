@@ -76,7 +76,7 @@ public class SaleController {
   // UPDATE NOT ALLOWED
 
   // DELETE
-  @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'CASHIER')")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
   @DeleteMapping("/{id}")
   public ResponseEntity<ApiResponse<Void>> delete(
       @PathVariable Long id
