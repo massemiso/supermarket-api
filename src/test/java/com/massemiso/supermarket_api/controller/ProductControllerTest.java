@@ -13,6 +13,7 @@ import com.massemiso.supermarket_api.dto.ProductRequestDto;
 import com.massemiso.supermarket_api.entity.Product;
 import com.massemiso.supermarket_api.repository.ProductRepository;
 import com.massemiso.supermarket_api.BaseIntegrationTest;
+import com.massemiso.supermarket_api.util.TestDataFactory;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.config.JsonPathConfig;
@@ -38,7 +39,7 @@ class ProductControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void getAll_ShouldReturn200AndAJsonWithAPageOfBranches() {
+  void getAll_ShouldReturn200AndAJsonWithAPageOfDto() {
     List<Product> entities = this.insertSomeDefaultValues();
     Product entity1 = entities.getFirst();
     Product entity2 = entities.getLast();
@@ -65,7 +66,7 @@ class ProductControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void getById_GivenValidId_ShouldReturn200AndApiResponseOfBranchDto() {
+  void getById_GivenValidId_ShouldReturn200AndApiResponseOfDto() {
     List<Product> entities = this.insertSomeDefaultValues();
     Product entity1 = entities.getFirst();
     int validId = entity1.getId().intValue();
@@ -100,7 +101,7 @@ class ProductControllerTest extends BaseIntegrationTest {
         .body("status", is(404));
   }
   @Test
-  void create_GivenValidBranchRequestDto_ShouldReturn201AndApiResponseOfBranchDto() {
+  void create_GivenValidRequestDto_ShouldReturn201AndApiResponseDto() {
     ProductRequestDto dto = new ProductRequestDto(
         "Product 1",
         "Category 1",
@@ -128,7 +129,7 @@ class ProductControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void create_GivenInvalidBranchRequestDto_ShouldReturn500AndApiResponseError() {
+  void create_GivenInvalidRequestDto_ShouldReturn500AndApiResponseError() {
     ProductRequestDto dto = new ProductRequestDto(
         "",
         "",
@@ -150,7 +151,56 @@ class ProductControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void update_GivenValidIdAndBranchRequestDto_ShouldReturn200AndApiResponseOfBranchDto() {
+  void create_GivenUserNotAuthenticated_ShouldReturn401Unauthorized(){
+    ProductRequestDto dto = new ProductRequestDto(
+        "Product 1",
+        "Category 1",
+        BigDecimal.ONE
+    );
+
+    given()
+        // given no authentication
+        .contentType(ContentType.JSON)
+        .body(dto)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to"
+            + " perform a POST on /api/products"))
+        .body("status", is(401));
+  }
+
+  @Test
+  void create_GivenUserNotAuthorized_ShouldReturn403Forbidden(){
+    ProductRequestDto dto = new ProductRequestDto(
+        "Product 1",
+        "Category 1",
+        BigDecimal.ONE
+    );
+
+    given()
+        // Cashier does not have permission to create products
+        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .contentType(ContentType.JSON)
+        .body(dto)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.FORBIDDEN.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("You do not have the required"
+            + " permissions to perform a POST on /api/products"))
+        .body("status", is(403));
+  }
+
+  @Test
+  void update_GivenValidIdAndRequestDto_ShouldReturn200AndApiResponseDto() {
     List<Product> entities = this.insertSomeDefaultValues();
     Product entity1 = entities.getFirst();
     int validId = entity1.getId().intValue();
@@ -183,7 +233,7 @@ class ProductControllerTest extends BaseIntegrationTest {
 
   @Test
   void update_GivenInvalidId_ShouldReturn404AndApiResponseError() {
-    int invalidId = 1;
+    int invalidId = -1;
     ProductRequestDto dto = new ProductRequestDto(
         "New Product 1",
         "New Category 1",
@@ -207,7 +257,7 @@ class ProductControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void update_GivenInvalidBranchRequestDto_ShouldReturn500AndApiResponseError() {
+  void update_GivenInvalidRequestDto_ShouldReturn500AndApiResponseError() {
     List<Product> entities = this.insertSomeDefaultValues();
     Product entity1 = entities.getFirst();
     int validId = entity1.getId().intValue();
@@ -231,6 +281,57 @@ class ProductControllerTest extends BaseIntegrationTest {
         .body("timestamp", containsString(LocalDate.now().toString()))
         .body("status", is(500));
 
+  }
+
+  @Test
+  void update_GivenUserNotAuthenticated_ShouldReturn401Unauthorized(){
+    ProductRequestDto dto = new ProductRequestDto(
+        "Product 1",
+        "Category 1",
+        BigDecimal.ONE
+    );
+    int validId = TestDataFactory.getDefaultProductId().intValue();
+
+    given()
+        // given no authentication
+        .contentType(ContentType.JSON)
+        .body(dto)
+    .when()
+        .put("{id}", validId)
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to"
+            + " perform a PUT on /api/products/" + validId))
+        .body("status", is(401));
+  }
+
+  @Test
+  void update_GivenUserNotAuthorized_ShouldReturn403Forbidden(){
+    ProductRequestDto dto = new ProductRequestDto(
+        "Product 1",
+        "Category 1",
+        BigDecimal.ONE
+    );
+    int validId = TestDataFactory.getDefaultProductId().intValue();
+
+    given()
+        // Cashier does not have permission to update products
+        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .contentType(ContentType.JSON)
+        .body(dto)
+    .when()
+        .put("{id}", validId)
+    .then()
+        .statusCode(HttpStatus.FORBIDDEN.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("You do not have the required"
+            + " permissions to perform a PUT on /api/products/" + validId))
+        .body("status", is(403));
   }
 
   @Test
@@ -263,6 +364,45 @@ class ProductControllerTest extends BaseIntegrationTest {
         .body("timestamp", containsString(LocalDate.now().toString()))
         .body("message", is("Product with id " + invalidId + " not found"))
         .body("status", is(404));
+  }
+
+  @Test
+  void delete_GivenUserNotAuthenticated_ShouldReturn401Unauthorized(){
+    int validId = TestDataFactory.getDefaultProductId().intValue();
+
+    given()
+        // given no authentication
+        .contentType(ContentType.JSON)
+    .when()
+        .delete("{id}", validId)
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to"
+            + " perform a DELETE on /api/products/" + validId))
+        .body("status", is(401));
+  }
+
+  @Test
+  void delete_GivenUserNotAuthorized_ShouldReturn403Forbidden(){
+    int validId = TestDataFactory.getDefaultProductId().intValue();
+
+    given()
+        // Cashier does not have permission to delete products
+        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .contentType(ContentType.JSON)
+    .when()
+        .delete("{id}", validId)
+    .then()
+        .statusCode(HttpStatus.FORBIDDEN.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("You do not have the required"
+            + " permissions to perform a DELETE on /api/products/" + validId))
+        .body("status", is(403));
   }
 
   private List<Product> insertSomeDefaultValues() {

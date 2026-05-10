@@ -6,7 +6,12 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
+import com.massemiso.supermarket_api.dto.BestSellerResponseDto;
+import com.massemiso.supermarket_api.dto.DetailSaleRequestDto;
+import com.massemiso.supermarket_api.dto.SaleRequestDto;
+import com.massemiso.supermarket_api.dto.mapper.ProductMapper;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Product;
@@ -41,6 +46,9 @@ class StatControllerTest extends BaseIntegrationTest {
   @Autowired
   private DetailSaleRepository detailSaleRepo;
 
+  @Autowired
+  private ProductMapper productMapper;
+
   @BeforeEach
   void setup(){
     RestAssured.config = RestAssured.config()
@@ -55,7 +63,64 @@ class StatControllerTest extends BaseIntegrationTest {
 
   @Test
   void getBestSellingProduct_ShouldReturn200AndApiResponseOfBestSellerDto(){
-    Branch branch =  branchRepo.save(Branch.builder().build());
+    BestSellerResponseDto bestSeller = insertSomeDefaultValues();
+    given()
+        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .contentType(ContentType.JSON)
+    .when()
+        .get("/best-selling-product")
+    .then()
+        .statusCode(HttpStatus.OK.value())
+        .body("content", notNullValue())
+        .body("content.product.id", is(bestSeller.product().id().intValue()))
+        .body("content.product.name", is(bestSeller.product().name()))
+        .body("content.product.actualPrice",
+            comparesEqualTo(bestSeller.product().actualPrice()))
+        .body("content.totalRevenue",
+            comparesEqualTo(bestSeller.totalRevenue()))
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Get best selling product successfully"))
+        .body("status", is(200));
+  }
+
+  @Test
+  void getBestSellingProduct_GivenUserNotAuthenticated_ShouldReturn401Unauthorized(){
+    given()
+        // given no authentication
+        .contentType(ContentType.JSON)
+    .when()
+        .get("/best-selling-product")
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to"
+            + " perform a GET on /api/stats/best-selling-product"))
+        .body("status", is(401));
+  }
+
+  @Test
+  void getBestSellingProduct_GivenUserNotAuthorized_ShouldReturn403Forbidden(){
+    given()
+        // cashiers can't get best selling product
+        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .contentType(ContentType.JSON)
+    .when()
+        .get("/best-selling-product")
+    .then()
+        .statusCode(HttpStatus.FORBIDDEN.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("You do not have the required"
+            + " permissions to perform a GET on /api/stats/best-selling-product"))
+        .body("status", is(403));
+  }
+
+  private BestSellerResponseDto insertSomeDefaultValues() {
+    Branch branch = branchRepo.save(Branch.builder().build());
     Product p1 = productRepo.save(
         Product.builder()
             .name("P1")
@@ -97,25 +162,9 @@ class StatControllerTest extends BaseIntegrationTest {
 
     repo.saveAll(List.of(entity1, entity2));
     detailSaleRepo.saveAll(List.of(ds1, ds2, ds3));
-
     BigDecimal bestSellingProductTotalRevenue = BigDecimal.TEN;
-    given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
-        .contentType(ContentType.JSON)
-    .when()
-        .get("/best-selling-product")
-    .then()
-        .statusCode(HttpStatus.OK.value())
-        .body("content", notNullValue())
-        .body("content.product.id", is(p2.getId().intValue()))
-        .body("content.product.name", is(p2.getName()))
-        .body("content.product.actualPrice",
-            comparesEqualTo(p2.getActualPrice()))
-        .body("content.totalRevenue",
-            comparesEqualTo(bestSellingProductTotalRevenue))
-        .body("timestamp", notNullValue())
-        .body("timestamp", containsString(LocalDate.now().toString()))
-        .body("message", is("Get best selling product successfully"))
-        .body("status", is(200));
+
+    return new BestSellerResponseDto(productMapper.toDto(p2),
+        bestSellingProductTotalRevenue);
   }
 }

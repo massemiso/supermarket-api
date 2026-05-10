@@ -5,6 +5,7 @@ import static io.restassured.config.JsonConfig.jsonConfig;
 import static org.hamcrest.Matchers.*;
 
 import com.massemiso.supermarket_api.dto.DetailSaleRequestDto;
+import com.massemiso.supermarket_api.dto.ProductRequestDto;
 import com.massemiso.supermarket_api.dto.SaleRequestDto;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.entity.DetailSale;
@@ -15,6 +16,7 @@ import com.massemiso.supermarket_api.repository.DetailSaleRepository;
 import com.massemiso.supermarket_api.repository.ProductRepository;
 import com.massemiso.supermarket_api.repository.SaleRepository;
 import com.massemiso.supermarket_api.BaseIntegrationTest;
+import com.massemiso.supermarket_api.util.TestDataFactory;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.config.JsonPathConfig;
@@ -202,6 +204,7 @@ class SaleControllerTest extends BaseIntegrationTest {
         .body("message", is("Sale with id " + invalidId + " not found"))
         .body("status", is(404));
   }
+
   @Test
   void create_GivenValidSaleRequestDto_ShouldReturn201AndApiResponseOfSaleDto() {
     List<Sale> entities = this.insertSomeDefaultValues();
@@ -268,6 +271,82 @@ class SaleControllerTest extends BaseIntegrationTest {
   }
 
   @Test
+  void create_GivenUserNotAuthenticated_ShouldReturn401Unauthorized(){
+    List<Sale> entities = this.insertSomeDefaultValues();
+    Long validBranchId = entities
+        .getLast()
+        .getBranch()
+        .getId();
+    Long validProductId = entities
+        .getLast()
+        .getDetailSaleList()
+        .getFirst()
+        .getProduct()
+        .getId();
+    SaleRequestDto requestDto = new SaleRequestDto(
+        validBranchId,
+        List.of(
+            new DetailSaleRequestDto(1, validProductId),
+            new DetailSaleRequestDto(3, validProductId)
+        )
+    );
+
+    given()
+        // given no authentication
+        .contentType(ContentType.JSON)
+        .body(requestDto)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to"
+            + " perform a POST on /api/sales"))
+        .body("status", is(401));
+  }
+
+//  For now all users can create sales
+//  @Test
+//  void create_GivenUserNotAuthorized_ShouldReturn403Forbidden(){
+//    List<Sale> entities = this.insertSomeDefaultValues();
+//    Long validBranchId = entities
+//        .getLast()
+//        .getBranch()
+//        .getId();
+//    Long validProductId = entities
+//        .getLast()
+//        .getDetailSaleList()
+//        .getFirst()
+//        .getProduct()
+//        .getId();
+//    SaleRequestDto requestDto = new SaleRequestDto(
+//        validBranchId,
+//        List.of(
+//            new DetailSaleRequestDto(1, validProductId),
+//            new DetailSaleRequestDto(3, validProductId)
+//        )
+//    );
+//
+//    given()
+//        // USER does not have permission to create products
+//        .auth().preemptive().basic(USER_USERNAME, USER_PASSWORD)
+//        .contentType(ContentType.JSON)
+//        .body(requestDto)
+//    .when()
+//        .post()
+//    .then()
+//        .statusCode(HttpStatus.FORBIDDEN.value())
+//        .body("content", nullValue())
+//        .body("timestamp", notNullValue())
+//        .body("timestamp", containsString(LocalDate.now().toString()))
+//        .body("message", is("You do not have the required"
+//            + " permissions to perform a POST on /api/sales"))
+//        .body("status", is(403));
+//  }
+
+  @Test
   void delete_GivenValidId_ShouldReturn204AndNoContent() {
     int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
     given()
@@ -295,6 +374,45 @@ class SaleControllerTest extends BaseIntegrationTest {
         .body("timestamp", containsString(LocalDate.now().toString()))
         .body("message", is("Sale with id " + invalidId + " not found"))
         .body("status", is(404));
+  }
+
+  @Test
+  void delete_GivenUserNotAuthenticated_ShouldReturn401Unauthorized(){
+    int validId = TestDataFactory.getDefaultProductId().intValue();
+
+    given()
+        // given no authentication
+        .contentType(ContentType.JSON)
+    .when()
+        .delete("{id}", validId)
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to"
+            + " perform a DELETE on /api/sales/" + validId))
+        .body("status", is(401));
+  }
+
+  @Test
+  void delete_GivenUserNotAuthorized_ShouldReturn403Forbidden(){
+    int validId = TestDataFactory.getDefaultProductId().intValue();
+
+    given()
+        // Cashier does not have permission to delete products
+        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .contentType(ContentType.JSON)
+        .when()
+        .delete("{id}", validId)
+        .then()
+        .statusCode(HttpStatus.FORBIDDEN.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("You do not have the required"
+            + " permissions to perform a DELETE on /api/sales/" + validId))
+        .body("status", is(403));
   }
 
   private List<Sale> insertSomeDefaultValues() {
