@@ -32,6 +32,7 @@
     <springdoc.version>2.7.0</springdoc.version>
     <rest-assured.version>6.0.0</rest-assured.version>
     <jacoco.version>0.8.11</jacoco.version>
+    <java-jwt.version>4.5.0</java-jwt.version>
 	</properties>
 
 	<dependencies>
@@ -49,6 +50,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
+      <version>${java-jwt.version}</version>
     </dependency>
 
 		<dependency>
