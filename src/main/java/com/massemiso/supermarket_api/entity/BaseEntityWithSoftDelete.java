@@ -10,7 +10,9 @@ import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -20,6 +22,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * Has an:
  *  id field to track the entity's unique identifier.
  *  createdAt field to track when the entity was created.
+ *  createdBy field to track who created the entity.
+ *  updatedAt field to track when the entity was last modified.
+ *  updatedBy field to track who last modified the entity.
+ *  version field to track the entity's version.
  *  deletedAt field to track when the entity was deleted.
  */
 @MappedSuperclass
@@ -35,13 +41,20 @@ public abstract class BaseEntityWithSoftDelete {
   @Column(nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
+  @CreatedBy
+  private String createdBy;
+
   @LastModifiedDate
   private LocalDateTime updatedAt;
 
-  private LocalDateTime deletedAt;
+  @LastModifiedBy
+  private String updatedBy;
 
   @Version
   private Integer version;
+
+  // soft delete field
+  private LocalDateTime deletedAt;
 
   public void delete(){
     this.deletedAt = LocalDateTime.now();
