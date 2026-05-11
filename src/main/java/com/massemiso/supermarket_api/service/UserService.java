@@ -1,5 +1,7 @@
 package com.massemiso.supermarket_api.service;
 
+import com.massemiso.supermarket_api.dto.AuthRequestDto;
+import com.massemiso.supermarket_api.dto.AuthResponseDto;
 import com.massemiso.supermarket_api.dto.UserRequestDto;
 import com.massemiso.supermarket_api.dto.UserResponseDto;
 import com.massemiso.supermarket_api.dto.mapper.UserMapper;
@@ -9,12 +11,16 @@ import com.massemiso.supermarket_api.entity.UserEntity;
 import com.massemiso.supermarket_api.exception.UserNotFoundException;
 import com.massemiso.supermarket_api.repository.RoleRepository;
 import com.massemiso.supermarket_api.repository.UserRepository;
+import com.massemiso.supermarket_api.util.JwtUtil;
 import jakarta.transaction.Transactional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,18 +34,21 @@ public class UserService implements UserDetailsService {
   private final UserMapper userMapper;
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtUtil jwtUtil;
 
   @Autowired
   public UserService(
       UserRepository userRepository,
       UserMapper userMapper,
       RoleRepository roleRepository,
-      PasswordEncoder passwordEncoder
+      PasswordEncoder passwordEncoder,
+      JwtUtil jwtUtil
   ){
     this.userRepository = userRepository;
     this.userMapper = userMapper;
     this.roleRepository = roleRepository;
     this.passwordEncoder = passwordEncoder;
+    this.jwtUtil = jwtUtil;
   }
 
   @Override
@@ -125,5 +134,31 @@ public class UserService implements UserDetailsService {
         .orElseGet(() ->
             roleRepository.save(
                 RoleEntity.builder().roleEnum(roleEnum).build()));
+  }
+
+  public AuthResponseDto login(AuthRequestDto authRequestDto) {
+    Authentication auth = this.authenticate(
+        authRequestDto.username(),
+        authRequestDto.password());
+    SecurityContextHolder.getContext().setAuthentication(auth);
+    return new AuthResponseDto(
+        authRequestDto.username(),
+        jwtUtil.createToken(auth),
+        true
+    );
+  }
+
+  private Authentication authenticate(String username, String password){
+    UserDetails userDetails = loadUserByUsername(username);
+    if (!userDetails.isEnabled()){
+      throw new RuntimeException("User is disabled");
+    }
+
+    if (!passwordEncoder.matches(password, userDetails.getPassword())){
+      throw new RuntimeException("Password is invalid");
+    }
+
+    return new UsernamePasswordAuthenticationToken(
+        username, password, userDetails.getAuthorities());
   }
 }

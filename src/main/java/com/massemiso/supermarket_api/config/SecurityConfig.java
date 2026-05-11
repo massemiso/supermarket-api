@@ -1,7 +1,10 @@
 package com.massemiso.supermarket_api.config;
 
+import com.massemiso.supermarket_api.config.filter.JwtTokenValidator;
 import com.massemiso.supermarket_api.exception.GlobalHandlerException;
 import com.massemiso.supermarket_api.service.UserService;
+import com.massemiso.supermarket_api.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,18 +20,23 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
+  @Autowired
+  private JwtUtil jwtUtil;
+
   @Bean
   public SecurityFilterChain securityFilterChain
       (HttpSecurity httpSecurity) throws Exception {
     return httpSecurity
         .csrf(AbstractHttpConfigurer::disable)
-        .httpBasic(Customizer.withDefaults())
+//        .httpBasic(Customizer.withDefaults())
         .sessionManagement(
             session
                 -> session
@@ -50,6 +58,9 @@ public class SecurityConfig {
         .headers(headers -> headers
             .frameOptions(FrameOptionsConfig::sameOrigin)
         )
+        .addFilterBefore(
+            new JwtTokenValidator(jwtUtil),
+            BasicAuthenticationFilter.class)
         .build();
   }
 
