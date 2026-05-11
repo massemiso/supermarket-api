@@ -114,7 +114,7 @@ class BranchControllerTest extends BaseIntegrationTest {
 
 
   @Test
-  void create_GivenInvalidBranchRequestDto_ShouldReturn500AndApiResponseError() {
+  void create_GivenInvalidBranchRequestDto_ShouldReturn400ndApiResponseError() {
     BranchRequestDto branchRequestDto = new BranchRequestDto(
         "",
         "",
@@ -128,12 +128,14 @@ class BranchControllerTest extends BaseIntegrationTest {
     .when()
         .post()
     .then()
-        .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .statusCode(HttpStatus.BAD_REQUEST.value())
         .body("content", nullValue())
         .body("timestamp", notNullValue())
         .body("timestamp", containsString(LocalDate.now().toString()))
-        //.body("message", is("Branch with id 1 not found"))
-        .body("status", is(500));
+        .body("message", containsString("[address] must not be blank"))
+        .body("message", containsString("[phoneNumber] must not be blank"))
+        .body("message", containsString("[name] must not be blank"))
+        .body("status", is(HttpStatus.BAD_REQUEST.value()));
   }
 
   @Test
@@ -239,7 +241,7 @@ class BranchControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void update_GivenInvalidBranchRequestDto_ShouldReturn500AndApiResponseError() {
+  void update_GivenInvalidBranchRequestDto_ShouldReturn400AndApiResponseError() {
     int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
     BranchRequestDto branchRequestDto = new BranchRequestDto(
         "",
@@ -254,12 +256,14 @@ class BranchControllerTest extends BaseIntegrationTest {
     .when()
         .put("/{id}", validId)
     .then()
-        .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .statusCode(HttpStatus.BAD_REQUEST.value())
         .body("content", nullValue())
         .body("timestamp", notNullValue())
         .body("timestamp", containsString(LocalDate.now().toString()))
-        //.body("message", is("Branch with id 1 not found"))
-        .body("status", is(500));
+        .body("message", containsString("[address] must not be blank"))
+        .body("message", containsString("[phoneNumber] must not be blank"))
+        .body("message", containsString("[name] must not be blank"))
+        .body("status", is(HttpStatus.BAD_REQUEST.value()));
 
   }
 

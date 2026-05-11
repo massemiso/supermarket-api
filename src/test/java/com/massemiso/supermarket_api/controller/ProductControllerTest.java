@@ -129,7 +129,7 @@ class ProductControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void create_GivenInvalidRequestDto_ShouldReturn500AndApiResponseError() {
+  void create_GivenInvalidRequestDto_ShouldReturn400AndApiResponseError() {
     ProductRequestDto dto = new ProductRequestDto(
         "",
         "",
@@ -143,11 +143,14 @@ class ProductControllerTest extends BaseIntegrationTest {
     .when()
         .post()
     .then()
-        .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .statusCode(HttpStatus.BAD_REQUEST.value())
         .body("content", nullValue())
         .body("timestamp", notNullValue())
         .body("timestamp", containsString(LocalDate.now().toString()))
-        .body("status", is(500));
+        .body("message", containsString("[actualPrice] must not be null"))
+        .body("message", containsString("[category] must not be blank"))
+        .body("message", containsString("[name] must not be blank"))
+        .body("status", is(HttpStatus.BAD_REQUEST.value()));
   }
 
   @Test
@@ -257,7 +260,7 @@ class ProductControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void update_GivenInvalidRequestDto_ShouldReturn500AndApiResponseError() {
+  void update_GivenInvalidRequestDto_ShouldReturn400AndApiResponseError() {
     List<Product> entities = this.insertSomeDefaultValues();
     Product entity1 = entities.getFirst();
     int validId = entity1.getId().intValue();
@@ -275,11 +278,14 @@ class ProductControllerTest extends BaseIntegrationTest {
     .when()
         .put("/{id}", validId)
     .then()
-        .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .statusCode(HttpStatus.BAD_REQUEST.value())
         .body("content", nullValue())
         .body("timestamp", notNullValue())
         .body("timestamp", containsString(LocalDate.now().toString()))
-        .body("status", is(500));
+        .body("message", containsString("[actualPrice] must not be null"))
+        .body("message", containsString("[category] must not be blank"))
+        .body("message", containsString("[name] must not be blank"))
+        .body("status", is(HttpStatus.BAD_REQUEST.value()));
 
   }
 

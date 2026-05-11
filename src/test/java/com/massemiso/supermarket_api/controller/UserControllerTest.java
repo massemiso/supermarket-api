@@ -190,7 +190,7 @@ class UserControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void create_GivenInvalidRequestDto_ShouldReturn500AndApiResponseError() {
+  void create_GivenInvalidRequestDto_ShouldReturn400AndApiResponseError() {
     UserRequestDto requestDto = new UserRequestDto(
         null,
         null,
@@ -205,12 +205,16 @@ class UserControllerTest extends BaseIntegrationTest {
     .when()
         .post()
     .then()
-        .statusCode(500)
+        .statusCode(HttpStatus.BAD_REQUEST.value())
         .body("content", nullValue())
         .body("timestamp", notNullValue())
         .body("timestamp", containsString(LocalDate.now().toString()))
         .body("message", notNullValue())
-        .body("status", is(500));
+        .body("message", containsString("[username] must not be blank"))
+        .body("message", containsString("[password] must not be blank"))
+        .body("message", containsString("[email] must not be blank"))
+        .body("message", containsString("[roles] must not be empty"))
+        .body("status", is(HttpStatus.BAD_REQUEST.value()));
   }
 
   @Test
@@ -324,7 +328,7 @@ class UserControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void update_GivenInvalidRequestDto_ShouldReturn500AndApiResponseError() {
+  void update_GivenInvalidRequestDto_ShouldReturn400AndApiResponseError() {
     UserRequestDto requestDto = new UserRequestDto(
         null,
         null,
@@ -341,11 +345,15 @@ class UserControllerTest extends BaseIntegrationTest {
      .when()
         .put("/{id}", validId)
      .then()
-        .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .statusCode(HttpStatus.BAD_REQUEST.value())
         .body("content", nullValue())
         .body("timestamp", notNullValue())
         .body("timestamp", containsString(LocalDate.now().toString()))
-        .body("status", is(500));
+        .body("message", containsString("[username] must not be blank"))
+        .body("message", containsString("[password] must not be blank"))
+        .body("message", containsString("[email] must not be blank"))
+        .body("message", containsString("[roles] must not be empty"))
+        .body("status", is(HttpStatus.BAD_REQUEST.value()));
   }
 
   @Test

@@ -248,7 +248,7 @@ class SaleControllerTest extends BaseIntegrationTest {
   }
 
   @Test
-  void create_GivenInvalidSaleRequestDto_ShouldReturn500AndApiResponseError() {
+  void create_GivenInvalidSaleRequestDto_ShouldReturn400AndApiResponseError() {
     this.insertSomeDefaultValues();
     SaleRequestDto requestDto = new SaleRequestDto(
         null,
@@ -262,12 +262,15 @@ class SaleControllerTest extends BaseIntegrationTest {
     .when()
         .post()
         .then()
-    .statusCode(500)
+    .statusCode(HttpStatus.BAD_REQUEST.value())
         .body("content", nullValue())
         .body("timestamp", notNullValue())
         .body("timestamp", containsString(LocalDate.now().toString()))
         .body("message", notNullValue())
-        .body("status", is(500));
+        .body("message", containsString("[branchId] must not be null"))
+        .body("message",
+            containsString("[detailSaleRequestDtoList] must not be empty"))
+        .body("status", is(400));
   }
 
   @Test
