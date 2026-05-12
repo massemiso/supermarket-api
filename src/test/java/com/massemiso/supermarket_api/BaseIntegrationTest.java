@@ -1,6 +1,6 @@
 package com.massemiso.supermarket_api;
 
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
 import static io.restassured.config.JsonConfig.jsonConfig;
 
 import com.massemiso.supermarket_api.config.UserSeeder;

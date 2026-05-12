@@ -1,12 +1,16 @@
 package com.massemiso.supermarket_api.controller;
 
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
+import com.massemiso.supermarket_api.BaseIntegrationTest;
 import com.massemiso.supermarket_api.dto.BranchRequestDto;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.repository.BranchRepository;
-import com.massemiso.supermarket_api.BaseIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;

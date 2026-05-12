@@ -1,8 +1,11 @@
 package com.massemiso.supermarket_api.controller;
 
-import static io.restassured.RestAssured.*;
-import static io.restassured.config.JsonConfig.jsonConfig;
-import static org.hamcrest.Matchers.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import com.massemiso.supermarket_api.BaseIntegrationTest;
 import com.massemiso.supermarket_api.config.UserSeeder;
@@ -12,7 +15,6 @@ import com.massemiso.supermarket_api.entity.UserEntity;
 import com.massemiso.supermarket_api.repository.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.path.json.config.JsonPathConfig;
 import java.time.LocalDate;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
