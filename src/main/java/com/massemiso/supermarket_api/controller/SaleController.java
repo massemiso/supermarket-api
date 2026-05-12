@@ -35,6 +35,7 @@ public class SaleController {
 
   // GET ALL
   @GetMapping
+  @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CASHIER')")
   public ResponseEntity<Page<SaleResponseDto>> getAll(
       Pageable pageable,
       @RequestParam(required = false) Long branchId,
@@ -45,6 +46,7 @@ public class SaleController {
 
   // GET
   @GetMapping("/{id}")
+  @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CASHIER')")
   public ResponseEntity<ApiResponse<SaleResponseDto>> getById(
       @PathVariable Long id){
     SaleResponseDto responseDto = saleService.getById(id);
