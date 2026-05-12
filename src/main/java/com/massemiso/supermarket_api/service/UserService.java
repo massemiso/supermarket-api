@@ -1,5 +1,6 @@
 package com.massemiso.supermarket_api.service;
 
+import com.massemiso.supermarket_api.dto.AuthRegisterRequestDto;
 import com.massemiso.supermarket_api.dto.AuthRequestDto;
 import com.massemiso.supermarket_api.dto.AuthResponseDto;
 import com.massemiso.supermarket_api.dto.UserRequestDto;
@@ -8,13 +9,16 @@ import com.massemiso.supermarket_api.dto.mapper.UserMapper;
 import com.massemiso.supermarket_api.entity.RoleEntity;
 import com.massemiso.supermarket_api.entity.RoleEnum;
 import com.massemiso.supermarket_api.entity.UserEntity;
+import com.massemiso.supermarket_api.exception.UserAlreadyExists;
 import com.massemiso.supermarket_api.exception.UserNotFoundException;
 import com.massemiso.supermarket_api.repository.RoleRepository;
 import com.massemiso.supermarket_api.repository.UserRepository;
 import com.massemiso.supermarket_api.util.JwtUtil;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.management.relation.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -120,6 +124,35 @@ public class UserService implements UserDetailsService {
     userRepository.save(entity);
   }
 
+
+  public AuthResponseDto login(AuthRequestDto authRequestDto) {
+    Authentication auth = this.authenticate(
+        authRequestDto.username(),
+        authRequestDto.password());
+    SecurityContextHolder.getContext().setAuthentication(auth);
+    return new AuthResponseDto(
+        authRequestDto.username(),
+        jwtUtil.createToken(auth),
+        true
+    );
+  }
+
+  @Transactional
+  public AuthResponseDto register(AuthRegisterRequestDto requestDto) {
+    if (userRepository.findByUsername(requestDto.username()).isPresent()){
+      throw new UserAlreadyExists(requestDto.username());
+    }
+    RoleEntity role = findOrCreateRole(RoleEnum.GUEST);
+
+    UserEntity entity = userMapper.toEntity(Set.of(role), requestDto,
+        encodePassword(requestDto.password()));
+    userRepository.save(entity);
+
+    AuthRequestDto authRequestDto = new AuthRequestDto(
+        requestDto.username(), requestDto.password());
+    return login(authRequestDto);
+  }
+
   private UserEntity findById(Long id){
     return userRepository
         .findByIdAndDeletedAtIsNull(id)
@@ -137,18 +170,6 @@ public class UserService implements UserDetailsService {
                 RoleEntity.builder().roleEnum(roleEnum).build()));
   }
 
-  public AuthResponseDto login(AuthRequestDto authRequestDto) {
-    Authentication auth = this.authenticate(
-        authRequestDto.username(),
-        authRequestDto.password());
-    SecurityContextHolder.getContext().setAuthentication(auth);
-    return new AuthResponseDto(
-        authRequestDto.username(),
-        jwtUtil.createToken(auth),
-        true
-    );
-  }
-
   private Authentication authenticate(String username, String password){
     UserDetails userDetails = loadUserByUsername(username);
     if (!userDetails.isEnabled()){
@@ -162,4 +183,5 @@ public class UserService implements UserDetailsService {
     return new UsernamePasswordAuthenticationToken(
         username, password, userDetails.getAuthorities());
   }
+
 }

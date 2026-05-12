@@ -1,5 +1,7 @@
 package com.massemiso.supermarket_api.dto.mapper;
 
+import com.massemiso.supermarket_api.dto.AuthRegisterRequestDto;
+import com.massemiso.supermarket_api.dto.AuthResponseDto;
 import com.massemiso.supermarket_api.dto.UserRequestDto;
 import com.massemiso.supermarket_api.dto.UserResponseDto;
 import com.massemiso.supermarket_api.entity.RoleEntity;
@@ -11,6 +13,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
   public UserEntity toEntity(Set<RoleEntity> roles, UserRequestDto requestDto, String passwordEncoded){
+    return UserEntity.builder()
+        .username(requestDto.username())
+        .password(passwordEncoded)
+        .email(requestDto.email())
+        .accountNonExpired(true)
+        .accountNonLocked(true)
+        .credentialsNonExpired(true)
+        .roles(roles)
+        .build();
+  }
+
+  public UserEntity toEntity(
+      Set<RoleEntity> roles,
+      AuthRegisterRequestDto requestDto,
+      String passwordEncoded){
     return UserEntity.builder()
         .username(requestDto.username())
         .password(passwordEncoded)

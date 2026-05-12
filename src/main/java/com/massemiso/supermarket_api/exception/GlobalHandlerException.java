@@ -57,7 +57,7 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
                 + fieldError.getDefaultMessage())
             .collect(Collectors.joining(", "))
         +  " }";
-    log.error("Parameter Not Valid: {}", errorMessage);
+    log.warn("Parameter Not Valid: {}", errorMessage);
     ApiResponse<Void> apiResponse = ApiResponse.error(
         errorMessage,
         HttpStatus.BAD_REQUEST.value()
@@ -100,13 +100,25 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
 
   @ExceptionHandler(BadCredentialsException.class)
   ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException e) {
-    log.error("401 UNAUTHORIZED: {}", e.getMessage());
+    log.warn("401 UNAUTHORIZED: {}", e.getMessage());
     ApiResponse<Void> apiResponse = ApiResponse.error(
         e.getMessage(),
         HttpStatus.UNAUTHORIZED.value()
     );
     return ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
+        .body(apiResponse);
+  }
+
+  @ExceptionHandler(UserAlreadyExists.class)
+  ResponseEntity<ApiResponse<Void>> handleUserAlreadyExists(UserAlreadyExists e) {
+    log.warn("409 CONFLICT: {}", e.getMessage());
+    ApiResponse<Void> apiResponse = ApiResponse.error(
+        e.getMessage(),
+        HttpStatus.CONFLICT.value()
+    );
+    return ResponseEntity
+        .status(HttpStatus.CONFLICT)
         .body(apiResponse);
   }
 
