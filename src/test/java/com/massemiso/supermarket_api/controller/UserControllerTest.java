@@ -31,9 +31,6 @@ class UserControllerTest extends BaseIntegrationTest {
 
   @BeforeEach
   void setup(){
-    RestAssured.config = RestAssured.config()
-        .jsonConfig(jsonConfig()
-            .numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
     RestAssured.baseURI = "http://localhost:" + port + "/api/users";
   }
 

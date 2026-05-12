@@ -1,11 +1,13 @@
 package com.massemiso.supermarket_api;
 
 import static io.restassured.RestAssured.*;
+import static io.restassured.config.JsonConfig.jsonConfig;
 
 import com.massemiso.supermarket_api.config.UserSeeder;
 import com.massemiso.supermarket_api.dto.AuthRequestDto;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.path.json.config.JsonPathConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +48,9 @@ public abstract class BaseIntegrationTest {
 
   @BeforeEach
   void setup(){
+    RestAssured.config = RestAssured.config()
+        .jsonConfig(jsonConfig()
+            .numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
     RestAssured.port = port;
     RestAssured.baseURI = "http://localhost";
     seeder.createUsersIfNotExists();

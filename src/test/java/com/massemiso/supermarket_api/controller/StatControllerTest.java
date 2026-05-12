@@ -52,9 +52,6 @@ class StatControllerTest extends BaseIntegrationTest {
 
   @BeforeEach
   void setup(){
-    RestAssured.config = RestAssured.config()
-        .jsonConfig(jsonConfig()
-            .numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
     RestAssured.baseURI = "http://localhost:" + port + "/api/stats";
     detailSaleRepo.deleteAll();
     repo.deleteAll();
