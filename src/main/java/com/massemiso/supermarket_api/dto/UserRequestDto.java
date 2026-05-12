@@ -11,4 +11,15 @@ public record UserRequestDto (
     @NotBlank String password,
     @NotBlank @Email String email,
     @NotEmpty Set<RoleEnum> roles
-    ){ }
+){
+
+  @Override
+  public String toString() {
+    return "UserRequestDto{" +
+        "username='" + username + '\'' +
+        ", password=[MASKED]" +
+        ", email='" + email + '\'' +
+        ", roles=" + roles +
+        '}';
+  }
+}

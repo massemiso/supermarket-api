@@ -8,4 +8,13 @@ public record AuthRequestDto(
     String username,
     @NotBlank @Size(min = 6, message = "Password must be at least 6 characters long")
     String password
-) { }
+) {
+
+  @Override
+  public String toString() {
+    return "AuthRequestDto{" +
+        "username='" + username + '\'' +
+        ", password=[MASKED]" +
+        '}';
+  }
+}
