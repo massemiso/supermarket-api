@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.massemiso.supermarket_api.dto.AuthRequestDto;
+import com.massemiso.supermarket_api.dto.AuthResponseDto;
 import com.massemiso.supermarket_api.dto.UserRequestDto;
 import com.massemiso.supermarket_api.dto.UserResponseDto;
 import com.massemiso.supermarket_api.dto.mapper.UserMapper;
@@ -13,7 +15,9 @@ import com.massemiso.supermarket_api.entity.UserEntity;
 import com.massemiso.supermarket_api.exception.UserNotFoundException;
 import com.massemiso.supermarket_api.repository.RoleRepository;
 import com.massemiso.supermarket_api.repository.UserRepository;
+import com.massemiso.supermarket_api.util.JwtUtil;
 import com.massemiso.supermarket_api.util.TestDataFactory;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +30,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,6 +51,8 @@ class UserServiceTest {
   private RoleRepository roleRepository;
   @Mock
   private PasswordEncoder passwordEncoder;
+  @Mock
+  private JwtUtil jwtUtil;
   @InjectMocks
   private UserService userService;
 
@@ -452,5 +463,148 @@ class UserServiceTest {
     );
     verify(userRepository).findByIdAndDeletedAtIsNull(invalidId);
     verify(userRepository, never()).save(any(UserEntity.class));
+  }
+
+  @Test
+  void login_GivenValidAuthRequestDto_ShouldReturnAuthResponseDtoWithJwtToken(){
+    // arrange
+    AuthRequestDto requestDto = new AuthRequestDto(
+        "admin",
+        "my_super_secret_password"
+    );
+    UserEntity user = UserEntity.builder()
+        .username(requestDto.username())
+        .email("admin@test.com")
+        .password("my_super_secret_password_encoded")
+        .roles(Set.of(new RoleEntity(RoleEnum.ADMIN)))
+        .accountNonExpired(true)
+        .accountNonLocked(true)
+        .credentialsNonExpired(true)
+        .build();
+    Authentication auth = new UsernamePasswordAuthenticationToken(
+        requestDto.username(), requestDto.password(), user.getAuthorities());
+    String jwtToken = "some_super_secret_jwt_token";
+
+    // mock
+    when(userRepository.findByUsername(requestDto.username()))
+        .thenReturn(Optional.of(user));
+    when(passwordEncoder.matches(requestDto.password(), user.getPassword()))
+        .thenReturn(true);
+    when(jwtUtil.createToken(auth))
+        .thenReturn(jwtToken);
+
+    // act
+    AuthResponseDto responseDto = userService.login(requestDto);
+
+    // assert
+    assertNotNull(responseDto);
+    assertEquals(requestDto.username(), responseDto.username());
+    assertThat(responseDto.token())
+        .isNotNull()
+        .isEqualTo(jwtToken);
+    assertTrue(responseDto.status());
+
+    verify(userRepository).findByUsername(requestDto.username());
+    verify(passwordEncoder).matches(requestDto.password(), user.getPassword());
+    verify(jwtUtil).createToken(auth);
+  }
+
+  @Test
+  void login_GivenUserNotFound_ShouldThrowUsernameNotFoundException(){
+    // arrange
+    AuthRequestDto requestDto = new AuthRequestDto(
+        "admin",
+        "my_super_secret_password"
+    );
+    UserEntity user = UserEntity.builder()
+        .username(requestDto.username())
+        .email("admin@test.com")
+        .password("my_super_secret_password_encoded")
+        .roles(Set.of(new RoleEntity(RoleEnum.ADMIN)))
+        .accountNonExpired(true)
+        .accountNonLocked(true)
+        .credentialsNonExpired(true)
+        .build();
+
+    // mock
+    when(userRepository.findByUsername(requestDto.username()))
+        .thenReturn(Optional.empty());
+
+    // act & assert
+    assertThrows(UsernameNotFoundException.class,
+        () ->
+            userService.login(requestDto)
+    );
+
+    verify(userRepository).findByUsername(requestDto.username());
+    verify(passwordEncoder, never()).matches(requestDto.password(), user.getPassword());
+    verify(jwtUtil, never()).createToken(any(Authentication.class));
+  }
+
+  @Test
+  void login_GivenUserDisabled_ShouldThrowUsernameNotFoundException(){
+    // arrange
+    AuthRequestDto requestDto = new AuthRequestDto(
+        "admin",
+        "my_super_secret_password"
+    );
+    UserEntity user = UserEntity.builder()
+        .username(requestDto.username())
+        .email("admin@test.com")
+        .password("my_super_secret_password_encoded")
+        .roles(Set.of(new RoleEntity(RoleEnum.ADMIN)))
+        .accountNonExpired(true)
+        .accountNonLocked(true)
+        .credentialsNonExpired(true)
+        .build();
+    ReflectionTestUtils.setField(user, "deletedAt", LocalDateTime.now());
+
+    // mock
+    when(userRepository.findByUsername(requestDto.username()))
+        .thenReturn(Optional.of(user));
+
+    // act & assert
+    assertThrows(UsernameNotFoundException.class,
+        () ->
+            userService.login(requestDto)
+    );
+
+    verify(userRepository).findByUsername(requestDto.username());
+    verify(passwordEncoder, never()).matches(requestDto.password(), user.getPassword());
+    verify(jwtUtil, never()).createToken(any(Authentication.class));
+  }
+
+  @Test
+  void login_GivenInvalidPassword_ShouldThrowBadCredentialsException(){
+    // arrange
+    AuthRequestDto requestDto = new AuthRequestDto(
+        "admin",
+        "my_super_secret_INVALID_password"
+    );
+    UserEntity user = UserEntity.builder()
+        .username(requestDto.username())
+        .email("admin@test.com")
+        .password("my_super_secret_password_encoded")
+        .roles(Set.of(new RoleEntity(RoleEnum.ADMIN)))
+        .accountNonExpired(true)
+        .accountNonLocked(true)
+        .credentialsNonExpired(true)
+        .build();
+
+    // mock
+    when(userRepository.findByUsername(requestDto.username()))
+        .thenReturn(Optional.of(user));
+    when(passwordEncoder.matches(requestDto.password(), user.getPassword()))
+        .thenReturn(false);
+
+    // act & assert
+    assertThrows(BadCredentialsException.class,
+        () ->
+            userService.login(requestDto)
+    );
+
+    verify(userRepository).findByUsername(requestDto.username());
+    verify(passwordEncoder).matches(requestDto.password(), user.getPassword());
+    verify(jwtUtil, never()).createToken(any(Authentication.class));
   }
 }
