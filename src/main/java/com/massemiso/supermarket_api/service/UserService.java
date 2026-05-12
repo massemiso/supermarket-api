@@ -142,15 +142,16 @@ public class UserService implements UserDetailsService {
     if (userRepository.findByUsername(requestDto.username()).isPresent()){
       throw new UserAlreadyExists(requestDto.username());
     }
-    RoleEntity role = findOrCreateRole(RoleEnum.GUEST);
-
-    UserEntity entity = userMapper.toEntity(Set.of(role), requestDto,
-        encodePassword(requestDto.password()));
-    userRepository.save(entity);
-
-    AuthRequestDto authRequestDto = new AuthRequestDto(
-        requestDto.username(), requestDto.password());
-    return login(authRequestDto);
+    UserRequestDto userRequestDto = new UserRequestDto(
+        requestDto.username(),
+        requestDto.password(),
+        requestDto.email(),
+        Set.of(RoleEnum.GUEST)
+    );
+    create(userRequestDto);
+    return login(new AuthRequestDto(
+        requestDto.username(), requestDto.password()
+    ));
   }
 
   private UserEntity findById(Long id){
