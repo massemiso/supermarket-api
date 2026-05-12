@@ -41,6 +41,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     Product entity2 = entities.getLast();
 
     given()
+        .header(HttpHeaders.AUTHORIZATION, guestAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get()
@@ -62,12 +63,30 @@ class ProductControllerTest extends BaseIntegrationTest {
   }
 
   @Test
+  void getAll_GivenUserNotAuthenticated_ShouldReturn401Unauthorized() {
+    given()
+        // no given user authentication
+        .contentType(ContentType.JSON)
+    .when()
+        .get()
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to"
+            + " perform a GET on /api/products"))
+        .body("status", is(401));
+  }
+
+  @Test
   void getById_GivenValidId_ShouldReturn200AndApiResponseOfDto() {
     List<Product> entities = this.insertSomeDefaultValues();
     Product entity1 = entities.getFirst();
     int validId = entity1.getId().intValue();
 
     given()
+        .header(HttpHeaders.AUTHORIZATION, guestAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", validId)
@@ -85,6 +104,7 @@ class ProductControllerTest extends BaseIntegrationTest {
   void getById_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = 1;
     given()
+        .header(HttpHeaders.AUTHORIZATION, guestAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", invalidId)
@@ -96,6 +116,27 @@ class ProductControllerTest extends BaseIntegrationTest {
         .body("message", is("Product with id 1 not found"))
         .body("status", is(404));
   }
+
+  @Test
+  void getById_GivenUserNotAuthenticated_ShouldReturn401Unauthorized() {
+    List<Product> entities = this.insertSomeDefaultValues();
+    Product entity1 = entities.getFirst();
+    int validId = entity1.getId().intValue();
+    given()
+        // no given user authentication
+        .contentType(ContentType.JSON)
+    .when()
+        .get("/{id}", validId)
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to"
+            + " perform a GET on /api/products/" + validId))
+        .body("status", is(401));
+  }
+
   @Test
   void create_GivenValidRequestDto_ShouldReturn201AndApiResponseDto() {
     ProductRequestDto dto = new ProductRequestDto(

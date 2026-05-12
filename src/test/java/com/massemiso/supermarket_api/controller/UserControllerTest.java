@@ -50,16 +50,18 @@ class UserControllerTest extends BaseIntegrationTest {
         .get()
     .then()
         .statusCode(HttpStatus.OK.value())
-        .body("content", hasSize(3))
+        .body("content", hasSize(4))
         .body("content[0].username", is(ADMIN_USERNAME) )
         .body("content[0].email", is(ADMIN_EMAIL))
         .body("content[1].username", is(MANAGER_USERNAME))
         .body("content[1].email", is(MANAGER_EMAIL))
         .body("content[2].username", is(CASHIER_USERNAME))
         .body("content[2].email", is(CASHIER_EMAIL))
+        .body("content[3].username", is(GUEST_USERNAME))
+        .body("content[3].email", is(GUEST_EMAIL))
         .body("page.size", is(20))
         .body("page.number", is(0))
-        .body("page.totalElements", is(3))
+        .body("page.totalElements", is(4))
         .body("page.totalPages", is(1));
   }
 

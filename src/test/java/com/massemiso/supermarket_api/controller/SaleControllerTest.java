@@ -62,6 +62,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     Sale entity2 = entities.getLast();
 
     given()
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get()
@@ -93,6 +94,7 @@ class SaleControllerTest extends BaseIntegrationTest {
         .intValue();
 
     given()
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
         .queryParam("branchId", branchId)
     .when()
@@ -118,6 +120,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     repo.save(entity);
 
     given()
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
         .queryParam("date", LocalDate.now().toString())
     .when()
@@ -148,6 +151,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     repo.save(entity);
 
     given()
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
         .queryParam("branchId", branchId)
         .queryParam("date", LocalDate.now().toString())
@@ -163,6 +167,42 @@ class SaleControllerTest extends BaseIntegrationTest {
         .body("page.totalElements", is(1))
         .body("page.totalPages", is(1));
   }
+
+  @Test
+  void getAll_GivenUserNotAuthenticated_ShouldReturn401Unauthorized() {
+    given()
+        // no given user authentication
+        .contentType(ContentType.JSON)
+    .when()
+        .get()
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to"
+            + " perform a GET on /api/sales"))
+        .body("status", is(401));
+  }
+
+  @Test
+  void getAll_GivenUserNotAuthorized_ShouldReturn403Forbidden() {
+    given()
+        // guest users aren't supposed to fetch sales
+        .header(HttpHeaders.AUTHORIZATION, guestAuthHeader)
+        .contentType(ContentType.JSON)
+    .when()
+        .get()
+    .then()
+        .statusCode(HttpStatus.FORBIDDEN.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("You do not have the required"
+            + " permissions to perform a GET on /api/sales"))
+        .body("status", is(403));
+  }
+
   @Test
   void getById_GivenValidId_ShouldReturn200AndApiResponseOfSaleDto() {
     Sale entity = this.insertSomeDefaultValues().getFirst();
@@ -170,6 +210,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     int branchId = entity.getBranch().getId().intValue();
 
     given()
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", validId)
@@ -193,6 +234,7 @@ class SaleControllerTest extends BaseIntegrationTest {
   void getById_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = -1;
     given()
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", invalidId)
@@ -203,6 +245,45 @@ class SaleControllerTest extends BaseIntegrationTest {
         .body("timestamp", containsString(LocalDate.now().toString()))
         .body("message", is("Sale with id " + invalidId + " not found"))
         .body("status", is(404));
+  }
+
+  @Test
+  void getById_GivenUserNotAuthenticated_ShouldReturn401Unauthorized() {
+    Sale entity = this.insertSomeDefaultValues().getFirst();
+    int validId = entity.getId().intValue();
+    given()
+        // no given user authentication
+        .contentType(ContentType.JSON)
+    .when()
+        .get("/{id}", validId)
+    .then()
+        .statusCode(HttpStatus.UNAUTHORIZED.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Authentication is required to"
+            + " perform a GET on /api/sales/" + validId))
+        .body("status", is(401));
+  }
+
+  @Test
+  void getById_GivenUserNotAuthorized_ShouldReturn403Forbidden() {
+    Sale entity = this.insertSomeDefaultValues().getFirst();
+    int validId = entity.getId().intValue();
+    given()
+        // guest users aren't supposed to fetch sales
+        .header(HttpHeaders.AUTHORIZATION, guestAuthHeader)
+        .contentType(ContentType.JSON)
+    .when()
+        .get("/{id}", validId)
+    .then()
+        .statusCode(HttpStatus.FORBIDDEN.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("You do not have the required"
+            + " permissions to perform a GET on /api/sales/" + validId))
+        .body("status", is(403));
   }
 
   @Test
@@ -310,44 +391,43 @@ class SaleControllerTest extends BaseIntegrationTest {
         .body("status", is(401));
   }
 
-//  For now all users can create sales
-//  @Test
-//  void create_GivenUserNotAuthorized_ShouldReturn403Forbidden(){
-//    List<Sale> entities = this.insertSomeDefaultValues();
-//    Long validBranchId = entities
-//        .getLast()
-//        .getBranch()
-//        .getId();
-//    Long validProductId = entities
-//        .getLast()
-//        .getDetailSaleList()
-//        .getFirst()
-//        .getProduct()
-//        .getId();
-//    SaleRequestDto requestDto = new SaleRequestDto(
-//        validBranchId,
-//        List.of(
-//            new DetailSaleRequestDto(1, validProductId),
-//            new DetailSaleRequestDto(3, validProductId)
-//        )
-//    );
-//
-//    given()
-//        // USER does not have permission to create products
-//        .auth().preemptive().basic(USER_USERNAME, USER_PASSWORD)
-//        .contentType(ContentType.JSON)
-//        .body(requestDto)
-//    .when()
-//        .post()
-//    .then()
-//        .statusCode(HttpStatus.FORBIDDEN.value())
-//        .body("content", nullValue())
-//        .body("timestamp", notNullValue())
-//        .body("timestamp", containsString(LocalDate.now().toString()))
-//        .body("message", is("You do not have the required"
-//            + " permissions to perform a POST on /api/sales"))
-//        .body("status", is(403));
-//  }
+  @Test
+  void create_GivenUserNotAuthorized_ShouldReturn403Forbidden(){
+    List<Sale> entities = this.insertSomeDefaultValues();
+    Long validBranchId = entities
+        .getLast()
+        .getBranch()
+        .getId();
+    Long validProductId = entities
+        .getLast()
+        .getDetailSaleList()
+        .getFirst()
+        .getProduct()
+        .getId();
+    SaleRequestDto requestDto = new SaleRequestDto(
+        validBranchId,
+        List.of(
+            new DetailSaleRequestDto(1, validProductId),
+            new DetailSaleRequestDto(3, validProductId)
+        )
+    );
+
+    given()
+        // Guest does not have permission to create products
+        .header(HttpHeaders.AUTHORIZATION, guestAuthHeader)
+        .contentType(ContentType.JSON)
+        .body(requestDto)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.FORBIDDEN.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("You do not have the required"
+            + " permissions to perform a POST on /api/sales"))
+        .body("status", is(403));
+  }
 
   @Test
   void delete_GivenValidId_ShouldReturn204AndNoContent() {
