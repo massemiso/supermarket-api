@@ -1,10 +1,13 @@
 package com.massemiso.supermarket_api.controller;
 
 import com.massemiso.supermarket_api.dto.ApiResponse;
+import com.massemiso.supermarket_api.dto.AuthRegisterRequestDto;
 import com.massemiso.supermarket_api.dto.AuthRequestDto;
 import com.massemiso.supermarket_api.dto.AuthResponseDto;
+import com.massemiso.supermarket_api.dto.UserResponseDto;
 import com.massemiso.supermarket_api.service.UserService;
 import jakarta.validation.Valid;
+import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +35,19 @@ public class AuthController {
    return ResponseEntity.ok(apiResponse);
   }
 
-  // for now only login is implemented
-  // users will be registered by admin and manager users with POST /api/users
+  // guests can register with POST /api/auth/register but can't choose role
+  // will be registered as guest
+  @PostMapping("/register")
+  public ResponseEntity<ApiResponse<AuthResponseDto>> register(
+      @Valid @RequestBody AuthRegisterRequestDto requestDto
+  ){
+    ApiResponse<AuthResponseDto> apiResponse = ApiResponse.success(
+        userService.register(requestDto),
+        "Registration successfull",
+        HttpStatus.CREATED.value()
+    );
+    return ResponseEntity
+        .status(HttpStatus.CREATED.value())
+        .body(apiResponse);
+  }
 }
