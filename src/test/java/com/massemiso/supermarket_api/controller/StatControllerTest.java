@@ -30,6 +30,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 class StatControllerTest extends BaseIntegrationTest {
@@ -65,7 +66,7 @@ class StatControllerTest extends BaseIntegrationTest {
   void getBestSellingProduct_ShouldReturn200AndApiResponseOfBestSellerDto(){
     BestSellerResponseDto bestSeller = insertSomeDefaultValues();
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get("/best-selling-product")
@@ -105,7 +106,7 @@ class StatControllerTest extends BaseIntegrationTest {
   void getBestSellingProduct_GivenUserNotAuthorized_ShouldReturn403Forbidden(){
     given()
         // cashiers can't get best selling product
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get("/best-selling-product")

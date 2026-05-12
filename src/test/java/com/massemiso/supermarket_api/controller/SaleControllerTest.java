@@ -26,6 +26,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -227,7 +228,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -256,7 +257,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -353,7 +354,7 @@ class SaleControllerTest extends BaseIntegrationTest {
   void delete_GivenValidId_ShouldReturn204AndNoContent() {
     int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -366,7 +367,7 @@ class SaleControllerTest extends BaseIntegrationTest {
     this.insertSomeDefaultValues();
     int invalidId = -1;
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)
@@ -404,7 +405,7 @@ class SaleControllerTest extends BaseIntegrationTest {
 
     given()
         // Cashier does not have permission to delete products
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
         .when()
         .delete("{id}", validId)

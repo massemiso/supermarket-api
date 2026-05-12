@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 class ProductControllerTest extends BaseIntegrationTest {
@@ -109,7 +110,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -137,7 +138,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -187,7 +188,7 @@ class ProductControllerTest extends BaseIntegrationTest {
 
     given()
         // Cashier does not have permission to create products
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -215,7 +216,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -244,7 +245,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -272,7 +273,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -325,7 +326,7 @@ class ProductControllerTest extends BaseIntegrationTest {
 
     given()
         // Cashier does not have permission to update products
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
         .body(dto)
     .when()
@@ -347,7 +348,7 @@ class ProductControllerTest extends BaseIntegrationTest {
     int validId = entity1.getId().intValue();
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -359,7 +360,7 @@ class ProductControllerTest extends BaseIntegrationTest {
   void delete_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = 1;
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)
@@ -397,7 +398,7 @@ class ProductControllerTest extends BaseIntegrationTest {
 
     given()
         // Cashier does not have permission to delete products
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("{id}", validId)

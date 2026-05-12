@@ -1,6 +1,11 @@
 package com.massemiso.supermarket_api;
 
+import static io.restassured.RestAssured.*;
+
 import com.massemiso.supermarket_api.config.UserSeeder;
+import com.massemiso.supermarket_api.dto.AuthRequestDto;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,8 +46,30 @@ public abstract class BaseIntegrationTest {
 
   @BeforeEach
   void setup(){
+    RestAssured.port = port;
+    RestAssured.baseURI = "http://localhost";
     seeder.createUsersIfNotExists();
+    this.adminAuthHeader = "Bearer " + getJwtToken(ADMIN_USERNAME, ADMIN_PASSWORD);
+    this.managerAuthHeader = "Bearer " +  getJwtToken(MANAGER_USERNAME, MANAGER_PASSWORD);
+    this.cashierAuthHeader = "Bearer " + getJwtToken(CASHIER_USERNAME, CASHIER_PASSWORD);
   }
+
+  private String getJwtToken(String username, String password){
+    return given()
+        .port(port)
+        .contentType(ContentType.JSON)
+        .body(new AuthRequestDto(username, password))
+    .when()
+        .post("/api/auth/login")
+    .then()
+        .statusCode(200)
+        .extract()
+        .path("content.token");
+  }
+
+  protected String adminAuthHeader;
+  protected String managerAuthHeader;
+  protected String cashierAuthHeader;
 
   @Value("${user.admin.username}") protected String ADMIN_USERNAME;
   @Value("${user.admin.password}") protected String ADMIN_PASSWORD;

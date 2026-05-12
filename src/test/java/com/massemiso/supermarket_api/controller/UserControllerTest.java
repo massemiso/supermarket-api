@@ -15,9 +15,11 @@ import io.restassured.http.ContentType;
 import io.restassured.path.json.config.JsonPathConfig;
 import java.time.LocalDate;
 import java.util.Set;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 class UserControllerTest extends BaseIntegrationTest {
@@ -33,14 +35,17 @@ class UserControllerTest extends BaseIntegrationTest {
         .jsonConfig(jsonConfig()
             .numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
     RestAssured.baseURI = "http://localhost:" + port + "/api/users";
+  }
+
+  @AfterEach
+  void tearDown(){
     repo.deleteAll();
-    seeder.createUsersIfNotExists();
   }
 
   @Test
   void getAll_ShouldReturn200AndAJsonWithAPageOfDto() {
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get()
@@ -80,7 +85,7 @@ class UserControllerTest extends BaseIntegrationTest {
   void getAll_GivenUserNotAuthorized_ShouldReturn403Forbidden(){
     given()
         // cashier does not have permission to fetch users
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get()
@@ -100,7 +105,7 @@ class UserControllerTest extends BaseIntegrationTest {
     int validId = manager.getId().intValue();
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get("/{id}", validId)
@@ -144,7 +149,7 @@ class UserControllerTest extends BaseIntegrationTest {
     int validId = getUser(MANAGER_USERNAME).getId().intValue();
     given()
         // cashier does not have permission to fetch users
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .get("{id}", validId)
@@ -168,7 +173,7 @@ class UserControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -199,7 +204,7 @@ class UserControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -252,7 +257,7 @@ class UserControllerTest extends BaseIntegrationTest {
 
     given()
         // cashier does not have permission to create users
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -279,7 +284,7 @@ class UserControllerTest extends BaseIntegrationTest {
     int validId = userEntity.getId().intValue();
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -312,7 +317,7 @@ class UserControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -339,7 +344,7 @@ class UserControllerTest extends BaseIntegrationTest {
     int validId = userEntity.getId().intValue();
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(requestDto)
      .when()
@@ -396,7 +401,7 @@ class UserControllerTest extends BaseIntegrationTest {
 
     given()
         // Cashier does not have permission to update users
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
         .body(requestDto)
     .when()
@@ -415,7 +420,7 @@ class UserControllerTest extends BaseIntegrationTest {
   void delete_GivenValidId_ShouldReturn204AndNoContent() {
     int validId = getUser(MANAGER_USERNAME).getId().intValue();
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -427,7 +432,7 @@ class UserControllerTest extends BaseIntegrationTest {
   void delete_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = -1;
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)
@@ -463,7 +468,7 @@ class UserControllerTest extends BaseIntegrationTest {
     int validId = getUser(MANAGER_USERNAME).getId().intValue();
     given()
         // Cashier does not have permission to delete products
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("{id}", validId)

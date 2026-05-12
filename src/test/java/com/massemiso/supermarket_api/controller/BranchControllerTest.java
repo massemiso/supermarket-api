@@ -14,6 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 class BranchControllerTest extends BaseIntegrationTest {
@@ -94,7 +95,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -122,7 +123,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -172,7 +173,7 @@ class BranchControllerTest extends BaseIntegrationTest {
 
     given()
         // Only ADMIN users are authorized to create branches
-        .auth().preemptive().basic(MANAGER_USERNAME, MANAGER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, managerAuthHeader)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -197,7 +198,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -225,7 +226,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -250,7 +251,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -303,7 +304,7 @@ class BranchControllerTest extends BaseIntegrationTest {
 
     given()
         // Only ADMIN users are authorized to update branches
-        .auth().preemptive().basic(MANAGER_USERNAME, MANAGER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, managerAuthHeader)
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()
@@ -329,7 +330,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     int validId = branch1.getId().intValue();
 
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
@@ -341,7 +342,7 @@ class BranchControllerTest extends BaseIntegrationTest {
   void delete_GivenInvalidId_ShouldReturn404AndApiResponseError() {
     int invalidId = 1;
     given()
-        .auth().preemptive().basic(ADMIN_USERNAME, ADMIN_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", invalidId)
@@ -377,7 +378,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     int validId = this.insertSomeDefaultValues().getFirst().getId().intValue();
     given()
         // Only ADMIN users are authorized to delete branches
-        .auth().preemptive().basic(CASHIER_USERNAME, CASHIER_PASSWORD)
+        .header(HttpHeaders.AUTHORIZATION, managerAuthHeader)
         .contentType(ContentType.JSON)
     .when()
         .delete("/{id}", validId)
