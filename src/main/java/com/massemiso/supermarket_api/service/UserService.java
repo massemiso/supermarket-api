@@ -57,7 +57,7 @@ public class UserService implements UserDetailsService {
       throws UsernameNotFoundException {
     UserEntity user =  userRepository
         .findByUsername(username)
-        .orElseThrow(() -> new UsernameNotFoundException(username));
+        .orElseThrow(() -> new UsernameNotFoundException("User '" + username + "' not found"));
 
     return User.builder()
         .username(user.getUsername())
@@ -152,11 +152,11 @@ public class UserService implements UserDetailsService {
   private Authentication authenticate(String username, String password){
     UserDetails userDetails = loadUserByUsername(username);
     if (!userDetails.isEnabled()){
-      throw new UsernameNotFoundException("User '" + username + "' is disabled");
+      throw new UsernameNotFoundException("User '" + username + "' not found");
     }
 
     if (!passwordEncoder.matches(password, userDetails.getPassword())){
-      throw new BadCredentialsException("Wrong password");
+      throw new BadCredentialsException("Wrong password for user '" + username + "'");
     }
 
     return new UsernamePasswordAuthenticationToken(
