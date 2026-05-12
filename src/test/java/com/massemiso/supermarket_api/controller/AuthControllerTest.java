@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 import com.massemiso.supermarket_api.BaseIntegrationTest;
 import com.massemiso.supermarket_api.config.UserSeeder;
+import com.massemiso.supermarket_api.dto.AuthRegisterRequestDto;
 import com.massemiso.supermarket_api.dto.AuthRequestDto;
 import com.massemiso.supermarket_api.repository.UserRepository;
 import com.massemiso.supermarket_api.service.UserService;
@@ -140,5 +141,59 @@ class AuthControllerTest extends BaseIntegrationTest {
         .body("timestamp", notNullValue())
         .body("timestamp", containsString(LocalDate.now().toString()))
         .body("status", is(HttpStatus.UNAUTHORIZED.value()));
+  }
+
+  @Test
+  void register_GivenValidAuthRegisterRequestDto_ShouldReturn201AndApiResponseOfAuthResponseDto(){
+    // arrange
+    AuthRegisterRequestDto requestDto = new AuthRegisterRequestDto(
+        "my_new_user",
+        "my_super_secret_password",
+        "my_super_email@guest.com"
+    );
+
+    // act
+    given()
+        .contentType(ContentType.JSON)
+        .body(requestDto)
+    .when()
+        .post("/register")
+    .then()
+        .statusCode(HttpStatus.CREATED.value())
+        .body("content", notNullValue())
+        .body("content.username", is(requestDto.username()))
+        .body("content.token", notNullValue())
+        .body("content.status", is(true))
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", is("Registration successfull"))
+        .body("status", is(HttpStatus.CREATED.value()));
+  }
+
+  @Test
+  void register_GivenUsernameAlreadyExists_ShouldReturn409Conflict(){
+    // arrange
+    AuthRegisterRequestDto requestDto = new AuthRegisterRequestDto(
+        CASHIER_USERNAME,
+        "my_super_secret_password",
+        "my_super_email@guest.com"
+    );
+
+    // act
+    given()
+        .contentType(ContentType.JSON)
+        .body(requestDto)
+    .when()
+        .post("/register")
+    .then()
+        .statusCode(HttpStatus.CONFLICT.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message",
+            is("User with username '" + requestDto.username() + "' already exists."))
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("status", is(HttpStatus.CONFLICT.value()));
   }
 }
