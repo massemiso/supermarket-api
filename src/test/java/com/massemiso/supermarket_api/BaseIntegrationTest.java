@@ -57,6 +57,7 @@ public abstract class BaseIntegrationTest {
     this.adminAuthHeader = "Bearer " + getJwtToken(ADMIN_USERNAME, ADMIN_PASSWORD);
     this.managerAuthHeader = "Bearer " +  getJwtToken(MANAGER_USERNAME, MANAGER_PASSWORD);
     this.cashierAuthHeader = "Bearer " + getJwtToken(CASHIER_USERNAME, CASHIER_PASSWORD);
+    this.guestAuthHeader = "Bearer " + getJwtToken(GUEST_USERNAME, GUEST_PASSWORD);
   }
 
   private String getJwtToken(String username, String password){
@@ -75,6 +76,7 @@ public abstract class BaseIntegrationTest {
   protected String adminAuthHeader;
   protected String managerAuthHeader;
   protected String cashierAuthHeader;
+  protected String guestAuthHeader;
 
   @Value("${user.admin.username}") protected String ADMIN_USERNAME;
   @Value("${user.admin.password}") protected String ADMIN_PASSWORD;
@@ -85,4 +87,7 @@ public abstract class BaseIntegrationTest {
   @Value("${user.cashier.username}") protected String CASHIER_USERNAME;
   @Value("${user.cashier.password}") protected String CASHIER_PASSWORD;
   @Value("${user.cashier.email}") protected String CASHIER_EMAIL;
+  @Value("${user.guest.username}") protected String GUEST_USERNAME;
+  @Value("${user.guest.password}") protected String GUEST_PASSWORD;
+  @Value("${user.guest.email}") protected String GUEST_EMAIL;
 }

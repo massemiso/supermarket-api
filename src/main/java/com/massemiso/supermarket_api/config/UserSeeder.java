@@ -34,6 +34,12 @@ public class UserSeeder implements CommandLineRunner {
   private String CASHIER_PASSWORD;
   @Value("${user.cashier.email}")
   private String CASHIER_EMAIL;
+  @Value("${user.guest.username}")
+  private String GUEST_USERNAME;
+  @Value("${user.guest.password}")
+  private String GUEST_PASSWORD;
+  @Value("${user.guest.email}")
+  private String GUEST_EMAIL;
 
   @Autowired
   private UserRepository userRepository;
@@ -50,6 +56,9 @@ public class UserSeeder implements CommandLineRunner {
     }
     if (userRepository.findByUsername(CASHIER_USERNAME).isEmpty()){
       saveUser(RoleEnum.CASHIER, CASHIER_USERNAME, CASHIER_PASSWORD, CASHIER_EMAIL);
+    }
+    if (userRepository.findByUsername(GUEST_USERNAME).isEmpty()){
+      saveUser(RoleEnum.GUEST, GUEST_USERNAME, GUEST_PASSWORD, GUEST_EMAIL);
     }
   }
 
