@@ -191,7 +191,7 @@ class BranchControllerTest extends BaseIntegrationTest {
     );
 
     given()
-//        .auth().basic(seeder.getADMIN_USERNAME(), seeder.getADMIN_PASSWORD())
+        // no given user authentication
         .contentType(ContentType.JSON)
         .body(branchRequestDto)
     .when()

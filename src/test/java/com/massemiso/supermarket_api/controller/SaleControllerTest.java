@@ -486,9 +486,9 @@ class SaleControllerTest extends BaseIntegrationTest {
         // Cashier does not have permission to delete products
         .header(HttpHeaders.AUTHORIZATION, cashierAuthHeader)
         .contentType(ContentType.JSON)
-        .when()
+   .when()
         .delete("{id}", validId)
-        .then()
+    .then()
         .statusCode(HttpStatus.FORBIDDEN.value())
         .body("content", nullValue())
         .body("timestamp", notNullValue())
