@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -151,11 +152,11 @@ public class UserService implements UserDetailsService {
   private Authentication authenticate(String username, String password){
     UserDetails userDetails = loadUserByUsername(username);
     if (!userDetails.isEnabled()){
-      throw new RuntimeException("User is disabled");
+      throw new UsernameNotFoundException("User '" + username + "' is disabled");
     }
 
     if (!passwordEncoder.matches(password, userDetails.getPassword())){
-      throw new RuntimeException("Password is invalid");
+      throw new BadCredentialsException("Wrong password");
     }
 
     return new UsernamePasswordAuthenticationToken(

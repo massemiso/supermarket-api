@@ -12,7 +12,9 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -90,6 +92,23 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
   @ExceptionHandler(UserNotFoundException.class)
   ResponseEntity<ApiResponse<Void>> handleUserNotFoundException(UserNotFoundException e) {
     return handleNotFoundException(e);
+  }
+
+  @ExceptionHandler(UsernameNotFoundException.class)
+  ResponseEntity<ApiResponse<Void>> handleUsernmeNotFoundException(UsernameNotFoundException e) {
+    return handleNotFoundException(e);
+  }
+
+  @ExceptionHandler(BadCredentialsException.class)
+  ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException e) {
+    log.error("401 UNAUTHORIZED: {}", e.getMessage());
+    ApiResponse<Void> apiResponse = ApiResponse.error(
+        e.getMessage(),
+        HttpStatus.UNAUTHORIZED.value()
+    );
+    return ResponseEntity
+        .status(HttpStatus.UNAUTHORIZED)
+        .body(apiResponse);
   }
 
   @ExceptionHandler(AccessDeniedException.class)
