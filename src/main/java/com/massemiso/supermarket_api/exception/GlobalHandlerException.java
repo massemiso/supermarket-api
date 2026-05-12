@@ -95,7 +95,7 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
   }
 
   @ExceptionHandler(UsernameNotFoundException.class)
-  ResponseEntity<ApiResponse<Void>> handleUsernmeNotFoundException(UsernameNotFoundException e) {
+  ResponseEntity<ApiResponse<Void>> handleUsernameNotFoundException(UsernameNotFoundException e) {
     return handleNotFoundException(e);
   }
 
