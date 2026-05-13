@@ -25,6 +25,13 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @ControllerAdvice
 public class GlobalHandlerException implements AuthenticationEntryPoint {
 
+  private enum LogType{
+    INFO,
+    WARN,
+    ERROR,
+    DEBUG
+  }
+
   // Authentication exceptions
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -59,7 +66,7 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
         apiMsg,
         HttpStatus.FORBIDDEN,
         logMsg,
-        "WARN");
+        LogType.WARN);
   }
 
   // General exception handler
@@ -69,18 +76,24 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
         e.getMessage(),
         HttpStatus.INTERNAL_SERVER_ERROR,
         "Unexpected error occurred: " + e.getMessage(),
-        "ERROR");
+        LogType.ERROR);
   }
 
   // Helper method for handling many similar exceptions
   private ResponseEntity<ApiResponse<Void>> handleExceptionsHelper
-      (String apiMsg, HttpStatus status, String logMsg, String logType){
+  (String apiMsg, HttpStatus status, String logMsg, LogType logType){
     switch (logType){
-      case "WARN":
+      case INFO:
+        log.info(logMsg);
+        break;
+      case WARN:
         log.warn(logMsg);
         break;
-      case "ERROR":
+      case ERROR:
         log.error(logMsg);
+        break;
+      case DEBUG:
+        log.debug(logMsg);
         break;
     }
     ApiResponse<Void> apiResponse = ApiResponse.error(
@@ -98,7 +111,7 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
         e.getMessage(),
         HttpStatus.UNAUTHORIZED,
         "401 UNAUTHORIZED: " + e.getMessage(),
-        "WARN");
+        LogType.WARN);
   }
 
   @ExceptionHandler(UserAlreadyExists.class)
@@ -107,7 +120,7 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
         e.getMessage(),
         HttpStatus.CONFLICT,
         "409 CONFLICT: " + e.getMessage(),
-        "WARN");
+        LogType.WARN);
   }
 
   // Method argument for validations exceptions
@@ -124,7 +137,7 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
         apiMsg,
         HttpStatus.BAD_REQUEST,
         "Parameter Not Valid: " + apiMsg,
-        "WARN");
+        LogType.WARN);
   }
 
   // Not found exception handler helper
@@ -133,7 +146,7 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
         e.getMessage(),
         HttpStatus.NOT_FOUND,
         "RESOURCE: " + e.getMessage(),
-        "WARN");
+        LogType.WARN);
   }
 
   @ExceptionHandler(ProductNotFoundException.class)
