@@ -95,6 +95,12 @@ The application can be configured using environment variables. This is especiall
 ### Authentication & Security
 The API is secured using **JWT (JSON Web Tokens)**. To access protected endpoints, you must first authenticate via the `/api/auth/login` endpoint to receive a token, which should then be included in the `Authorization` header as a `Bearer` token.
 
+By default **ALL** endpoints are protected and require a valid token, excluding auth endpoints and test endpoints such as:
+- `/api/auth/login`
+- `/api/auth/register`
+- `/h2-console`
+- `/swagger-ui`
+
 Unauthenticated requests will return a `401 Unauthorized`, and authenticated requests without the proper roles will return a standard `403 Forbidden` API response.
 
 For testing purposes, the pre-seeded users are:
