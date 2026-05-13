@@ -32,8 +32,8 @@ public class AuthController {
       description = "Login successful"
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
-      responseCode = "404",
-      description = "User not found" ,
+      responseCode = "400",
+      description = "Parameter not valid" ,
       content = @Content
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -42,8 +42,8 @@ public class AuthController {
       content = @Content
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
-      responseCode = "400",
-      description = "Parameter not valid" ,
+      responseCode = "404",
+      description = "User not found" ,
       content = @Content
   )
   @PostMapping("/login")
@@ -59,7 +59,7 @@ public class AuthController {
   }
 
   // guests can register with POST /api/auth/register but can't choose role
-  // will be registered as guest
+  // they will be registered as guest
   @Operation(
       summary = "Register new user, returns token valid for 30 minutes",
       description = "Register with username, password and email, role will be by default of type 'GUEST'"
@@ -69,13 +69,13 @@ public class AuthController {
       description = "Register successful"
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
-      responseCode = "409",
-      description = "User already exists",
+      responseCode = "400",
+      description = "Parameter not valid" ,
       content = @Content
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
-      responseCode = "400",
-      description = "Parameter not valid" ,
+      responseCode = "409",
+      description = "User already exists",
       content = @Content
   )
   @PostMapping("/register")

@@ -107,10 +107,10 @@ For testing purposes, the pre-seeded users are:
 | `guest` | `guest123` | GUEST |
 
 ### Auth
-| Method | Endpoint | Description | Roles Required | Request Body | Return | Common Errors |
-| :--- | :--- |:--- |:---------------|:------------|:------------|:------------|
-| POST | `/api/auth/login` | Authenticate and get a JWT token | `NONE` | `username`, `password` | OK 200 | 401 (Bad Credentials), 400 (Validation) |
-| POST | `/api/auth/register` | Register a new user as `GUEST` | `NONE` | `username`, `password`, `email` | CREATED 201 | 400 (Validation), 409 (User Exists) |
+| Method | Endpoint | Description | Roles Required | Request Body | Return | Common Errors                                            |
+| :--- | :--- |:--- |:---------------|:------------|:------------|:---------------------------------------------------------|
+| POST | `/api/auth/login` | Authenticate and get a JWT token | `NONE` | `username`, `password` | OK 200 | 401 (Bad Credentials), 400 (Validation), 404 (Not Found) |
+| POST | `/api/auth/register` | Register a new user as `GUEST` | `NONE` | `username`, `password`, `email` | CREATED 201 | 400 (Validation), 409 (User Exists)                      |
 
 #### Example JSON Requests/Responses
 - POST Login Request:
