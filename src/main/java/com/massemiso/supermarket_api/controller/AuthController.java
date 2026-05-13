@@ -4,12 +4,13 @@ import com.massemiso.supermarket_api.dto.ApiResponse;
 import com.massemiso.supermarket_api.dto.AuthRegisterRequestDto;
 import com.massemiso.supermarket_api.dto.AuthRequestDto;
 import com.massemiso.supermarket_api.dto.AuthResponseDto;
-import com.massemiso.supermarket_api.dto.UserResponseDto;
 import com.massemiso.supermarket_api.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import jakarta.validation.Valid;
-import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,24 @@ public class AuthController {
   @Autowired
   private UserService userService;
 
+  @Operation(
+      summary = "Login user, returns token valid for 30 minutes",
+      description = "Login with username and password"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "200",
+      description = "Login successful"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "404",
+      description = "User not found" ,
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "401",
+      description = "Wrong password" ,
+      content = @Content
+  )
   @PostMapping("/login")
   public ResponseEntity<ApiResponse<AuthResponseDto>> login(
       @Valid @RequestBody AuthRequestDto authRequestDto
@@ -38,6 +57,19 @@ public class AuthController {
 
   // guests can register with POST /api/auth/register but can't choose role
   // will be registered as guest
+  @Operation(
+      summary = "Register new user, returns token valid for 30 minutes",
+      description = "Register with username, password and email, role will be by default of type 'GUEST'"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "201",
+      description = "Register successful"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "409",
+      description = "User already exists",
+      content = @Content
+  )
   @PostMapping("/register")
   public ResponseEntity<ApiResponse<AuthResponseDto>> register(
       @Valid @RequestBody AuthRegisterRequestDto requestDto
