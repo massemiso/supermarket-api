@@ -10,7 +10,8 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
     info = @Info(
         title = "Supermarket API",
         version = "1.0",
-    description = "API Documentation for a Supermarket RESTful monolith app."),
+        description = "API Documentation for a Supermarket RESTful monolith app. " +
+                "In non-production environments, valid test tokens are automatically appended to this description."),
     security = @SecurityRequirement(name = "bearerAuth")
 )
 @SecurityScheme(
