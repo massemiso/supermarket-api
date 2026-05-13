@@ -4,9 +4,13 @@ import com.massemiso.supermarket_api.dto.ApiResponse;
 import com.massemiso.supermarket_api.dto.SaleRequestDto;
 import com.massemiso.supermarket_api.dto.SaleResponseDto;
 import com.massemiso.supermarket_api.service.SaleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,10 +37,37 @@ public class SaleController {
     this.saleService = saleService;
   }
 
-  // GET ALL
+  @Operation(
+      summary = "Get a page of sales in db, needs authentication"+
+          ", needs ADMIN, MANAGER or CASHIER role"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "200",
+      description = "Get sales successful"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "401",
+      description = "Not authenticated",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "403",
+      description = "Not authorized",
+      content = @Content
+  )
   @GetMapping
   @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CASHIER')")
   public ResponseEntity<Page<SaleResponseDto>> getAll(
+      @ParameterObject
+      @Schema(
+          example = """
+              {
+                "page": 0,
+                "size": 20,
+                "sort": "name,asc"
+              }
+              """
+      )
       Pageable pageable,
       @RequestParam(required = false) Long branchId,
       @RequestParam(required = false) LocalDate date){
@@ -44,7 +75,29 @@ public class SaleController {
         saleService.getAll(pageable, branchId, date));
   }
 
-  // GET
+  @Operation(
+      summary = "Get a sale by id, needs authentication"+
+          ", needs ADMIN, MANAGER or CASHIER role"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "200",
+      description = "Sale retrieved successfully"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "401",
+      description = "Not authenticated",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "404",
+      description = "Not found sale",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "403",
+      description = "Not authorized",
+      content = @Content
+  )
   @GetMapping("/{id}")
   @PreAuthorize("hasAnyRole('ADMIN','MANAGER','CASHIER')")
   public ResponseEntity<ApiResponse<SaleResponseDto>> getById(
@@ -59,7 +112,29 @@ public class SaleController {
         .ok(apiResponse);
   }
 
-  // POST
+  @Operation(
+      summary = "Create a sale, needs authentication" +
+          ", needs ADMIN, MANAGER or CASHIER role"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "201",
+      description = "Sale created successfully"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "400",
+      description = "Parameter not valid",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "401",
+      description = "Not authenticated",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "403",
+      description = "Not authorized",
+      content = @Content
+  )
   @PostMapping
   @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'CASHIER')")
   public ResponseEntity<ApiResponse<SaleResponseDto>> create(
@@ -77,7 +152,29 @@ public class SaleController {
 
   // UPDATE NOT ALLOWED
 
-  // DELETE
+  @Operation(
+      summary = "Soft deletes an existing sale, needs authentication" +
+          ", needs ADMIN or MANAGER role"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "204",
+      description = "Delete sale successful"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "401",
+      description = "Not authenticated",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "403",
+      description = "Not authorized",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "404",
+      description = "Not found sale",
+      content = @Content
+  )
   @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
   @DeleteMapping("/{id}")
   public ResponseEntity<ApiResponse<Void>> delete(
