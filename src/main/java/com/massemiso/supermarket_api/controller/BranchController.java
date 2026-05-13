@@ -43,7 +43,8 @@ public class BranchController {
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
       responseCode = "200",
-      description = "Get branches successful"
+      description = "Get branches successful",
+      content = @Content
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
       responseCode = "401",

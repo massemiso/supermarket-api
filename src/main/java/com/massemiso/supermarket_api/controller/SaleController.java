@@ -43,7 +43,8 @@ public class SaleController {
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
       responseCode = "200",
-      description = "Get sales successful"
+      description = "Get sales successful",
+      content = @Content
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
       responseCode = "401",

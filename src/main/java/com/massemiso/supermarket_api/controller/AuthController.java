@@ -24,8 +24,7 @@ public class AuthController {
   private UserService userService;
 
   @Operation(
-      summary = "Login user, returns token valid for 30 minutes",
-      description = "Login with username and password"
+      summary = "Login user, returns token valid for 30 minutes"
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
       responseCode = "200",
