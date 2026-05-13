@@ -4,35 +4,42 @@ and sales. This project was developed inspired by a technical test to
 demonstrate skills in Java and Spring Boot.
 
 ## Features
-- Role-based security using **Spring Security** and Basic Authentication. Secures endpoints based on `ADMIN`, `MANAGER`, and `CASHIER` roles.
-- **CRUD** operations for Branches, Products and Sales.
+- Role-based security using **Spring Security** and **JWT (JSON Web Tokens)**. Secures endpoints based on `ADMIN`, `MANAGER`, `CASHIER`, and `GUEST` roles.
+- **Authentication System**: Login and Registration endpoints providing stateless JWT authentication.
+- **CRUD** operations for Users, Branches, Products and Sales.
 - **Business Statistics** for best-selling products via native SQL projections.
 - **Soft deletion** of entities: to preserve data integrity and allow for data recovery.
 - Pagination and search sorting for collections.
 - Consistent API responses with **JSON**, including exception details.
 - **Optimistic Locking** using JPA @Version to prevent data overwriting in high-load scenarios.
-- Logging with **SLF4J** and **Logback**.
+- Logging with **SLF4J** and **Logback**, including **Aspect-Oriented Logging (AOP)** for service monitoring.
 - Automated auditing using **Spring Data JPA Auditing**.
 - Dockerized application for easy deployment using **Docker**.
+
+## Domain Model
+Below is the class diagram representing the core entities and their relationships.
+
+![Class Diagram](uml/class-diagram.png)
 
 ## Stack
 - Java 21+
 - Maven
 - Spring Boot 3.x
-- Spring Security
+- Spring Security & JWT
 - Spring Boot JPA (Hibernate)
 - PostgreSQL (production/docker) 
 - H2 (local development/in-memory)
 - Testcontainers
 - REST Assured
 - Docker & Docker Compose
-- Lombok & MapStruct (conceptually)
+- Lombok & Manual DTO Mapping
 
 ## Project Structure
 ~~~
 src/main/java/com/massemiso/supermarket_api/
-├── config/        # JPA Auditing, Web & Pagination settings
-├── controller/    # REST Endpoints with @Valid 
+├── aspect/        # Aspect-Oriented Programming (Logging)
+├── config/        # JPA Auditing, Web, Security & JWT filters
+├── controller/    # REST Endpoints with @Valid and @PreAuthorize
 ├── dto/           # Records for immutable data transfer & Mappers
 ├── entity/        # JPA Models with @MappedSuperclass for Soft Delete
 ├── exception/     # Custom exceptions & @ControllerAdvice handler
@@ -73,89 +80,104 @@ docker compose up --build
 _This starts the Spring Boot app and a dedicated PostgreSQL 15 container._
 
 ## API Documentation
+## Configuration
+The application can be configured using environment variables. This is especially important for security settings in production.
+
+| Variable | Description                                      | Default (Local) |
+| :--- |:-------------------------------------------------| :--- |
+| `SPRING_DATASOURCE_URL` | JDBC URL for the db, useful in local development | `jdbc:h2:mem:supermarket-db` |
+| `JWT_PRIVATE_KEY` | Secret key for signing JWT tokens                | `f043c350d733...` |
+| `JWT_USER_GENERATOR` | Issuer name for the JWT token                    | `AUTH0-JWT-BACKEND` |
+| `JWT_TOKEN_TIME` | Token expiration time in milliseconds            | `1800000` (30 min) |
+
+## API Documentation
 
 ### Authentication & Security
-The API is secured using **Basic Authentication**. Endpoints require specific roles to be accessed. Unauthenticated requests will return a `401 Unauthorized`, and authenticated requests without the proper roles will return a standard `403 Forbidden` API response.
+The API is secured using **JWT (JSON Web Tokens)**. To access protected endpoints, you must first authenticate via the `/api/auth/login` endpoint to receive a token, which should then be included in the `Authorization` header as a `Bearer` token.
+
+Unauthenticated requests will return a `401 Unauthorized`, and authenticated requests without the proper roles will return a standard `403 Forbidden` API response.
 
 For testing purposes, the pre-seeded users are:
+
 | Username | Password     | Role |
 | :--- |:-------------| :--- |
 | `admin` | `admin123`   | ADMIN |
 | `manager` | `manager123` | MANAGER |
 | `cashier` | `cashier123` | CASHIER |
+| `guest` | `guest123` | GUEST |
+
+### Auth
+| Method | Endpoint | Description | Roles Required | Request Body | Return | Common Errors |
+| :--- | :--- |:--- |:---------------|:------------|:------------|:------------|
+| POST | `/api/auth/login` | Authenticate and get a JWT token | `NONE` | `username`, `password` | OK 200 | 401 (Bad Credentials), 400 (Validation) |
+| POST | `/api/auth/register` | Register a new user as `GUEST` | `NONE` | `username`, `password`, `email` | CREATED 201 | 400 (Validation), 409 (User Exists) |
+
+#### Example JSON Requests/Responses
+- POST Login Request:
+~~~json
+{
+  "username": "admin",
+  "password": "admin123"
+}
+~~~
+- POST Login Success Response:
+~~~json
+{
+  "content": {
+    "username": "admin",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "status": true
+  },
+  "timestamp": "2026-05-12 22:30:00",
+  "message": "Login successfull",
+  "status": 200
+}
+~~~
+- POST Login Failure Response (Wrong Password):
+~~~json
+{
+  "content": null,
+  "timestamp": "2026-05-12 22:31:00",
+  "message": "Bad credentials",
+  "status": 401
+}
+~~~
+
+
+### Users
+| Method | Endpoint | Description | Roles Required | Request Body | Return | Common Errors |
+| :--- | :--- |:--- |:---------------|:------------|:------------|:------------|
+| GET | `/api/users` | Fetches all users (supports pagination) | `ADMIN`,`MANAGER` | `NONE` | OK 200 | `NONE` |
+| GET | `/api/users/{id}` | Gets details of a specific user | `ADMIN`,`MANAGER` | `NONE` | OK 200 | 404 (Not Found) |
+| POST | `/api/users` | Register a new user with roles | `ADMIN`,`MANAGER` | `username`, `password`, `email`, `roles` | CREATED 201 | 400 (Validation), 409 (Conflict) |
+| PUT | `/api/users/{id}` | Updates a specific user | `ADMIN`,`MANAGER` | `username`, `password`, `email`, `roles` | OK 200 | 400 (Validation), 404 (Not Found) |
+| DELETE | `/api/users/{id}` | **Soft deletes** a specific user | `ADMIN` | `NONE` | NO_CONTENT 204 | 404 (Not Found) |
 
 ### Branches
-| Method | Endpoint | Description | Roles Required | Return      |
-| :--- | :--- |:--- |:---------------|:------------| 
-| GET | `/api/branches` | Fetches all active branches (supports pagination) | `NONE`           | OK 200      |
-| GET | `/api/branches/{id}` | Gets details of a specific active branch   | `NONE`           | OK 200      |
-| POST | `/api/branches` | Register a new branch with **name**, **address** and **phoneNumber**  | `ADMIN`         | CREATED 201 |
-| PUT | `/api/branches/{id}` | Updates a specific active branch with a **name**, **address** and **phoneNumber** |  `ADMIN`    |  OK 200     |
-| DELETE | `/api/branches/{id}` | **Soft deletes** a specific active branch  |  `ADMIN`   | NO_CONTENT 204 |
+| Method | Endpoint | Description | Roles Required | Request Body | Return | Common Errors |
+| :--- | :--- |:--- |:---------------|:------------|:------------|:------------|
+| GET | `/api/branches` | Fetches all active branches (supports pagination) | `ANY`           | `NONE` | OK 200 | `NONE` |
+| GET | `/api/branches/{id}` | Gets details of a specific active branch   | `ANY`           | `NONE` | OK 200 | 404 (Not Found) |
+| POST | `/api/branches` | Register a new branch | `ADMIN`         | `name`, `address`, `phoneNumber` | CREATED 201 | 400 (Validation) |
+| PUT | `/api/branches/{id}` | Updates a specific active branch |  `ADMIN`    | `name`, `address`, `phoneNumber` | OK 200 | 400 (Validation), 404 (Not Found) |
+| DELETE | `/api/branches/{id}` | **Soft deletes** a specific active branch  |  `ADMIN`   | `NONE` | NO_CONTENT 204 | 404 (Not Found) |
 
-#### Example JSON Requests/Responses
-- POST Body Request:
-~~~json
-{
-  "name": "Walmart",
-  "address": "Washington 3330",
-  "phoneNumber": "123456789"
-}
-~~~
-- POST Success Body Response:
-~~~json
-{
-  "content": {
-    "id": 1,
-    "name": "Walmart",
-    "address": "Washington 3330",
-    "phoneNumber": "123456789"
-  },
-  "timestamp": "2026-04-22T12:00:00.000+00:00",
-  "message": "Branch created successfully",
-  "status": 201
-}
-~~~
-
-| Method | Endpoint             | Description                                                                            | Roles Required    | Return      |
-| :--- |:---------------------|:---------------------------------------------------------------------------------------|:------------------|:------------| 
-| GET | `/api/products`      | Fetches all active products (supports pagination)                                      | `NONE`            | OK 200      |
-| GET | `/api/products/{id}` | Gets details of a specific active product                                              | `NONE`            | OK 200      |
-| POST | `/api/products`      | Register a new product with **name**, **category** and an **actualPrice**              | `ADMIN`,`MANAGER` | CREATED 201 |
-| PUT | `/api/products/{id}` | Updates a specific active product with a **name**, **category** and an **actualPrice** | `ADMIN`,`MANAGER` |  OK 200     |
-| DELETE | `/api/products/{id}` | **Soft deletes** a specific active product                                             | `ADMIN`,`MANAGER` | NO_CONTENT 204 |
-
-#### Example JSON Requests/Responses
-- POST Body Request:
-~~~json
-{
-  "name": "Organic Milk",
-  "category": "Dairy",
-  "actualPrice": 4.50
-}
-~~~
-- POST Success Body Response:
-~~~json
-{
-  "content": {
-    "id": 1,
-    "name": "Organic Milk",
-    "category": "Dairy",
-    "actualPrice": 4.50
-  },
-  "timestamp": "2026-04-22T12:00:00.000+00:00",
-  "message": "Product created successfully",
-  "status": 201
-}
-~~~
+### Products
+| Method | Endpoint             | Description                                                                            | Roles Required    | Request Body | Return | Common Errors |
+| :--- | :--- |:---------------------|:------------------|:------------|:------------|:------------|
+| GET | `/api/products`      | Fetches all active products (supports pagination)                                      | `ANY`            | `NONE` | OK 200 | `NONE` |
+| GET | `/api/products/{id}` | Gets details of a specific active product                                              | `ANY`            | `NONE` | OK 200 | 404 (Not Found) |
+| POST | `/api/products`      | Register a new product | `ADMIN`,`MANAGER` | `name`, `category`, `actualPrice` | CREATED 201 | 400 (Validation) |
+| PUT | `/api/products/{id}` | Updates a specific active product | `ADMIN`,`MANAGER` | `name`, `category`, `actualPrice` | OK 200 | 400 (Validation), 404 (Not Found) |
+| DELETE | `/api/products/{id}` | **Soft deletes** a specific active product                                             | `ADMIN`,`MANAGER` | `NONE` | NO_CONTENT 204 | 404 (Not Found) |
 
 ### Sales
-| Method | Endpoint          | Description                                                                                                                                        | Roles Required              | Return      |
-| :--- |:------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------|:------------| 
-| GET | `/api/sales`      | Fetches all active sales (supports pagination and search filtering by **branchId** and **date**)                                              | `NONE`                      | OK 200      |
-| GET | `/api/sales/{id}` | Gets details of a specific active sale                                                                                                             | `NONE`                      | OK 200      |
-| POST | `/api/sales`      | Register a new sale with an active **branchId** and a **list of detail sales**. Each detail sale includes **quantity** and an active **productId** | `ADMIN`,`MANAGER`,`CASHIER` | CREATED 201 |
-| DELETE | `/api/sales/{id}` | **Soft deletes** a specific active sale                                                                                                            | `ADMIN`,`MANAGER`,`CASHIER`          | NO_CONTENT 204 |
+| Method | Endpoint          | Description                                                                                                                                        | Roles Required              | Request Body | Return | Common Errors |
+| :--- | :--- |:------------------|:----------------------------|:------------|:------------|:------------|
+| GET | `/api/sales`      | Fetches all active sales (supports pagination and search filtering) | `ADMIN`,`MANAGER`,`CASHIER` | `NONE` | OK 200 | `NONE` |
+| GET | `/api/sales/{id}` | Gets details of a specific active sale                                                                                                             | `ADMIN`,`MANAGER`,`CASHIER` | `NONE` | OK 200 | 404 (Not Found) |
+| POST | `/api/sales`      | Register a new sale | `ADMIN`,`MANAGER`,`CASHIER` | `branchId`, `detailSaleRequestDtoList` | CREATED 201 | 400 (Validation), 404 (Not Found) |
+| DELETE | `/api/sales/{id}` | **Soft deletes** a specific active sale                                                                                                            | `ADMIN`,`MANAGER`          | `NONE` | NO_CONTENT 204 | 404 (Not Found) |
 #### Example JSON Requests/Responses
 - POST Body Request:
 ~~~json
@@ -213,13 +235,13 @@ For testing purposes, the pre-seeded users are:
 ~~~json
 {
   "content": {
-    "first": {
+    "product": {
       "id": 1,
       "name": "Organic Milk",
       "category": "Dairy",
       "actualPrice": 4.50
     },
-    "second": 27.0
+    "totalRevenue": 27.0
   },
   "timestamp": "2026-04-22T12:00:00.000+00:00",
   "message": "Get best selling product successfully",
