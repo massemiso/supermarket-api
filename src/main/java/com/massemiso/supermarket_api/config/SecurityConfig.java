@@ -34,7 +34,6 @@ public class SecurityConfig {
       (HttpSecurity httpSecurity) throws Exception {
     return httpSecurity
         .csrf(AbstractHttpConfigurer::disable)
-//        .httpBasic(Customizer.withDefaults())
         .sessionManagement(
             session
                 -> session
@@ -42,15 +41,21 @@ public class SecurityConfig {
         .exceptionHandling(ex -> ex
             .authenticationEntryPoint(new GlobalHandlerException()))
         .authorizeHttpRequests(auth -> {
-          // public
-//          auth.requestMatchers(HttpMethod.GET,"/api/branches/**").permitAll();
-//          auth.requestMatchers(HttpMethod.GET,"/api/products/**").permitAll();
-//          auth.requestMatchers(HttpMethod.GET,"/api/sales/**").permitAll();
 
-          // auth infrastructure
-          auth.requestMatchers("/api/auth/**", "/h2-console/**").permitAll();
+          // auth login & register
+          auth.requestMatchers("/api/auth/**").permitAll();
 
-          // everything else be authenticated by default
+          // h2-console
+          auth.requestMatchers("/h2-console/**").permitAll();
+
+          // swagger-ui
+          auth.requestMatchers(
+              "/v3/api-docs/**",
+              "/swagger-ui/**",
+              "/swagger-ui.html"
+          ).permitAll();
+
+          // everything else need to be authenticated by default
           auth.anyRequest().authenticated();
         })
         .headers(headers -> headers
