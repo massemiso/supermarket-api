@@ -63,7 +63,7 @@ class AuthControllerTest extends BaseIntegrationTest {
         .body("content.status", is(true))
         .body("timestamp", notNullValue())
         .body("timestamp", containsString(LocalDate.now().toString()))
-        .body("message", is("Login successfull"))
+        .body("message", is("Login successful"))
         .body("status", is(HttpStatus.OK.value()));
   }
 
@@ -166,7 +166,7 @@ class AuthControllerTest extends BaseIntegrationTest {
         .body("content.status", is(true))
         .body("timestamp", notNullValue())
         .body("timestamp", containsString(LocalDate.now().toString()))
-        .body("message", is("Registration successfull"))
+        .body("message", is("Registration successful"))
         .body("status", is(HttpStatus.CREATED.value()));
   }
 

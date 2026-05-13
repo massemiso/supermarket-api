@@ -129,7 +129,7 @@ For testing purposes, the pre-seeded users are:
     "status": true
   },
   "timestamp": "2026-05-12 22:30:00",
-  "message": "Login successfull",
+  "message": "Login successful",
   "status": 200
 }
 ~~~

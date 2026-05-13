@@ -6,6 +6,7 @@ import com.massemiso.supermarket_api.dto.AuthRequestDto;
 import com.massemiso.supermarket_api.dto.AuthResponseDto;
 import com.massemiso.supermarket_api.dto.UserResponseDto;
 import com.massemiso.supermarket_api.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class AuthController {
   ){
     ApiResponse<AuthResponseDto> apiResponse = ApiResponse.success(
         userService.login(authRequestDto),
-        "Login successfull",
+        "Login successful",
         HttpStatus.OK.value()
     );
    return ResponseEntity.ok(apiResponse);
@@ -43,7 +44,7 @@ public class AuthController {
   ){
     ApiResponse<AuthResponseDto> apiResponse = ApiResponse.success(
         userService.register(requestDto),
-        "Registration successfull",
+        "Registration successful",
         HttpStatus.CREATED.value()
     );
     return ResponseEntity
