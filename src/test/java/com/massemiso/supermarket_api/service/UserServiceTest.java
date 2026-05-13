@@ -21,6 +21,7 @@ import com.massemiso.supermarket_api.dto.mapper.UserMapper;
 import com.massemiso.supermarket_api.entity.RoleEntity;
 import com.massemiso.supermarket_api.entity.RoleEnum;
 import com.massemiso.supermarket_api.entity.UserEntity;
+import com.massemiso.supermarket_api.exception.UserAlreadyExists;
 import com.massemiso.supermarket_api.exception.UserNotFoundException;
 import com.massemiso.supermarket_api.repository.RoleRepository;
 import com.massemiso.supermarket_api.repository.UserRepository;
@@ -212,6 +213,8 @@ class UserServiceTest {
     String passwordEncoded = "password_super_protected";
 
     // mock
+    when(userRepository.findByUsername(requestDto.username()))
+        .thenReturn(Optional.empty());
     when(roleRepository.findByRoleEnum(roleEnum))
         .thenReturn(Optional.of(roleEntity));
     when(passwordEncoder.encode(requestDto.password()))
@@ -239,6 +242,7 @@ class UserServiceTest {
         .isNotNull()
         .hasSize(entity.getRoles().size());
 
+    verify(userRepository).findByUsername(requestDto.username());
     verify(roleRepository).findByRoleEnum(roleEnum);
     verify(passwordEncoder).encode(requestDto.password());
     verify(userMapper).toEntity(roles, requestDto, passwordEncoded);
@@ -263,6 +267,8 @@ class UserServiceTest {
     String passwordEncoded = "password_super_protected";
 
     // mock
+    when(userRepository.findByUsername(requestDto.username()))
+        .thenReturn(Optional.empty());
     when(roleRepository.findByRoleEnum(roleEnum))
         .thenReturn(Optional.empty());
     when(roleRepository.save(any(RoleEntity.class)))
@@ -292,12 +298,38 @@ class UserServiceTest {
         .isNotNull()
         .hasSize(entity.getRoles().size());
 
+    verify(userRepository).findByUsername(requestDto.username());
     verify(roleRepository).findByRoleEnum(roleEnum);
     verify(roleRepository).save(any(RoleEntity.class));
     verify(passwordEncoder).encode(requestDto.password());
     verify(userMapper).toEntity(roles, requestDto, passwordEncoded);
     verify(userRepository).save(entity);
     verify(userMapper).toDto(entity);
+  }
+
+  @Test
+  void create_GivenUserThatAlreadyExists_ShouldThrowUserAlreadyExists() {
+    // arrange
+    UserRequestDto requestDto =
+        TestDataFactory.createDefaultUserRequestDto();
+    UserEntity entity = TestDataFactory.createDefaultUserEntity();
+
+    // mock
+    when(userRepository.findByUsername(requestDto.username()))
+        .thenReturn(Optional.of(entity));
+
+    // act & assert
+    assertThrows(UserAlreadyExists.class,
+        () -> userService.create(requestDto)
+    );
+
+    // assert
+    verify(userRepository).findByUsername(requestDto.username());
+    verify(roleRepository, never()).findByRoleEnum(any(RoleEnum.class));
+    verify(passwordEncoder, never()).encode(anyString());
+    verify(userMapper, never()).toEntity(any(), any(UserRequestDto.class), anyString());
+    verify(userRepository, never()).save(any(UserEntity.class));
+    verify(userMapper, never()).toDto(any(UserEntity.class));
   }
 
   @Test

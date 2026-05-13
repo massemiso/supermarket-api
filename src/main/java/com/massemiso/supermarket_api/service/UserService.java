@@ -87,6 +87,9 @@ public class UserService implements UserDetailsService {
 
   @Transactional
   public UserResponseDto create(UserRequestDto requestDto) {
+    if (userRepository.findByUsername(requestDto.username()).isPresent()){
+      throw new UserAlreadyExists(requestDto.username());
+    }
     Set<RoleEntity> roles = requestDto.roles()
         .stream()
         .map(this::findOrCreateRole)
@@ -139,9 +142,6 @@ public class UserService implements UserDetailsService {
 
   @Transactional
   public AuthResponseDto register(AuthRegisterRequestDto requestDto) {
-    if (userRepository.findByUsername(requestDto.username()).isPresent()){
-      throw new UserAlreadyExists(requestDto.username());
-    }
     UserRequestDto userRequestDto = new UserRequestDto(
         requestDto.username(),
         requestDto.password(),

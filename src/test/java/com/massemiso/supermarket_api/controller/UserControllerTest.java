@@ -224,6 +224,32 @@ class UserControllerTest extends BaseIntegrationTest {
   }
 
   @Test
+  void create_GivenUserAlreadyExists_ShouldReturn409Conflict() {
+    UserRequestDto requestDto = new UserRequestDto(
+        CASHIER_USERNAME,
+        "password123",
+        "newUser@example.com",
+        Set.of(RoleEnum.CASHIER)
+    );
+
+    given()
+        .header(HttpHeaders.AUTHORIZATION, adminAuthHeader)
+        .contentType(ContentType.JSON)
+        .body(requestDto)
+    .when()
+        .post()
+    .then()
+        .statusCode(HttpStatus.CONFLICT.value())
+        .body("content", nullValue())
+        .body("timestamp", notNullValue())
+        .body("timestamp", containsString(LocalDate.now().toString()))
+        .body("message", notNullValue())
+        .body("message",
+            is("User with username '" + requestDto.username() + "' already exists."))
+        .body("status", is(HttpStatus.CONFLICT.value()));
+  }
+
+  @Test
   void create_GivenUserNotAuthenticated_ShouldReturn401Unauthorized(){
     UserRequestDto requestDto = new UserRequestDto(
         "newUser",

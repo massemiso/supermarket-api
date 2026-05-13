@@ -130,8 +130,8 @@ public class UserController {
       content = @Content
   )
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
-      responseCode = "403",
-      description = "Not authorized",
+      responseCode = "409",
+      description = "User already exists",
       content = @Content
   )
   @PostMapping
