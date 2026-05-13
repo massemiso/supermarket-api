@@ -42,6 +42,36 @@ class UserMapperTest {
   }
 
   @Test
+  void toEntity_GivenValidAuthRegisterRequestDto_ShouldReturnUserEntity() {
+    //given
+    UserMapper userMapper = new UserMapper();
+    Set<RoleEntity> roles = Set.of(TestDataFactory.createDefaultRoleEntity());
+    UserRequestDto userDto = TestDataFactory.createDefaultUserRequestDto();
+    AuthRegisterRequestDto requestDto = new AuthRegisterRequestDto(
+        userDto.username(),
+        userDto.password(),
+        userDto.email()
+    );
+    String passwordEncoded = new BCryptPasswordEncoder().encode(requestDto.password());
+
+    //when
+    UserEntity entity = userMapper.toEntity(roles, requestDto, passwordEncoded);
+
+    //then
+    assertNotNull(entity);
+    assertEquals(requestDto.username(), entity.getUsername());
+    assertEquals(passwordEncoded, entity.getPassword());
+    assertEquals(requestDto.email(), entity.getEmail());
+    assertTrue(entity.getAccountNonExpired());
+    assertTrue(entity.getAccountNonLocked());
+    assertTrue(entity.getCredentialsNonExpired());
+    assertThat(entity.getRoles())
+        .isNotNull()
+        .hasSize(roles.size())
+        .containsExactlyElementsOf(roles);
+  }
+
+  @Test
   void toDto_GivenValidUserEntity_ShouldReturnUserResponseDto() {
     //given
     UserMapper userMapper = new UserMapper();
