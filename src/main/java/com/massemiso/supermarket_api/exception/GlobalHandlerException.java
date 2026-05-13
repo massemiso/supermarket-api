@@ -25,52 +25,115 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @ControllerAdvice
 public class GlobalHandlerException implements AuthenticationEntryPoint {
 
-  private ResponseEntity<ApiResponse<Void>> handleNotFoundException(Exception e) {
-    log.warn("RESOURCE: {}", e.getMessage());
+  // Authentication exceptions
+  @Override
+  public void commence(HttpServletRequest request, HttpServletResponse response,
+      AuthenticationException authenticationException) throws IOException, ServletException {
     ApiResponse<Void> apiResponse = ApiResponse.error(
-        e.getMessage(),
-        HttpStatus.NOT_FOUND.value()
+        "Authentication is required to perform a " + request.getMethod()
+            + " on " + request.getRequestURI(),
+        HttpStatus.UNAUTHORIZED.value()
     );
-    return ResponseEntity
-        .status(HttpStatus.NOT_FOUND)
-        .body(apiResponse);
+
+    String ipAddress = request.getRemoteAddr();
+    String userAgent = request.getHeader("User-Agent");
+    log.warn("401 UNAUTHORIZED: User [IP {}, Agent {}] tried to make a {} on {}"
+        , ipAddress, userAgent, request.getMethod(), request.getRequestURI());
+
+    response.setContentType("application/json");
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new JavaTimeModule());
+    response.getWriter().write(mapper.writeValueAsString(apiResponse));
   }
 
+  // Authorization exceptions
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(HttpServletRequest request) {
+    String apiMsg = "You do not have the required permissions to perform a "
+        + request.getMethod() + " on " + request.getRequestURI();
+    String logMsg = "403 FORBIDDEN: User '" + request.getRemoteUser() + "'"
+        + " doesn't have the required permissions to perform a " + request.getMethod() + " on "
+        + request.getRequestURI();
+    return handleExceptionsHelper(
+        apiMsg,
+        HttpStatus.FORBIDDEN,
+        logMsg,
+        "WARN");
+  }
+
+  // General exception handler
   @ExceptionHandler(Exception.class)
   ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
-    log.error("Unexpected error occurred: ", e);
-    ApiResponse<Void> apiResponse = ApiResponse.error(
+    return handleExceptionsHelper(
         e.getMessage(),
-        HttpStatus.INTERNAL_SERVER_ERROR.value()
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "Unexpected error occurred: " + e.getMessage(),
+        "ERROR");
+  }
+
+  // Helper method for handling many similar exceptions
+  private ResponseEntity<ApiResponse<Void>> handleExceptionsHelper
+      (String apiMsg, HttpStatus status, String logMsg, String logType){
+    switch (logType){
+      case "WARN":
+        log.warn(logMsg);
+        break;
+      case "ERROR":
+        log.error(logMsg);
+        break;
+    }
+    ApiResponse<Void> apiResponse = ApiResponse.error(
+        apiMsg,
+        status.value()
     );
     return ResponseEntity
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .status(status)
         .body(apiResponse);
   }
 
+  @ExceptionHandler(BadCredentialsException.class)
+  ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException e) {
+    return handleExceptionsHelper(
+        e.getMessage(),
+        HttpStatus.UNAUTHORIZED,
+        "401 UNAUTHORIZED: " + e.getMessage(),
+        "WARN");
+  }
+
+  @ExceptionHandler(UserAlreadyExists.class)
+  ResponseEntity<ApiResponse<Void>> handleUserAlreadyExists(UserAlreadyExists e) {
+    return handleExceptionsHelper(
+        e.getMessage(),
+        HttpStatus.CONFLICT,
+        "409 CONFLICT: " + e.getMessage(),
+        "WARN");
+  }
+
+  // Method argument for validations exceptions
   @ExceptionHandler(MethodArgumentNotValidException.class)
   ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException e) {
-    String errorMessage = "{ " +
+    String apiMsg = "{ " +
         e.getBindingResult().getFieldErrors().stream()
             .map(fieldError -> "[" + fieldError.getField() + "] "
                 + fieldError.getDefaultMessage())
             .collect(Collectors.joining(", "))
         +  " }";
-    log.warn("Parameter Not Valid: {}", errorMessage);
-    ApiResponse<Void> apiResponse = ApiResponse.error(
-        errorMessage,
-        HttpStatus.BAD_REQUEST.value()
-    );
-    return ResponseEntity
-        .status(HttpStatus.BAD_REQUEST)
-        .body(apiResponse);
+    return handleExceptionsHelper(
+        apiMsg,
+        HttpStatus.BAD_REQUEST,
+        "Parameter Not Valid: " + apiMsg,
+        "WARN");
   }
 
-  @ExceptionHandler(NoResourceFoundException.class)
-  public ResponseEntity<Void> handleNoResourceFoundException() {
-    // Just return 404 without logging an ERROR stack trace
-    return ResponseEntity.notFound().build();
+  // Not found exception handler helper
+  private ResponseEntity<ApiResponse<Void>> handleNotFoundException(Exception e) {
+    return handleExceptionsHelper(
+        e.getMessage(),
+        HttpStatus.NOT_FOUND,
+        "RESOURCE: " + e.getMessage(),
+        "WARN");
   }
 
   @ExceptionHandler(ProductNotFoundException.class)
@@ -98,61 +161,11 @@ public class GlobalHandlerException implements AuthenticationEntryPoint {
     return handleNotFoundException(e);
   }
 
-  @ExceptionHandler(BadCredentialsException.class)
-  ResponseEntity<ApiResponse<Void>> handleBadCredentialsException(BadCredentialsException e) {
-    log.warn("401 UNAUTHORIZED: {}", e.getMessage());
-    ApiResponse<Void> apiResponse = ApiResponse.error(
-        e.getMessage(),
-        HttpStatus.UNAUTHORIZED.value()
-    );
-    return ResponseEntity
-        .status(HttpStatus.UNAUTHORIZED)
-        .body(apiResponse);
-  }
-
-  @ExceptionHandler(UserAlreadyExists.class)
-  ResponseEntity<ApiResponse<Void>> handleUserAlreadyExists(UserAlreadyExists e) {
-    log.warn("409 CONFLICT: {}", e.getMessage());
-    ApiResponse<Void> apiResponse = ApiResponse.error(
-        e.getMessage(),
-        HttpStatus.CONFLICT.value()
-    );
-    return ResponseEntity
-        .status(HttpStatus.CONFLICT)
-        .body(apiResponse);
-  }
-
-  @ExceptionHandler(AccessDeniedException.class)
-  public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(HttpServletRequest request) {
-    String errorMessage = "You do not have the required permissions to perform a "
-        + request.getMethod() + " on " + request.getRequestURI();
-    log.warn("403 FORBIDDEN: User '{}' doesn't have the required permissions to perform a {} on {}",
-        request.getRemoteUser(), request.getMethod(), request.getRequestURI());
-    return ResponseEntity
-        .status(HttpStatus.FORBIDDEN)
-        .body(ApiResponse.error(errorMessage, 403));
-  }
-
-  // Catches Authentication exceptions
-  @Override
-  public void commence(HttpServletRequest request, HttpServletResponse response,
-      AuthenticationException authenticationException) throws IOException, ServletException {
-    ApiResponse<Void> apiResponse = ApiResponse.error(
-        "Authentication is required to perform a " + request.getMethod()
-            + " on " + request.getRequestURI(),
-        HttpStatus.UNAUTHORIZED.value()
-    );
-
-    String ipAddress = request.getRemoteAddr();
-    String userAgent = request.getHeader("User-Agent");
-    log.warn("401 UNAUTHORIZED: User [IP {}, Agent {}] tried to make a {} on {}"
-        , ipAddress, userAgent, request.getMethod(), request.getRequestURI());
-
-    response.setContentType("application/json");
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.registerModule(new JavaTimeModule());
-    response.getWriter().write(mapper.writeValueAsString(apiResponse));
+  // No resource found exception handler -> CHECK
+  @ExceptionHandler(NoResourceFoundException.class)
+  public ResponseEntity<Void> handleNoResourceFoundException() {
+    // Just return 404 without logging an ERROR stack trace
+    return ResponseEntity.notFound().build();
   }
 
 }
