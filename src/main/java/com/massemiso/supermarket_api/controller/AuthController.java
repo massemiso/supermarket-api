@@ -6,11 +6,9 @@ import com.massemiso.supermarket_api.dto.AuthRequestDto;
 import com.massemiso.supermarket_api.dto.AuthResponseDto;
 import com.massemiso.supermarket_api.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +41,11 @@ public class AuthController {
       description = "Wrong password" ,
       content = @Content
   )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "400",
+      description = "Parameter not valid" ,
+      content = @Content
+  )
   @PostMapping("/login")
   public ResponseEntity<ApiResponse<AuthResponseDto>> login(
       @Valid @RequestBody AuthRequestDto authRequestDto
@@ -68,6 +71,11 @@ public class AuthController {
   @io.swagger.v3.oas.annotations.responses.ApiResponse(
       responseCode = "409",
       description = "User already exists",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "400",
+      description = "Parameter not valid" ,
       content = @Content
   )
   @PostMapping("/register")
