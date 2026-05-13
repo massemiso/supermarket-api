@@ -72,7 +72,7 @@ public class UserSeeder implements CommandLineRunner {
     );
     userService.create(userRequestDto);
     log.info(roleEnum.name() + " user '" + username
-        + "' with password '" + password + "' created succesfully.");
+        + "' with password '" + password + "' created successfully.");
   }
 
   @Override
