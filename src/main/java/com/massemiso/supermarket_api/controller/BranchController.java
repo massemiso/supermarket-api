@@ -4,11 +4,17 @@ import com.massemiso.supermarket_api.dto.ApiResponse;
 import com.massemiso.supermarket_api.dto.BranchRequestDto;
 import com.massemiso.supermarket_api.dto.BranchResponseDto;
 import com.massemiso.supermarket_api.service.BranchService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.net.URI;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,15 +38,52 @@ public class BranchController {
     this.branchService = branchService;
   }
 
-  // GET ALL
+  @Operation(
+      summary = "Get a page of branches in db, needs authentication"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "200",
+      description = "Get branches successful"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "401",
+      description = "Not authenticated",
+      content = @Content
+  )
   @GetMapping
   public ResponseEntity<Page<BranchResponseDto>> getAll(
+      @ParameterObject
+      @Schema(
+          example = """
+              {
+                "page": 0,
+                "size": 20,
+                "sort": "name,asc"
+              }
+              """
+      )
       Pageable pageable){
     return ResponseEntity.ok(
         branchService.getAll(pageable));
   }
-  
-  // GET
+
+  @Operation(
+      summary = "Get branch by id, needs authentication"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "200",
+      description = "Branch retrieved successfully"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "401",
+      description = "Not authenticated",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "404",
+      description = "Not found branch",
+      content = @Content
+  )
   @GetMapping("/{id}")
   public ResponseEntity<ApiResponse<BranchResponseDto>> getById(
       @PathVariable Long id){
@@ -54,7 +97,28 @@ public class BranchController {
         .ok(apiResponse);
   }
 
-  // POST
+  @Operation(
+      summary = "Create a new branch, needs authentication and ADMIN role"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "201",
+      description = "Branch created successfully"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "400",
+      description = "Parameter not valid",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "401",
+      description = "Not authenticated",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "403",
+      description = "Not authorized",
+      content = @Content
+  )
   @PostMapping
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ApiResponse<BranchResponseDto>> create(
@@ -70,7 +134,33 @@ public class BranchController {
         .body(apiResponse);
   }
 
-  // UPDATE
+  @Operation(
+      summary = "Update an existing branch, needs authentication and ADMIN role"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "200",
+      description = "Branch updated successfully"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "400",
+      description = "Parameter not valid",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "401",
+      description = "Not authenticated",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "403",
+      description = "Not authorized",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "404",
+      description = "Not found branch",
+      content = @Content
+  )
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ApiResponse<BranchResponseDto>> update(
@@ -87,7 +177,28 @@ public class BranchController {
         .ok(apiResponse);
   }
 
-  // DELETE
+  @Operation(
+      summary = "Soft deletes an existing branch, needs authentication and ADMIN role"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "204",
+      description = "Delete successful"
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "401",
+      description = "Not authenticated",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "403",
+      description = "Not authorized",
+      content = @Content
+  )
+  @io.swagger.v3.oas.annotations.responses.ApiResponse(
+      responseCode = "404",
+      description = "Not found branch",
+      content = @Content
+  )
   @DeleteMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ApiResponse<Void>> delete(
