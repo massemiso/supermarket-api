@@ -53,7 +53,7 @@ public abstract class BaseIntegrationTest {
             .numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
     RestAssured.port = port;
     RestAssured.baseURI = "http://localhost";
-    seeder.createUsersIfNotExists();
+    seeder.seedMockUsers();
     this.adminAuthHeader = "Bearer " + getJwtToken(ADMIN_USERNAME, ADMIN_PASSWORD);
     this.managerAuthHeader = "Bearer " +  getJwtToken(MANAGER_USERNAME, MANAGER_PASSWORD);
     this.cashierAuthHeader = "Bearer " + getJwtToken(CASHIER_USERNAME, CASHIER_PASSWORD);

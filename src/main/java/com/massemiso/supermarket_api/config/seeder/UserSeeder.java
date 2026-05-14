@@ -10,17 +10,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!prod")
 @PropertySource("classpath:mock-users.properties")
 @Slf4j
 @Order(1)
 public class UserSeeder implements CommandLineRunner {
+  @Value("${prod.admin.username}")
+  private String PROD_ADMIN_USERNAME;
+  @Value("${prod.admin.password}")
+  private String PROD_ADMIN_PASSWORD;
+  @Value("${prod.admin.email}")
+  private String PROD_ADMIN_EMAIL;
+
   @Value("${user.admin.username}")
   private String ADMIN_USERNAME;
   @Value("${user.admin.password}")
@@ -46,13 +51,41 @@ public class UserSeeder implements CommandLineRunner {
   @Value("${user.guest.email}")
   private String GUEST_EMAIL;
 
+  @Value("${spring.profiles.active:default}")
+  private String activeProfile;
+
   @Autowired
   private UserRepository userRepository;
   @Autowired
   private UserService userService;
 
-  public void createUsersIfNotExists() {
-    log.info("USER_SEEDER: Seeding some mock accounts if needed...");
+  @Override
+  @Transactional
+  public void run(String... args) throws Exception {
+    // ALWAYS seed the admin if it doesn't exist (Essential for Production)
+    if (userRepository.findByUsername(PROD_ADMIN_USERNAME).isEmpty()) {
+      log.info("USER_SEEDER: Bootstrapping system with production Admin...");
+      seedAdmin();
+    }
+
+    // ONLY seed the extra mock accounts if we are NOT in production
+    if (!activeProfile.equals("prod")) {
+      log.info("USER_SEEDER: Development mode detected. Seeding mock users if needed...");
+      seedMockUsers();
+    }
+  }
+
+  private void seedAdmin() {
+    userService.create(new UserRequestDto(
+        PROD_ADMIN_USERNAME,
+        PROD_ADMIN_PASSWORD,
+        PROD_ADMIN_EMAIL,
+        Set.of(RoleEnum.ADMIN)
+    ));
+    log.info("USER_SEEDER: Admin '{}' created successfully.", PROD_ADMIN_USERNAME);
+  }
+
+  public void seedMockUsers() {
     if (userRepository.findByUsername(ADMIN_USERNAME).isEmpty()){
       saveUser(RoleEnum.ADMIN, ADMIN_USERNAME, ADMIN_PASSWORD, ADMIN_EMAIL);
     }
@@ -80,9 +113,4 @@ public class UserSeeder implements CommandLineRunner {
         roleEnum.name(), username, password);
   }
 
-  @Override
-  @Transactional
-  public void run(String... args) throws Exception {
-    createUsersIfNotExists();
-  }
 }
