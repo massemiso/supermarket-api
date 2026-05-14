@@ -64,7 +64,7 @@ public class UserSeeder implements CommandLineRunner {
   public void run(String... args) throws Exception {
     // ALWAYS seed the admin if it doesn't exist (Essential for Production)
     if (userRepository.findByUsername(PROD_ADMIN_USERNAME).isEmpty()) {
-      log.info("USER_SEEDER: Bootstrapping system with production Admin...");
+      log.info("USER_SEEDER: Bootstrapping system with production ADMIN...");
       seedAdmin();
     }
 
@@ -82,7 +82,7 @@ public class UserSeeder implements CommandLineRunner {
         PROD_ADMIN_EMAIL,
         Set.of(RoleEnum.ADMIN)
     ));
-    log.info("USER_SEEDER: Admin '{}' created successfully.", PROD_ADMIN_USERNAME);
+    log.info("USER_SEEDER: ADMIN '{}' created successfully.", PROD_ADMIN_USERNAME);
   }
 
   public void seedMockUsers() {
@@ -109,8 +109,8 @@ public class UserSeeder implements CommandLineRunner {
         Set.of(roleEnum)
     );
     userService.create(userRequestDto);
-    log.info("USER_SEEDER: {} user '{}' with password '{}' created successfully.",
-        roleEnum.name(), username, password);
+    log.info("USER_SEEDER: Mock {} user '{}' with password '{}' created successfully.",
+        roleEnum.name().toUpperCase(), username, password);
   }
 
 }
