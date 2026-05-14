@@ -35,3 +35,6 @@ build/
 ### Log Folder ###
 logs/
 
+### Environment Variables ###
+.env
+
