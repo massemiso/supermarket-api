@@ -4,17 +4,22 @@ import com.massemiso.supermarket_api.dto.UserRequestDto;
 import com.massemiso.supermarket_api.entity.RoleEnum;
 import com.massemiso.supermarket_api.repository.UserRepository;
 import com.massemiso.supermarket_api.service.UserService;
+import jakarta.transaction.Transactional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("!prod")
 @PropertySource("classpath:mock-users.properties")
 @Slf4j
+@Order(1)
 public class UserSeeder implements CommandLineRunner {
   @Value("${user.admin.username}")
   private String ADMIN_USERNAME;
@@ -47,7 +52,7 @@ public class UserSeeder implements CommandLineRunner {
   private UserService userService;
 
   public void createUsersIfNotExists() {
-    log.info("Seeding some mock accounts if needed...");
+    log.info("USER_SEEDER: Seeding some mock accounts if needed...");
     if (userRepository.findByUsername(ADMIN_USERNAME).isEmpty()){
       saveUser(RoleEnum.ADMIN, ADMIN_USERNAME, ADMIN_PASSWORD, ADMIN_EMAIL);
     }
@@ -71,11 +76,12 @@ public class UserSeeder implements CommandLineRunner {
         Set.of(roleEnum)
     );
     userService.create(userRequestDto);
-    log.info(roleEnum.name() + " user '" + username
-        + "' with password '" + password + "' created successfully.");
+    log.info("USER_SEEDER: {} user '{}' with password '{}' created successfully.",
+        roleEnum.name(), username, password);
   }
 
   @Override
+  @Transactional
   public void run(String... args) throws Exception {
     createUsersIfNotExists();
   }

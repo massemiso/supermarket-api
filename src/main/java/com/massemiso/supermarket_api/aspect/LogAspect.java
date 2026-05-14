@@ -23,12 +23,12 @@ public class LogAspect {
   @Pointcut("execution(* com.massemiso.supermarket_api.controller.*.*(..))")
   public void controllerLayerMethods(){}
 
-  @Around("serviceLayerMethods()") // Uses the pointcut defined above
+  @Around("serviceLayerMethods()")
   public Object logServiceActivity(ProceedingJoinPoint joinPoint) throws Throwable {
     String methodName = joinPoint.getSignature().getName();
     Object[] args = joinPoint.getArgs();
 
-    log.info("SERVICE: Attempting method [{}] with arguments: {}",
+    log.debug("SERVICE: Attempting method [{}] with arguments: {}",
         methodName, Arrays.toString(args));
 
     try{
@@ -45,17 +45,17 @@ public class LogAspect {
   private void chooseAndLogServiceMethod(String methodName, Object result) {
     // Custom logic for different method types
     if (methodName.startsWith("getAll")) {
-      // If it's a Page, just log the size
+      // If it's a Page, log the size
       if (result instanceof Page<?> page) {
-        log.info("SERVICE: Method [{}] returned a page with {} elements",
+        log.debug("SERVICE: Method [{}] returned a page with {} elements",
             methodName, page.getNumberOfElements());
       }
     } else if (methodName.startsWith("getById")) {
-      log.info("SERVICE: Method [{}] executed successfully", methodName);
+      log.debug("SERVICE: Method [{}] executed successfully", methodName);
       // We don't log 'result' here to keep logs clean and secure
     } else {
       // For Create/Update/Delete, we DO want to see the result
-      log.info("SERVICE: Method [{}] completed successfully. Data: {}",
+      log.debug("SERVICE: Method [{}] completed successfully. Data: {}",
           methodName, result);
     }
   }
@@ -83,7 +83,8 @@ public class LogAspect {
       return result;
     } catch(Throwable e){
       duration = System.currentTimeMillis() - start;
-      log.warn("API-FAILED: {} {} | Time: {}ms | Error: {}", httpMethod, requestUri, duration, e.getMessage());
+      log.warn("API-FAILED: {} {} | Time: {}ms | Error: {}"
+          , httpMethod, requestUri, duration, e.getMessage());
       throw e;
     }
   }
