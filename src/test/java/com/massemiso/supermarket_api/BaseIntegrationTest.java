@@ -3,7 +3,7 @@ package com.massemiso.supermarket_api;
 import static io.restassured.RestAssured.given;
 import static io.restassured.config.JsonConfig.jsonConfig;
 
-import com.massemiso.supermarket_api.config.UserSeeder;
+import com.massemiso.supermarket_api.config.seeder.UserSeeder;
 import com.massemiso.supermarket_api.dto.AuthRequestDto;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

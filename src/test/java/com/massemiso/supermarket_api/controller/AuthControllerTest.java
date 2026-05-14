@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import com.massemiso.supermarket_api.BaseIntegrationTest;
-import com.massemiso.supermarket_api.config.UserSeeder;
+import com.massemiso.supermarket_api.config.seeder.UserSeeder;
 import com.massemiso.supermarket_api.dto.AuthRegisterRequestDto;
 import com.massemiso.supermarket_api.dto.AuthRequestDto;
 import com.massemiso.supermarket_api.repository.UserRepository;

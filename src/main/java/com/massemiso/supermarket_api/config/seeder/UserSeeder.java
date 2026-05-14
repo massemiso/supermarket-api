@@ -1,4 +1,4 @@
-package com.massemiso.supermarket_api.config;
+package com.massemiso.supermarket_api.config.seeder;
 
 import com.massemiso.supermarket_api.dto.UserRequestDto;
 import com.massemiso.supermarket_api.entity.RoleEnum;
