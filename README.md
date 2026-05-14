@@ -19,7 +19,7 @@ demonstrate skills in Java and Spring Boot.
 ## Domain Model
 Below is the class diagram representing the core entities and their relationships.
 
-![Class Diagram](uml/class-diagram.png)
+![Class Diagram](docs/class-diagram.png)
 
 ## Stack
 - Java 21+
@@ -57,62 +57,80 @@ This project follows a testing pyramid:
   reliability (DTOs and Configs excluded for meaningful metrics).
 
 ## Getting Started
+
 ### Prerequisites
 - JDK 21
-- Docker
-- Docker Compose
+- Docker & Docker Compose
 
-### Installation
-1. Clone the repository
-~~~bash
-git clone https://github.com/massemiso/supermarket-api.git
-~~~
-2. Navigate to the folder and install dependencies with the maven wrapper
-   included.
-~~~bash
-cd supermarket-api
-./mvnw clean package
-~~~
-3. Build and run the docker compose
-~~~bash
-docker compose up --build
-~~~
-_This starts the Spring Boot app and a dedicated PostgreSQL 15 container._
+### Installation & Deployment
 
-## API Documentation
-## Configuration
-The application can be configured using environment variables. This is especially important for security settings in production.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/massemiso/supermarket-api.git
+   cd supermarket-api
+   ```
 
-| Variable | Description                                      | Default (Local) |
-| :--- |:-------------------------------------------------| :--- |
-| `SPRING_DATASOURCE_URL` | JDBC URL for the db, useful in local development | `jdbc:h2:mem:supermarket-db` |
-| `JWT_PRIVATE_KEY` | Secret key for signing JWT tokens                | `f043c350d733...` |
-| `JWT_USER_GENERATOR` | Issuer name for the JWT token                    | `AUTH0-JWT-BACKEND` |
-| `JWT_TOKEN_TIME` | Token expiration time in milliseconds            | `1800000` (30 min) |
+2. **Configure Environment Variables**
+   The application requires several environment variables to run securely. Create a `.env` file in the root directory:
+   ```bash
+   cp .env.example .env
+   ```
+   Open `.env` and configure your database credentials and JWT secret. 
+
+3. **Build the application**
+   ```bash
+   ./mvnw clean package -DskipTests
+   ```
+
+4. **Run with Docker Compose**
+   ```bash
+   docker compose up --build -d
+   ```
+   _This starts the Spring Boot app and a persistent PostgreSQL 15 container. The database data is stored in a Docker volume._
+
+## Execution Modes
+
+The application behavior changes significantly based on the `SPRING_PROFILES_ACTIVE` variable in your `.env`.
+
+###  Development & Demo (Default)
+**Best for:** Exploring features, running automated tests, or quick demos.
+- **How-To:** Set `SPRING_PROFILES_ACTIVE=default` in `.env` or just don't create a `.env` file.
+- **Database:** Uses H2 in-memory (or PostgreSQL if Docker is up).
+- **Seeding:** Automatically populates the DB with mock branches, products, and sales.
+- **Pre-seeded Users:**
+    - `admin`, `manager`, `cashier`, `guest` (Passwords: `see below on API Documentation`).
+- **Access:** Test all permission levels immediately via Swagger at `http://localhost:8080/swagger-ui/index.html`.
+
+### Production (Secure)
+**Best for:** Real-world deployment or a clean "production-like" test.
+- **How-To:** Set `SPRING_PROFILES_ACTIVE=prod` in `.env`.
+- **Database:** Connects to PostgreSQL.
+- **Seeding:** No mock data is generated.
+- **Security:** **Only one** admin user is created using the `PROD_ADMIN_USERNAME/PASSWORD` from your `.env`.
+- **Note:** You must manually set up your branches and products after logging in as the Admin.
+
+## Swagger UI
+Once the application is running, you can access the interactive Swagger UI at:
+`http://localhost:8080/swagger-ui/index.html`
+
+![Swagger UI Example](docs/swaggerui.png)
 
 ## API Documentation
 
 ### Authentication & Security
-The API is secured using **JWT (JSON Web Tokens)**. To access protected endpoints, you must first authenticate via the `/api/auth/login` endpoint to receive a token, which should then be included in the `Authorization` header as a `Bearer` token.
+The API is secured using **JWT (JSON Web Tokens)**. To access protected endpoints, you must include the token in the `Authorization` header as a `Bearer` token.
 
-By default **ALL** endpoints are protected and require a valid token, excluding auth endpoints and test endpoints such as:
-- `/api/auth/login`
-- `/api/auth/register`
-- `/h2-console`
-- `/swagger-ui`
+**Pre-seeded Users (Development Mode Only):**
 
-Unauthenticated requests will return a `401 Unauthorized`, and authenticated requests without the proper roles will return a standard `403 Forbidden` API response.
-
-For testing purposes, the pre-seeded users are:
-
-| Username | Password     | Role |
-| :--- |:-------------| :--- |
-| `admin` | `admin123`   | ADMIN |
+| Username | Password | Role |
+| :--- | :--- | :--- |
+| `admin` | `admin123` | ADMIN |
 | `manager` | `manager123` | MANAGER |
 | `cashier` | `cashier123` | CASHIER |
 | `guest` | `guest123` | GUEST |
 
-### Auth
+*Note: In production mode, use the credentials defined in your `.env` file.*
+
 | Method | Endpoint | Description | Roles Required | Request Body | Return | Common Errors                                            |
 | :--- | :--- |:--- |:---------------|:------------|:------------|:---------------------------------------------------------|
 | POST | `/api/auth/login` | Authenticate and get a JWT token | `NONE` | `username`, `password` | OK 200 | 401 (Bad Credentials), 400 (Validation), 404 (Not Found) |
@@ -252,9 +270,5 @@ For testing purposes, the pre-seeded users are:
   "timestamp": "2026-04-22T12:00:00.000+00:00",
   "message": "Get best selling product successfully",
   "status": 200
-}
-~~~
-
-### SwaggerUI
-Once the application is running, you can access the interactive Swagger UI at:
-`http://localhost:8080/swagger-ui.html`
+  }
+  ~~~
