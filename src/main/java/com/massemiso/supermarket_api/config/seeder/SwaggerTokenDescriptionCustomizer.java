@@ -64,8 +64,8 @@ public class SwaggerTokenDescriptionCustomizer implements OpenApiCustomizer {
     log.info("SWAGGER: Refreshing pre-generated test tokens...");
     StringBuilder sb = new StringBuilder();
     sb.append("\n\n---\n\n## Test Tokens (Refreshed every 30m)\n\n")
-        .append("Use these tokens to authorize requests.")
-        .append("Copy the entire line and paste it into the **Authorize** dialog.")
+        .append("Use these tokens to authorize requests. ")
+        .append("Copy the entire line and paste it into the **Authorize** dialog. ")
         .append("If a token expires, refresh the page.\n\n");
 
     appendToken(sb, "ADMIN", adminUsername);
