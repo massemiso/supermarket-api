@@ -33,6 +33,7 @@
     <rest-assured.version>6.0.0</rest-assured.version>
     <jacoco.version>0.8.11</jacoco.version>
     <java-jwt.version>4.5.0</java-jwt.version>
+    <mapstruct.version>1.6.3</mapstruct.version>
 	</properties>
 
 	<dependencies>
@@ -108,6 +109,12 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${mapstruct.version}</version>
     </dependency>
 
     <!-- Source: https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
@@ -194,6 +201,24 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </path>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstruct.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
 
