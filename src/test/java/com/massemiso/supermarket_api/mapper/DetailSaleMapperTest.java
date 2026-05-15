@@ -13,11 +13,10 @@ import com.massemiso.supermarket_api.util.TestDataFactory;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class DetailSaleMapperTest {
-  private final DetailSaleMapper mapper = Mappers.getMapper(DetailSaleMapper.class);
+  private final DetailSaleMapper mapper = DetailSaleMapper.INSTANCE;
 
   @Test
   void toDto_GivenValidDetailSale_ShouldReturnCorrectDetailSaleResponseDto() {

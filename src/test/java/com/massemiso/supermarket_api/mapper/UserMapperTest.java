@@ -14,12 +14,11 @@ import com.massemiso.supermarket_api.util.TestDataFactory;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 class UserMapperTest {
 
-  private final UserMapper mapper = Mappers.getMapper(UserMapper.class);
+  private final UserMapper mapper = UserMapper.INSTANCE;
 
   @Test
   void toEntity_GivenValidUserRequestDto_ShouldReturnUserEntity() {

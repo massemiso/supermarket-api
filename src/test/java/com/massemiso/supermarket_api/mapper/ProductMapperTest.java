@@ -11,11 +11,10 @@ import com.massemiso.supermarket_api.entity.Product;
 import com.massemiso.supermarket_api.util.TestDataFactory;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class ProductMapperTest {
-  private final ProductMapper mapper = Mappers.getMapper(ProductMapper.class);
+  private final ProductMapper mapper = ProductMapper.INSTANCE;
 
   @Test
   void toDto_GivenValidProduct_ShouldReturnCorrectProductResponseDto() {

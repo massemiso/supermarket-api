@@ -8,9 +8,11 @@ import com.massemiso.supermarket_api.entity.Sale;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface SaleMapper {
+  SaleMapper INSTANCE = Mappers.getMapper(SaleMapper.class);
 
   @Mapping(target = "detailSaleList", source = "detailSaleResponseDtoList")
   @Mapping(target = "branchId", source = "entity.branch.id")

@@ -9,11 +9,10 @@ import com.massemiso.supermarket_api.dto.BranchResponseDto;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class BranchMapperTest {
-  private final BranchMapper mapper = Mappers.getMapper(BranchMapper.class);
+  private final BranchMapper mapper = BranchMapper.INSTANCE;
 
   @Test
   void toDto_GivenABranch_ShouldReturnABranchResponseDto() {

@@ -7,9 +7,11 @@ import com.massemiso.supermarket_api.entity.Product;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface DetailSaleMapper {
+  DetailSaleMapper INSTANCE = Mappers.getMapper(DetailSaleMapper.class);
 
   @Mapping(target = "productId", source = "product.id")
   public DetailSaleResponseDto toDto(DetailSale entity);

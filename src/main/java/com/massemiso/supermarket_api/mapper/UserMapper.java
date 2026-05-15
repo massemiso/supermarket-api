@@ -9,9 +9,11 @@ import com.massemiso.supermarket_api.entity.UserEntity;
 import java.util.Set;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+  UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
   @Mapping(target = "roles", source = "roles")
   @Mapping(target = "password", source = "passwordEncoded")

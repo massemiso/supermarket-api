@@ -17,11 +17,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class SaleMapperTest {
-  private final SaleMapper mapper = Mappers.getMapper(SaleMapper.class);
+  private final SaleMapper mapper = SaleMapper.INSTANCE;
 
   @Test
   void toDto_GivenAValidSaleAndAListOfDetailSaleResponseDto_ShouldReturnCorrectSaleResponseDto() {
