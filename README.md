@@ -32,7 +32,7 @@ Below is the class diagram representing the core entities and their relationship
 - Testcontainers
 - REST Assured
 - Docker & Docker Compose
-- Lombok & Manual DTO Mapping
+- Lombok & DTO Mapping using MapStruct
 
 ## Project Structure
 ~~~
@@ -40,11 +40,13 @@ src/main/java/com/massemiso/supermarket_api/
 ├── aspect/        # Aspect-Oriented Programming (Logging)
 ├── config/        # JPA Auditing, Web, Security & JWT filters
 ├── controller/    # REST Endpoints with @Valid and @PreAuthorize
-├── dto/           # Records for immutable data transfer & Mappers
+├── dto/           # Records for immutable data transfer 
 ├── entity/        # JPA Models with @MappedSuperclass for Soft Delete
 ├── exception/     # Custom exceptions & @ControllerAdvice handler
+├── mapper/        # Mapper Classes with MapStruct
 ├── repository/    # Data Access Layer (Native Queries & Projections)
 ├── service/       # Business Logic with @Transactional boundaries
+├── util/          # Utilities used in other packages
 └── SupermarketApplication.java      # Main application class
 ~~~
 
