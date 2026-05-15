@@ -1,4 +1,4 @@
-package com.massemiso.supermarket_api.dto.mapper;
+package com.massemiso.supermarket_api.mapper;
 
 import com.massemiso.supermarket_api.dto.DetailSaleResponseDto;
 import com.massemiso.supermarket_api.dto.SaleResponseDto;

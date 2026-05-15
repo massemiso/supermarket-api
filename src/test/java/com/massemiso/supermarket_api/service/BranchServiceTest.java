@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.massemiso.supermarket_api.dto.BranchRequestDto;
 import com.massemiso.supermarket_api.dto.BranchResponseDto;
-import com.massemiso.supermarket_api.dto.mapper.BranchMapper;
+import com.massemiso.supermarket_api.mapper.BranchMapper;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.exception.BranchNotFoundException;
 import com.massemiso.supermarket_api.repository.BranchRepository;

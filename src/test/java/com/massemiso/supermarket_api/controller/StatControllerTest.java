@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 import com.massemiso.supermarket_api.BaseIntegrationTest;
 import com.massemiso.supermarket_api.dto.BestSellerResponseDto;
-import com.massemiso.supermarket_api.dto.mapper.ProductMapper;
+import com.massemiso.supermarket_api.mapper.ProductMapper;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Product;

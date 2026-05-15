@@ -1,10 +1,11 @@
-package com.massemiso.supermarket_api.dto;
+package com.massemiso.supermarket_api.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.massemiso.supermarket_api.dto.mapper.BranchMapper;
+import com.massemiso.supermarket_api.dto.BranchRequestDto;
+import com.massemiso.supermarket_api.dto.BranchResponseDto;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.util.TestDataFactory;
 import org.junit.jupiter.api.Test;

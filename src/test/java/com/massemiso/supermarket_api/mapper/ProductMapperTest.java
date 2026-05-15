@@ -1,11 +1,12 @@
-package com.massemiso.supermarket_api.dto;
+package com.massemiso.supermarket_api.mapper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.massemiso.supermarket_api.dto.mapper.ProductMapper;
+import com.massemiso.supermarket_api.dto.ProductRequestDto;
+import com.massemiso.supermarket_api.dto.ProductResponseDto;
 import com.massemiso.supermarket_api.entity.Product;
 import com.massemiso.supermarket_api.util.TestDataFactory;
 import java.math.BigDecimal;

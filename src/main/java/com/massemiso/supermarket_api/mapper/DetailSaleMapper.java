@@ -1,4 +1,4 @@
-package com.massemiso.supermarket_api.dto.mapper;
+package com.massemiso.supermarket_api.mapper;
 
 import com.massemiso.supermarket_api.dto.DetailSaleRequestDto;
 import com.massemiso.supermarket_api.dto.DetailSaleResponseDto;
@@ -7,7 +7,6 @@ import com.massemiso.supermarket_api.entity.Product;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
 public interface DetailSaleMapper {

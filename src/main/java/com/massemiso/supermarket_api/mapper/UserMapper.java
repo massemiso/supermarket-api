@@ -1,18 +1,14 @@
-package com.massemiso.supermarket_api.dto.mapper;
+package com.massemiso.supermarket_api.mapper;
 
 import com.massemiso.supermarket_api.dto.AuthRegisterRequestDto;
-import com.massemiso.supermarket_api.dto.AuthResponseDto;
 import com.massemiso.supermarket_api.dto.UserRequestDto;
 import com.massemiso.supermarket_api.dto.UserResponseDto;
 import com.massemiso.supermarket_api.entity.RoleEntity;
 import com.massemiso.supermarket_api.entity.RoleEnum;
 import com.massemiso.supermarket_api.entity.UserEntity;
 import java.util.Set;
-import java.util.stream.Collectors;
-import javax.management.relation.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {

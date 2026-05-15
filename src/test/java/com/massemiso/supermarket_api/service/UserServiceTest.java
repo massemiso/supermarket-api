@@ -17,7 +17,7 @@ import com.massemiso.supermarket_api.dto.AuthRequestDto;
 import com.massemiso.supermarket_api.dto.AuthResponseDto;
 import com.massemiso.supermarket_api.dto.UserRequestDto;
 import com.massemiso.supermarket_api.dto.UserResponseDto;
-import com.massemiso.supermarket_api.dto.mapper.UserMapper;
+import com.massemiso.supermarket_api.mapper.UserMapper;
 import com.massemiso.supermarket_api.entity.RoleEntity;
 import com.massemiso.supermarket_api.entity.RoleEnum;
 import com.massemiso.supermarket_api.entity.UserEntity;
