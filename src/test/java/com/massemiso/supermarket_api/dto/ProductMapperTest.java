@@ -10,15 +10,16 @@ import com.massemiso.supermarket_api.entity.Product;
 import com.massemiso.supermarket_api.util.TestDataFactory;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class ProductMapperTest {
+  private final ProductMapper mapper = Mappers.getMapper(ProductMapper.class);
 
   @Test
   void toDto_GivenValidProduct_ShouldReturnCorrectProductResponseDto() {
     // Arrange
     Product entity = TestDataFactory.createDefaultProduct();
-    ProductMapper mapper = new ProductMapper();
 
     // manually set the id field even if it's private and has no setter
     ReflectionTestUtils.setField(entity, "id", 1L);
@@ -42,7 +43,6 @@ class ProductMapperTest {
       "Some category",
       BigDecimal.ZERO
     );
-    ProductMapper mapper = new ProductMapper();
 
     // Act
     Product entity = mapper.toEntity(dto);
