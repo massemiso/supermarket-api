@@ -12,16 +12,17 @@ import com.massemiso.supermarket_api.util.TestDataFactory;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class DetailSaleMapperTest {
+  private final DetailSaleMapper mapper = Mappers.getMapper(DetailSaleMapper.class);
 
   @Test
   void toDto_GivenValidDetailSale_ShouldReturnCorrectDetailSaleResponseDto() {
     // arrange
     DetailSale entity = TestDataFactory.createDefaultDetailSale();
     ReflectionTestUtils.setField(entity, "id", 1L);
-    DetailSaleMapper mapper = new DetailSaleMapper();
 
     // act
     DetailSaleResponseDto dto = mapper.toDto(entity);
@@ -42,7 +43,6 @@ class DetailSaleMapperTest {
         5,
         product.getId()
     );
-    DetailSaleMapper mapper = new DetailSaleMapper();
 
     // act
     DetailSale entity = mapper.toEntity(dto, product);
@@ -75,10 +75,9 @@ class DetailSaleMapperTest {
           )
       );
     }
-    DetailSaleMapper mapper = new DetailSaleMapper();
 
     // act
-    List<DetailSaleResponseDto> dtoList = mapper.getDetailSaleListDto(detailSaleList);
+    List<DetailSaleResponseDto> dtoList = mapper.toDtoList(detailSaleList);
 
     // assert
     assertNotNull(dtoList);
@@ -88,12 +87,9 @@ class DetailSaleMapperTest {
   }
 
   @Test
-  void getDetailSaleListDto_GivenNullList_ShouldReturnAnEmptyListOfDetailSaleResponseDto() {
-    // arrange
-    DetailSaleMapper mapper = new DetailSaleMapper();
-
+  void getDetailSaleListDto_GiveEmptyList_ShouldReturnAnEmptyListOfDetailSaleResponseDto() {
     // act
-    List<DetailSaleResponseDto> dtoList = mapper.getDetailSaleListDto(null);
+    List<DetailSaleResponseDto> dtoList = mapper.toDtoList(List.of());
 
     // assert
     assertNotNull(dtoList);

@@ -5,32 +5,18 @@ import com.massemiso.supermarket_api.dto.DetailSaleResponseDto;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Product;
 import java.util.List;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.stereotype.Component;
 
-@Component
-public class DetailSaleMapper {
+@Mapper(componentModel = "spring")
+public interface DetailSaleMapper {
 
-  public DetailSaleResponseDto toDto(DetailSale entity) {
-    return new DetailSaleResponseDto(
-        entity.getId(),
-        entity.getQuantity(),
-        entity.getUnitPrice(),
-        entity.getProduct().getId()
-    );
-  }
+  @Mapping(target = "productId", source = "product.id")
+  public DetailSaleResponseDto toDto(DetailSale entity);
 
-  public DetailSale toEntity(DetailSaleRequestDto requestDto, Product product) {
-    return DetailSale.builder()
-        .quantity(requestDto.quantity())
-        .product(product)
-        .build();
-  }
+  @Mapping(target = "product", source = "product")
+  public DetailSale toEntity(DetailSaleRequestDto requestDto, Product product);
 
-  public List<DetailSaleResponseDto> getDetailSaleListDto(List<DetailSale> detailSaleList){
-    if (detailSaleList == null)
-      return List.of();
-    return detailSaleList.stream()
-        .map(this::toDto)
-        .toList();
-  }
+  public List<DetailSaleResponseDto> toDtoList(List<DetailSale> detailSaleList);
 }

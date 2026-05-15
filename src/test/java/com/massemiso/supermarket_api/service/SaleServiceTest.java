@@ -91,7 +91,7 @@ class SaleServiceTest {
     // mock
     when(saleRepository.findByDeletedAtIsNull(pageable))
         .thenReturn(pageSales);
-    when(detailSaleMapper.getDetailSaleListDto( anyList() ))
+    when(detailSaleMapper.toDtoList( anyList() ))
         .thenReturn(detailSaleResponseDtoList);
     when(saleMapper.toDto( any(Sale.class) , anyList() ))
         .thenReturn(responseDto);
@@ -107,7 +107,7 @@ class SaleServiceTest {
         .isEqualByComparingTo(responseDto.total());
 
     verify(saleRepository).findByDeletedAtIsNull(pageable);
-    verify(detailSaleMapper).getDetailSaleListDto( anyList() );
+    verify(detailSaleMapper).toDtoList( anyList() );
     verify(saleMapper).toDto( any(Sale.class) , anyList() );
   }
 
@@ -132,7 +132,7 @@ class SaleServiceTest {
     // mock
     when(saleRepository.findByDeletedAtIsNullAndBranchId(branchId, pageable))
         .thenReturn(pageSales);
-    when(detailSaleMapper.getDetailSaleListDto( anyList() ))
+    when(detailSaleMapper.toDtoList( anyList() ))
         .thenReturn(detailSaleResponseDtoList);
     when(saleMapper.toDto( any(Sale.class) , anyList() ))
         .thenReturn(responseDto);
@@ -150,7 +150,7 @@ class SaleServiceTest {
         .isEqualByComparingTo(responseDto.total());
 
     verify(saleRepository).findByDeletedAtIsNullAndBranchId(branchId, pageable);
-    verify(detailSaleMapper).getDetailSaleListDto( anyList() );
+    verify(detailSaleMapper).toDtoList( anyList() );
     verify(saleMapper).toDto( any(Sale.class) , anyList() );
   }
 
@@ -175,7 +175,7 @@ class SaleServiceTest {
     // mock
     when(saleRepository.findByDeletedAtIsNullAndDate(date, pageable))
         .thenReturn(pageSales);
-    when(detailSaleMapper.getDetailSaleListDto( anyList() ))
+    when(detailSaleMapper.toDtoList( anyList() ))
         .thenReturn(detailSaleResponseDtoList);
     when(saleMapper.toDto( any(Sale.class) , anyList() ))
         .thenReturn(responseDto);
@@ -192,7 +192,7 @@ class SaleServiceTest {
         .isEqualByComparingTo(responseDto.total());
 
     verify(saleRepository).findByDeletedAtIsNullAndDate(date, pageable);
-    verify(detailSaleMapper).getDetailSaleListDto( anyList() );
+    verify(detailSaleMapper).toDtoList( anyList() );
     verify(saleMapper).toDto( any(Sale.class) , anyList() );
   }
 
@@ -219,7 +219,7 @@ class SaleServiceTest {
     when(saleRepository
         .findByDeletedAtIsNullAndBranchIdAndDate(branchId, date, pageable))
         .thenReturn(pageSales);
-    when(detailSaleMapper.getDetailSaleListDto( anyList() ))
+    when(detailSaleMapper.toDtoList( anyList() ))
         .thenReturn(detailSaleResponseDtoList);
     when(saleMapper.toDto( any(Sale.class) , anyList() ))
         .thenReturn(responseDto);
@@ -239,7 +239,7 @@ class SaleServiceTest {
 
     verify(saleRepository)
         .findByDeletedAtIsNullAndBranchIdAndDate(branchId, date, pageable);
-    verify(detailSaleMapper).getDetailSaleListDto( anyList() );
+    verify(detailSaleMapper).toDtoList( anyList() );
     verify(saleMapper).toDto( any(Sale.class) , anyList() );
   }
 
@@ -257,7 +257,7 @@ class SaleServiceTest {
     // mock
     when(saleRepository.findByIdAndDeletedAtIsNull(validId))
         .thenReturn(Optional.of(entity));
-    when(detailSaleMapper.getDetailSaleListDto( entity.getDetailSaleList() ))
+    when(detailSaleMapper.toDtoList( entity.getDetailSaleList() ))
         .thenReturn( detailSaleResponseDtoList );
     when(saleMapper.toDto( any(Sale.class), anyList() ))
         .thenReturn(responseDto);
@@ -277,7 +277,7 @@ class SaleServiceTest {
         .containsExactlyInAnyOrderElementsOf(detailSaleResponseDtoList);
 
     verify(saleRepository).findByIdAndDeletedAtIsNull(validId);
-    verify(detailSaleMapper).getDetailSaleListDto( entity.getDetailSaleList() );
+    verify(detailSaleMapper).toDtoList( entity.getDetailSaleList() );
     verify(saleMapper).toDto( any(Sale.class), anyList() );
   }
 
@@ -367,7 +367,7 @@ class SaleServiceTest {
     verify(detailSaleMapper, never()).toEntity( any(DetailSaleRequestDto.class), any(Product.class));
     verify(saleMapper, never()).toEntity(any(Branch.class), anyList());
     verify(saleRepository, never()).save(any(Sale.class));
-    verify(detailSaleMapper, never()).getDetailSaleListDto( anyList() );
+    verify(detailSaleMapper, never()).toDtoList( anyList() );
     verify(saleMapper, never()).toDto(any(Sale.class), anyList());
 
   }
@@ -409,7 +409,7 @@ class SaleServiceTest {
     verify(detailSaleMapper, never()).toEntity( any(DetailSaleRequestDto.class), any(Product.class));
     verify(saleMapper, never()).toEntity(any(Branch.class), anyList());
     verify(saleRepository, never()).save(any(Sale.class));
-    verify(detailSaleMapper, never()).getDetailSaleListDto( anyList() );
+    verify(detailSaleMapper, never()).toDtoList( anyList() );
     verify(saleMapper, never()).toDto(any(Sale.class), anyList());
 
   }

@@ -57,7 +57,7 @@ public class SaleService {
           .findByDeletedAtIsNull(pageable)
           .map(sale -> saleMapper.toDto(
               sale,
-              detailSaleMapper.getDetailSaleListDto(
+              detailSaleMapper.toDtoList(
                   sale.getDetailSaleList())));
     }
     else if(date == null){
@@ -65,7 +65,7 @@ public class SaleService {
           .findByDeletedAtIsNullAndBranchId(branchId, pageable)
           .map(sale -> saleMapper.toDto(
               sale,
-              detailSaleMapper.getDetailSaleListDto(
+              detailSaleMapper.toDtoList(
                   sale.getDetailSaleList())));
     }
     else if(branchId == null){
@@ -73,7 +73,7 @@ public class SaleService {
           .findByDeletedAtIsNullAndDate(date, pageable)
           .map(sale -> saleMapper.toDto(
               sale,
-              detailSaleMapper.getDetailSaleListDto(
+              detailSaleMapper.toDtoList(
                   sale.getDetailSaleList())));
     }
     else{
@@ -81,7 +81,7 @@ public class SaleService {
           .findByDeletedAtIsNullAndBranchIdAndDate(branchId, date, pageable)
           .map(sale -> saleMapper.toDto(
               sale,
-              detailSaleMapper.getDetailSaleListDto(
+              detailSaleMapper.toDtoList(
                   sale.getDetailSaleList())));
     }
 
@@ -92,7 +92,7 @@ public class SaleService {
     Sale sale = findById(id);
     return saleMapper.toDto(
         sale,
-        detailSaleMapper.getDetailSaleListDto(
+        detailSaleMapper.toDtoList(
             sale.getDetailSaleList()));
   }
 
@@ -110,7 +110,7 @@ public class SaleService {
     entity = saleRepository.save(entity);
 
     return saleMapper.toDto(entity,
-        detailSaleMapper.getDetailSaleListDto(detailSaleList));
+        detailSaleMapper.toDtoList(detailSaleList));
   }
 
   @Transactional
