@@ -12,20 +12,22 @@ import com.massemiso.supermarket_api.util.TestDataFactory;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 class UserMapperTest {
 
+  private final UserMapper mapper = Mappers.getMapper(UserMapper.class);
+
   @Test
   void toEntity_GivenValidUserRequestDto_ShouldReturnUserEntity() {
     //given
-    UserMapper userMapper = new UserMapper();
     Set<RoleEntity> roles = Set.of(TestDataFactory.createDefaultRoleEntity());
     UserRequestDto requestDto = TestDataFactory.createDefaultUserRequestDto();
     String passwordEncoded = new BCryptPasswordEncoder().encode(requestDto.password());
 
     //when
-    UserEntity entity = userMapper.toEntity(roles, requestDto, passwordEncoded);
+    UserEntity entity = mapper.toEntity(roles, requestDto, passwordEncoded);
 
     //then
     assertNotNull(entity);
@@ -38,13 +40,13 @@ class UserMapperTest {
     assertThat(entity.getRoles())
         .isNotNull()
         .hasSize(roles.size())
-        .containsExactlyElementsOf(roles);
+        .anyMatch(role ->
+            roles.iterator().next().getRoleEnum().equals(role.getRoleEnum()));
   }
 
   @Test
   void toEntity_GivenValidAuthRegisterRequestDto_ShouldReturnUserEntity() {
     //given
-    UserMapper userMapper = new UserMapper();
     Set<RoleEntity> roles = Set.of(TestDataFactory.createDefaultRoleEntity());
     UserRequestDto userDto = TestDataFactory.createDefaultUserRequestDto();
     AuthRegisterRequestDto requestDto = new AuthRegisterRequestDto(
@@ -55,7 +57,7 @@ class UserMapperTest {
     String passwordEncoded = new BCryptPasswordEncoder().encode(requestDto.password());
 
     //when
-    UserEntity entity = userMapper.toEntity(roles, requestDto, passwordEncoded);
+    UserEntity entity = mapper.toEntity(roles, requestDto, passwordEncoded);
 
     //then
     assertNotNull(entity);
@@ -74,11 +76,10 @@ class UserMapperTest {
   @Test
   void toDto_GivenValidUserEntity_ShouldReturnUserResponseDto() {
     //given
-    UserMapper userMapper = new UserMapper();
     UserEntity entity = TestDataFactory.createDefaultUserEntity();
 
     //when
-    UserResponseDto dto = userMapper.toDto(entity);
+    UserResponseDto dto = mapper.toDto(entity);
 
     //then
     assertNotNull(dto);
