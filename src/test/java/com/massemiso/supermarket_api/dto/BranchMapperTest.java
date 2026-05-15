@@ -8,21 +8,22 @@ import com.massemiso.supermarket_api.dto.mapper.BranchMapper;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.util.TestDataFactory;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class BranchMapperTest {
+  private final BranchMapper mapper = Mappers.getMapper(BranchMapper.class);
 
   @Test
   void toDto_GivenABranch_ShouldReturnABranchResponseDto() {
     // Arrange
     Branch entity = TestDataFactory.createDefaultBranch();
-    BranchMapper branchMapper = new BranchMapper();
 
     // manually set the id field even if it's private and has no setter
     ReflectionTestUtils.setField(entity, "id", 1L);
 
     // Act
-    BranchResponseDto actual = branchMapper.toDto(entity);
+    BranchResponseDto actual = mapper.toDto(entity);
 
     // Assert
     assertNotNull(actual);
@@ -40,10 +41,9 @@ class BranchMapperTest {
         "Some address",
         "Some phoneNumber"
     );
-    BranchMapper branchMapper = new BranchMapper();
 
     // Act
-    Branch actual = branchMapper.toEntity(dto);
+    Branch actual = mapper.toEntity(dto);
 
     // Assert
     assertNotNull(actual);

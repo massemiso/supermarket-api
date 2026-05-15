@@ -3,24 +3,11 @@ package com.massemiso.supermarket_api.dto.mapper;
 import com.massemiso.supermarket_api.dto.BranchRequestDto;
 import com.massemiso.supermarket_api.dto.BranchResponseDto;
 import com.massemiso.supermarket_api.entity.Branch;
+import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
-@Component
-public class BranchMapper {
-  public BranchResponseDto toDto(Branch entity){
-    return new BranchResponseDto(
-        entity.getId(),
-        entity.getName(),
-        entity.getAddress(),
-        entity.getPhoneNumber()
-    );
-  }
-
-  public Branch toEntity(BranchRequestDto requestDto) {
-    return Branch.builder()
-        .name(requestDto.name())
-        .address(requestDto.address())
-        .phoneNumber(requestDto.phoneNumber())
-        .build();
-  }
+@Mapper(componentModel = "spring")
+public interface BranchMapper {
+  public BranchResponseDto toDto(Branch entity);
+  public Branch toEntity(BranchRequestDto requestDto);
 }
