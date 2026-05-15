@@ -17,17 +17,19 @@ import org.springframework.stereotype.Component;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+  @Mapping(target = "roles", source = "roles")
   @Mapping(target = "password", source = "passwordEncoded")
-  @Mapping(target = "accountNonExpired", ignore = true)
-  @Mapping(target = "accountNonLocked", ignore = true)
-  @Mapping(target = "credentialsNonExpired", ignore = true)
+  @Mapping(target = "accountNonExpired", expression = "java(true)")
+  @Mapping(target = "accountNonLocked", expression = "java(true)")
+  @Mapping(target = "credentialsNonExpired", expression = "java(true)")
   public UserEntity toEntity(
       Set<RoleEntity> roles, UserRequestDto requestDto, String passwordEncoded);
 
+  @Mapping(target = "roles", source = "roles")
   @Mapping(target = "password", source = "passwordEncoded")
-  @Mapping(target = "accountNonExpired", ignore = true)
-  @Mapping(target = "accountNonLocked", ignore = true)
-  @Mapping(target = "credentialsNonExpired", ignore = true)
+  @Mapping(target = "accountNonExpired", expression = "java(true)")
+  @Mapping(target = "accountNonLocked", expression = "java(true)")
+  @Mapping(target = "credentialsNonExpired", expression = "java(true)")
   public UserEntity toEntity
       (Set<RoleEntity> roles, AuthRegisterRequestDto requestDto, String passwordEncoded);
 
