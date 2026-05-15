@@ -2,9 +2,9 @@ package com.massemiso.supermarket_api.service;
 
 import com.massemiso.supermarket_api.dto.BranchRequestDto;
 import com.massemiso.supermarket_api.dto.BranchResponseDto;
-import com.massemiso.supermarket_api.mapper.BranchMapper;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.exception.BranchNotFoundException;
+import com.massemiso.supermarket_api.mapper.BranchMapper;
 import com.massemiso.supermarket_api.repository.BranchRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

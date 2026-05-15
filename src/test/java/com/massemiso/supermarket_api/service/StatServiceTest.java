@@ -11,9 +11,9 @@ import static org.mockito.Mockito.when;
 
 import com.massemiso.supermarket_api.dto.BestSellerResponseDto;
 import com.massemiso.supermarket_api.dto.ProductResponseDto;
-import com.massemiso.supermarket_api.mapper.ProductMapper;
 import com.massemiso.supermarket_api.entity.Product;
 import com.massemiso.supermarket_api.exception.ProductNotFoundException;
+import com.massemiso.supermarket_api.mapper.ProductMapper;
 import com.massemiso.supermarket_api.repository.BestSellerProjection;
 import com.massemiso.supermarket_api.repository.DetailSaleRepository;
 import com.massemiso.supermarket_api.repository.ProductRepository;

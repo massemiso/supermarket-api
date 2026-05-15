@@ -9,11 +9,11 @@ import static org.hamcrest.Matchers.nullValue;
 
 import com.massemiso.supermarket_api.BaseIntegrationTest;
 import com.massemiso.supermarket_api.dto.BestSellerResponseDto;
-import com.massemiso.supermarket_api.mapper.ProductMapper;
 import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Product;
 import com.massemiso.supermarket_api.entity.Sale;
+import com.massemiso.supermarket_api.mapper.ProductMapper;
 import com.massemiso.supermarket_api.repository.BranchRepository;
 import com.massemiso.supermarket_api.repository.DetailSaleRepository;
 import com.massemiso.supermarket_api.repository.ProductRepository;
