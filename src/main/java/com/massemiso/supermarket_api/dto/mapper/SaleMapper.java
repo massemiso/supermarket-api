@@ -6,31 +6,16 @@ import com.massemiso.supermarket_api.entity.Branch;
 import com.massemiso.supermarket_api.entity.DetailSale;
 import com.massemiso.supermarket_api.entity.Sale;
 import java.util.List;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Component
-public class SaleMapper {
+@Mapper(componentModel = "spring")
+public interface SaleMapper {
 
+  @Mapping(target = "detailSaleList", source = "detailSaleResponseDtoList")
+  @Mapping(target = "branchId", source = "entity.branch.id")
   public SaleResponseDto toDto(
-      Sale entity,
-      List<DetailSaleResponseDto> detailSaleResponseDtoList) {
-    return new SaleResponseDto(
-        entity.getId(),
-        entity.getDate(),
-        entity.getBranch().getId(),
-        detailSaleResponseDtoList,
-        entity.getSaleStatus(),
-        entity.getTotal()
-    );
-  }
+      Sale entity, List<DetailSaleResponseDto> detailSaleResponseDtoList);
 
-  public Sale toEntity(
-      Branch branch,
-      List<DetailSale> detailSaleList) {
-    // ASSUME: user can't update sales
-    return Sale.builder()
-        .branch(branch)
-        .detailSaleList(detailSaleList)
-        .build();
-  }
+  public Sale toEntity(Branch branch, List<DetailSale> detailSaleList);
 }

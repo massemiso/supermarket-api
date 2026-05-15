@@ -16,9 +16,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class SaleMapperTest {
+  private final SaleMapper mapper = Mappers.getMapper(SaleMapper.class);
 
   @Test
   void toDto_GivenAValidSaleAndAListOfDetailSaleResponseDto_ShouldReturnCorrectSaleResponseDto() {
@@ -45,7 +47,6 @@ class SaleMapperTest {
         .branch(branch)
         .detailSaleList(detailSaleList)
         .build();
-   SaleMapper mapper = new SaleMapper();
 
     // act
     SaleResponseDto dto = mapper.toDto(entity, detailSaleResponseDtoList);
@@ -78,8 +79,6 @@ class SaleMapperTest {
     BigDecimal actualTotal = detailSaleList.stream()
         .map(DetailSale::calculateTotal)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-    SaleMapper mapper = new SaleMapper();
 
     // act
     Sale entity = mapper.toEntity(branch, detailSaleList);
