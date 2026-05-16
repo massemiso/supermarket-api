@@ -13,8 +13,9 @@ demonstrate skills in Java and Spring Boot.
 - Consistent API responses with **JSON**, including exception details.
 - **Optimistic Locking** using JPA @Version to prevent data overwriting in high-load scenarios.
 - Logging with **SLF4J** and **Logback**, including **Aspect-Oriented Logging (AOP)** for service monitoring.
-- Automated auditing using **Spring Data JPA Auditing**.
-- Dockerized application for easy deployment using **Docker**.
+- **Nginx** implementation for **SSL Termination (HTTPS)** and secure request routing.
+- **Dockerized Architecture** using **Docker Compose**, featuring persistent volumes for PostgreSQL data and service logs.
+- **Automated auditing** using **Spring Data JPA Auditing**.
 
 ## Domain Model
 Below is the class diagram representing the core entities and their relationships.
@@ -36,18 +37,20 @@ Below is the class diagram representing the core entities and their relationship
 
 ## Project Structure
 ~~~
-src/main/java/com/massemiso/supermarket_api/
-├── aspect/        # Aspect-Oriented Programming (Logging)
-├── config/        # JPA Auditing, Web, Security & JWT filters
-├── controller/    # REST Endpoints with @Valid and @PreAuthorize
-├── dto/           # Records for immutable data transfer 
-├── entity/        # JPA Models with @MappedSuperclass for Soft Delete
-├── exception/     # Custom exceptions & @ControllerAdvice handler
-├── mapper/        # Mapper Classes with MapStruct
-├── repository/    # Data Access Layer (Native Queries & Projections)
-├── service/       # Business Logic with @Transactional boundaries
-├── util/          # Utilities used in other packages
-└── SupermarketApplication.java      # Main application class
+/
+├── docker/        # Infrastructure config (Nginx, Certs, Logs)
+├── src/main/java/com/massemiso/supermarket_api/
+│   ├── aspect/    # Aspect-Oriented Programming (Logging)
+│   ├── config/    # JPA Auditing, Web, Security & JWT filters
+│   ├── controller/# REST Endpoints with @Valid and @PreAuthorize
+│   ├── dto/       # Records for immutable data transfer 
+│   ├── entity/    # JPA Models with @MappedSuperclass for Soft Delete
+│   ├── exception/ # Custom exceptions & @ControllerAdvice handler
+│   ├── mapper/    # Mapper Classes with MapStruct
+│   ├── repository/# Data Access Layer (Native Queries & Projections)
+│   ├── service/   # Business Logic with @Transactional boundaries
+│   ├── util/      # JWT and Security utilities
+│   └── SupermarketApplication.java # Main application class
 ~~~
 
 ## Testing Strategy
@@ -63,6 +66,7 @@ This project follows a testing pyramid:
 ### Prerequisites
 - JDK 21
 - Docker & Docker Compose
+- **OpenSSL** (Required for local HTTPS/Nginx setup)
 
 ### Installation & Deployment
 
@@ -72,23 +76,33 @@ This project follows a testing pyramid:
    cd supermarket-api
    ```
 
-2. **Configure Environment Variables**
-   The application requires several environment variables to run securely. Create a `.env` file in the root directory:
+2. **Setup Infrastructure (Docker Only)**
+   <br>If you are deploying via Docker, you must generate local SSL certificates for the Nginx proxy:
+   ```bash
+   mkdir -p docker/certs
+   openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+     -keyout docker/certs/selfsigned.key \
+     -out docker/certs/selfsigned.crt \
+     -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost"
+   ```
+
+3. **Configure Environment Variables (Optional)**
+   <br>The application uses environment variables for security. You can create a `.env` file in the root directory:
    ```bash
    cp .env.example .env
    ```
-   Open `.env` and configure your database credentials and JWT secret. 
+   If this file is not created, the application will fall back to the default values defined in `application.properties`.
 
-3. **Build the application**
+4. **Build and Run**
    ```bash
    ./mvnw clean package -DskipTests
-   ```
-
-4. **Run with Docker Compose**
-   ```bash
    docker compose up --build -d
    ```
-   _This starts the Spring Boot app and a persistent PostgreSQL 15 container. The database data is stored in a Docker volume._
+   _This starts the Spring Boot app, a persistent PostgreSQL container, and an Nginx reverse proxy. All traffic is served over HTTPS._
+5. **Watch the logs (Extra)**
+   ```bash
+   docker compose logs -f
+   ```
 
 ## Execution Modes
 
@@ -101,7 +115,7 @@ The application behavior changes significantly based on the `SPRING_PROFILES_ACT
 - **Seeding:** Automatically populates the DB with mock branches, products, and sales.
 - **Pre-seeded Users:**
     - `admin`, `manager`, `cashier`, `guest` (Passwords: `see below on API Documentation`).
-- **Access:** Test all permission levels immediately via Swagger at `http://localhost:8080/swagger-ui/index.html`.
+- **Access:** Test all permission levels immediately via Swagger at `https://localhost/swagger-ui/index.html`.
 
 ### Production (Secure)
 **Best for:** Real-world deployment or a clean "production-like" test.
@@ -113,9 +127,18 @@ The application behavior changes significantly based on the `SPRING_PROFILES_ACT
 
 ## Swagger UI
 Once the application is running, you can access the interactive Swagger UI at:
-`http://localhost:8080/swagger-ui/index.html`
+`https://localhost/swagger-ui/index.html`
 
 ![Swagger UI Example](.github/assets/swaggerui.png)
+
+## Monitoring & Logs
+The project is configured to persist logs from all services directly to your host machine:
+
+- **Spring API:** `docker/logs/app/spring.log`
+- **PostgreSQL:** `docker/logs/db/postgresql-*.log`
+- **Nginx Proxy:** `docker/logs/nginx/access.log` & `error.log`
+
+*Note: Database logs are automatically managed via a self-fixing permission entrypoint to ensure they are readable on your host.*
 
 ## API Documentation
 
