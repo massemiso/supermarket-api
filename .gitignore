@@ -33,7 +33,9 @@ build/
 .vscode/
 
 ### Log Folder ###
-logs/
+docker/logs/**/*.log
+docker/logs/**/*.csv
+!docker/logs/**/.gitkeep
 
 ### Environment Variables ###
 .env
