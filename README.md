@@ -87,11 +87,11 @@ This project follows a testing pyramid:
    ```
 
 3. **Configure Environment Variables (Optional)**
-   <br>The application uses environment variables for security. You can create a `.env` file in the root directory:
+   The application uses environment variables for security. While recommended for production, you can skip this step for local development. If you choose to configure them, create a `.env` file in the root directory:
    ```bash
    cp .env.example .env
    ```
-   If this file is not created, the application will fall back to the default values defined in `application.properties`.
+   If this file is not created, Docker Compose and the application will automatically fall back to the sensible default values defined in the configuration files.
 
 4. **Build and Run**
    ```bash

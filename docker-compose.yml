@@ -37,14 +37,22 @@ services:
 
   app:
     build: .
-    env_file: .env
     container_name: supermarket-api
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      # please set the required variables in the .env file if you want security
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-supermarket_db}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-user}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
+      JWT_SECRET: ${JWT_SECRET:-f043c350d733e63ffb7d66987f0a5577f896077c64b400324541ebd60befa888}
+      JWT_USER_GENERATOR: ${JWT_USER_GENERATOR:-AUTH0-JWT-BACKEND}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-3600000}
+      PROD_ADMIN_USERNAME: ${PROD_ADMIN_USERNAME:-sysadmin}
+      PROD_ADMIN_PASSWORD: ${PROD_ADMIN_PASSWORD:-sysadmin123}
+      PROD_ADMIN_EMAIL: ${PROD_ADMIN_EMAIL:-sysadmin@supermarket.com}
+      # ----------------------------------------------------------------------------
       JAVA_TOOL_OPTIONS: "-Xmx384m -Xms128m"
       LOGGING_FILE_NAME: /app/logs/spring.log
     volumes:
