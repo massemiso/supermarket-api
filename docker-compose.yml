@@ -4,9 +4,10 @@ services:
     image: postgres:15
     container_name: supermarket-db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # please set the required variables in the .env file if you want security
+      POSTGRES_DB: ${POSTGRES_DB:-supermarket_db}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
 
     # DEAL WITH PERMISSIONS AND LOGS
     user: root
