@@ -19,7 +19,7 @@ demonstrate skills in Java and Spring Boot.
 ## Domain Model
 Below is the class diagram representing the core entities and their relationships.
 
-![Class Diagram](docs/class-diagram.png)
+![Class Diagram](.github/assets/class-diagram.png)
 
 ## Stack
 - Java 21+
@@ -115,7 +115,7 @@ The application behavior changes significantly based on the `SPRING_PROFILES_ACT
 Once the application is running, you can access the interactive Swagger UI at:
 `http://localhost:8080/swagger-ui/index.html`
 
-![Swagger UI Example](docs/swaggerui.png)
+![Swagger UI Example](.github/assets/swaggerui.png)
 
 ## API Documentation
 
