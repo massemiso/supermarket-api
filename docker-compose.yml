@@ -1,43 +1,50 @@
 services:
 
-  postgres:
+  db:
     image: postgres:15
-    container_name: postgres_db
-
+    container_name: supermarket-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-
     deploy:
       resources:
         limits:
           memory: 256M
-
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   app:
     build: .
     env_file: .env
-    container_name: spring_app
-
+    container_name: supermarket-api
     depends_on:
-      - postgres
-
-    ports:
-      - "8080:8080"
-
+      - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
       JAVA_TOOL_OPTIONS: "-Xmx384m -Xms128m"
-
     deploy:
       resources:
         limits:
           memory: 512M
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: supermarket-proxy
+    ports:
+      - "8080:80"
+    volumes:
+      - ./docs/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    networks:
+      - default
+    deploy:
+      resources:
+        limits:
+          memory: 64M
 
 volumes:
   postgres_data:
