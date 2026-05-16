@@ -37,6 +37,11 @@ docker/logs/**/*.log
 docker/logs/**/*.csv
 !docker/logs/**/.gitkeep
 
+### Certificates ###
+docker/certs/*.crt
+docker/certs/*.key
+!docker/certs/.gitkeep
+
 ### Environment Variables ###
 .env
 
