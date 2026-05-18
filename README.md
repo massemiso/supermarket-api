@@ -61,12 +61,23 @@ This project follows a testing pyramid:
 - **Coverage**: Instrumented with **JaCoCo** to ensure high code 
   reliability (DTOs and Configs excluded for meaningful metrics).
 
+## Live Demo (Try it out!)
+> **Note:** This is a live instance of the application running on a home server.
+> - **URL:** [https://massemiso.duckdns.org:9093/swagger-ui/index.html](https://massemiso.duckdns.org:9093/swagger-ui/index.html)
+> - **SSL Warning:** A *"Connection not private"* warning is **expected** due to a self-signed certificate. Click **"Advanced"** → **"Proceed"**.
+> - **HTTPS Only:** For security reasons, only HTTPS is available on port `9093`.
+> - **Patience Required:** Hosted on a home connection; latency may be higher than cloud hosting.
+> - **Seeding:** Running in `default` mode. Use the pre-seeded users from the [API Documentation](#api-documentation) section.
+> - **Easy Testing:** For your convenience, **valid JWT test tokens** for all roles are automatically generated and displayed at the top of the Swagger UI description. Simply copy and paste them into the "Authorize" button!
+
+![Live Demo](.github/assets/demo.png)
+
 ## Getting Started
 
 ### Prerequisites
 - JDK 21
 - Docker & Docker Compose
-- **OpenSSL** (Required for local HTTPS/Nginx setup)
+- OpenSSL (Required for local HTTPS/Nginx setup)
 
 ### Installation & Deployment
 
@@ -87,7 +98,7 @@ This project follows a testing pyramid:
    ```
 
 3. **Configure Environment Variables (Optional)**
-   The application uses environment variables for security. While recommended for production, you can skip this step for local development. If you choose to configure them, create a `.env` file in the root directory:
+   <br>The application uses environment variables for security. While recommended for production, you can skip this step for local development. If you choose to configure them, create a `.env` file in the root directory:
    ```bash
    cp .env.example .env
    ```
@@ -124,12 +135,6 @@ The application behavior changes significantly based on the `SPRING_PROFILES_ACT
 - **Seeding:** No mock data is generated.
 - **Security:** **Only one** admin user is created using the `PROD_ADMIN_USERNAME/PASSWORD` from your `.env`.
 - **Note:** You must manually set up your branches and products after logging in as the Admin.
-
-## Swagger UI
-Once the application is running, you can access the interactive Swagger UI at:
-`https://localhost/swagger-ui/index.html`
-
-![Swagger UI Example](.github/assets/swaggerui.png)
 
 ## Monitoring & Logs
 The project is configured to persist logs from all services directly to your host machine:

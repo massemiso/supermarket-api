@@ -35,6 +35,7 @@ build/
 ### Log Folder ###
 docker/logs/**/*.log
 docker/logs/**/*.csv
+docker/logs/**/*.gz
 !docker/logs/**/.gitkeep
 
 ### Certificates ###
