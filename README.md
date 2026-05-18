@@ -62,13 +62,13 @@ This project follows a testing pyramid:
   reliability (DTOs and Configs excluded for meaningful metrics).
 
 ## Live Demo (Try it out!)
-> **Note:** This is a live instance of the application running on a home server.
-> - **URL:** [https://massemiso.duckdns.org:9093/swagger-ui/index.html](https://massemiso.duckdns.org:9093/swagger-ui/index.html)
-> - **SSL Warning:** A *"Connection not private"* warning is **expected** due to a self-signed certificate. Click **"Advanced"** → **"Proceed"**.
-> - **HTTPS Only:** For security reasons, only HTTPS is available on port `9093`.
-> - **Patience Required:** Hosted on a home connection; latency may be higher than cloud hosting.
-> - **Seeding:** Running in `default` mode. Use the pre-seeded users from the [API Documentation](#api-documentation) section.
-> - **Easy Testing:** For your convenience, **valid JWT test tokens** for all roles are automatically generated and displayed at the top of the Swagger UI description. Simply copy and paste them into the "Authorize" button!
+ **NOTE:** This is a live instance of the application running on a home server.
+ - **URL:** [https://massemiso.duckdns.org:9093/swagger-ui/index.html](https://massemiso.duckdns.org:9093/swagger-ui/index.html)
+ - **SSL Warning:** A *"Connection not private"* warning is **expected** due to a self-signed certificate. Click **"Advanced"** → **"Proceed"**.
+ - **HTTPS Only:** For security reasons, only HTTPS is available on port `9093`.
+ - **Patience Required:** Hosted on a home connection; latency may be higher than cloud hosting.
+ - **Seeding:** Running in `default` mode. Use the pre-seeded users from the [API Documentation](#api-documentation) section.
+ - **Easy Testing:** For your convenience, **valid JWT test tokens** for all roles are automatically generated and displayed at the top of the Swagger UI description. Simply copy and paste them into the "Authorize" button!
 
 ![Live Demo](.github/assets/demo.png)
 
